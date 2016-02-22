@@ -18,5 +18,5 @@ JS_FUNC(CGetTickCount);
 JS_FUNC(CDelay);
 JS_FUNC(CCloseD2);
 JS_FUNC(CScreenSize);
-
+JS_FUNC(CPrint);
 

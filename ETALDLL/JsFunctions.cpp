@@ -5,6 +5,7 @@
 #include "V8Script.h"
 #include "D2Helpers.h"
 #include <shlwapi.h>
+#include "D2Funcs.h"
 
 
 void StringReplace(char* str, const char find, const char replace, size_t buflen)
@@ -28,6 +29,7 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CDelay, "Delay");
 	JS_FLINK(CCloseD2, "CloseD2");
 	JS_FLINK(CScreenSize, "ScreenSize");
+	JS_FLINK(CPrint, "Print");
 	return Context::New(isolate, NULL, global);
 }
 
@@ -130,4 +132,14 @@ JS_FUNC(CClick) {
 JS_FUNC(CGetTickCount)
 {
 	args.GetReturnValue().Set(v8::Int32::New(GetTickCount()));
+}
+
+
+JS_FUNC(CPrint)
+{
+	HandleScope handle_scope(args.GetIsolate());
+	String::Utf8Value str(args[0]);
+	char* cstr = (char*)ToCString(str);
+	//std::replace(cstr, cstr + strlen(cstr), '%', (char)(unsigned char)0xFE);
+	D2Funcs::Print(cstr);
 }

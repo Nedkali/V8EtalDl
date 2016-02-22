@@ -5,9 +5,14 @@
 
 #ifndef __D2PTRS_H__
 #define __D2PTRS_H__
-#endif
+
 #include <Windows.h>
 #include "D2Structs.h"
+
+#pragma warning ( push )
+#pragma warning ( disable: 4245 )
+
+#pragma optimize ( "", off )
 
 class Pointer
 {
@@ -57,6 +62,7 @@ enum { DLLNO_D2CLIENT, DLLNO_D2COMMON, DLLNO_D2GFX, DLLNO_D2LANG, DLLNO_D2WIN, D
 //#define APTR(ASM_NAME, DLL, OFFSET) extern DWORD* Asm_##dll##_##name##(VOID); static DWORD dll##_##name = *Asm_##dll##_##name##();
 #endif
 
+FPTR(void __stdcall, PrintGameString, (wchar_t *wMessage, int nColor), "D2Client.dll", 0x75EB0)
 //////////////////////////////////////////////////////////////////////
 // D2Client Function Pointers
 //////////////////////////////////////////////////////////////////////
@@ -204,3 +210,8 @@ FUNCPTR(BNCLIENT, DecodeAndLoadKeys, char __cdecl, (), 0x10920)
 #define D2CLIENT_GetItemDesc(pUnit, pBuffer)			D2CLIENT_GetItemDesc_ASM((DWORD)pUnit, pBuffer)
 #define D2CLIENT_MercItemAction(bPacketType, dwSlotId)	D2CLIENT_MercItemAction_ASM(bPacketType, dwSlotId)
 #define D2CLIENT_SendGamePacket(dwLen, bPacket)			D2CLIENT_SendGamePacket_ASM(dwLen, bPacket)
+
+#pragma warning ( pop )
+#pragma optimize ( "", on )
+
+#endif

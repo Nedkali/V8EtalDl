@@ -73,8 +73,7 @@
     <LinkIncremental>true</LinkIncremental>
     <TargetName>D2ETAL</TargetName>
     <LibraryWPath />
-    <OutDir>D:\My Documents\GitHub\EtalManager\Etal Manager\bin\Debug\</OutDir>
-    <IncludePath>D:\My Documents\GitHub\V8EtalDll\ETALDLL\V8\lib\Debug;$(IncludePath)</IncludePath>
+    <IncludePath>V8\lib\Debug;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -84,8 +83,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>D2ETAL</TargetName>
-    <OutDir>..\..\EtalManager\Etal Manager\bin\Release\</OutDir>
-    <LibraryPath>F:\Test2\ETALDLL\V8\lib\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>V8\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -176,7 +174,10 @@
   <ItemGroup>
     <ClInclude Include="Common.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="D2Funcs.h" />
     <ClInclude Include="D2Intercepts.h" />
+    <ClInclude Include="D2Skills.h" />
+    <ClInclude Include="Helpers.h" />
     <ClInclude Include="JsDefines.h" />
     <ClInclude Include="JsFunctions.h" />
     <ClInclude Include="Offset.h" />
@@ -191,10 +192,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp" />
+    <ClCompile Include="D2Funcs.cpp" />
     <ClCompile Include="D2Intercepts.cpp" />
     <ClCompile Include="D2Helpers.cpp" />
     <ClCompile Include="D2Functions.cpp" />
     <ClCompile Include="D2Pointers.cpp" />
+    <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="JsFunctions.cpp" />
     <ClCompile Include="Main.cpp">

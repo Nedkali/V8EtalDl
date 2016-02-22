@@ -19,4 +19,8 @@ JS_FUNC(CDelay);
 JS_FUNC(CCloseD2);
 JS_FUNC(CScreenSize);
 JS_FUNC(CPrint);
+JS_FUNC(CMove);
+JS_FUNC(CSetSkill);
+JS_FUNC(CExitGame);
+JS_FUNC(CGetPlayerUnit);
 

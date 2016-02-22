@@ -30,9 +30,55 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CCloseD2, "CloseD2");
 	JS_FLINK(CScreenSize, "ScreenSize");
 	JS_FLINK(CPrint, "Print");
+	JS_FLINK(CMove, "Move");
+	JS_FLINK(CSetSkill, "SetSkill");
+	JS_FLINK(CExitGame, "ExitGame");
+	JS_FLINK(CGetPlayerUnit, "GetPlayerUnit");
 	return Context::New(isolate, NULL, global);
 }
+JS_FUNC(CGetPlayerUnit)
+{
+	D2Funcs::GetPlayerUnit();
+}
+JS_FUNC(CExitGame)
+{
+	D2Funcs::ExitGame();
+}
+JS_FUNC(CSetSkill)
+{
+	HandleScope handle_scope(args.GetIsolate());
+	bool left = false;
+	if (args.Length() == 2)
+	{
+		int skillid = args[0]->Uint32Value();
+		String::Utf8Value str(args[1]);
+		char* cstr = (char*)ToCString(str);
+		if (cstr == "true")
+			left = true;
+		else
+			left = false;
+		D2Funcs::SetSkill(skillid, left);
+		args.GetReturnValue().Set(Boolean::New(true));
+	}
 
+	args.GetReturnValue().Set(Boolean::New(false));
+	return;
+}
+JS_FUNC(CMove)
+{
+	HandleScope handle_scope(args.GetIsolate());
+
+	if (args.Length() == 2)
+	{
+		int x = args[0]->Uint32Value();
+		int y = args[1]->Uint32Value();
+		D2Funcs::MoveTo(static_cast<WORD>(x), static_cast<WORD>(y));
+		args.GetReturnValue().Set(Boolean::New(true));
+	}
+
+	args.GetReturnValue().Set(Boolean::New(false));
+	return;
+}
 JS_FUNC(CScreenSize)
 {
 	
@@ -56,8 +102,18 @@ JS_FUNC(CCloseD2)
 JS_FUNC(CDelay)
 {
 	HandleScope handle_scope(args.GetIsolate());
-	int x = args[0]->Uint32Value();
-	Sleep(x);
+	if (args.Length() == 1)
+	{
+		int x = args[0]->Uint32Value();
+		Sleep(x);
+	}
+	else if (args.Length() == 2)
+	{
+		int x = args[0]->Uint32Value();
+		int b = args[1]->Uint32Value();
+		int random = rand() % x+b;
+		Sleep(random);
+	}
 	return;
 }
 

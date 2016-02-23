@@ -4,7 +4,7 @@
 #pragma once
 #include <windows.h>
 #include <vector>
-
+#include "MenuControls.h"
 
 
 struct Profile {

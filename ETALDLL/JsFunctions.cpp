@@ -48,8 +48,13 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CSelectChar, "SelectChar");
 	JS_FLINK(CGetText, "GetText");
 	JS_FLINK(CSetText, "SetText");
-	JS_FLINK(CClientState, "ClientState");
+	JS_FLINK(CClientState, "ClientState"); 
+	JS_FLINK(CTESTWAYPOINT, "WayPoint");
 	return Context::New(isolate, NULL, global);
+
+	Handle<ObjectTemplate>property = ObjectTemplate::New();
+	JS_FLINK(CLoad, "Load");
+	return Context::New(isolate, NULL, property);
 }
 
 JS_FUNC(CClientState)
@@ -217,9 +222,24 @@ JS_FUNC(CGetArea)
 
 	D2Funcs::Print(act);
 
+	DWORD parea = GetPlayerArea();
+	char areap[128];//Player Area
+	sprintf_s(areap, "%u", parea);
+	D2Funcs::Print(areap);
+	
 	args.GetReturnValue().Set(v8::Int32::New(areaid));
 }
 
+JS_FUNC(CTESTWAYPOINT)
+{
+	HandleScope handle_scope(args.GetIsolate());
+	INT32 wp = args[0]->Uint32Value();
+	UnitAny* pUnit = D2CLIENT_FindUnit(fpGetPlayerUnit()->dwUnitId, fpGetPlayerUnit()->dwType);
+	D2CLIENT_TakeWaypoint(pUnit->dwUnitId, wp);
+	if (!D2CLIENT_GetUIState(UI_GAME))
+		fpCloseInteract();
+
+}
 JS_FUNC(CGetPlayerUnit)
 {
 	HandleScope handle_scope(args.GetIsolate());

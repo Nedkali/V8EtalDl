@@ -43,6 +43,22 @@ struct GameStructInfo {
 	char szGamePassword[0x18];		//0x241
 };
 
+struct UnitHashTable
+{
+	UnitAny* table[128];
+};
+
+struct UnitInteraction {
+	DWORD dwMoveType;
+	UnitAny* lpPlayerUnit;
+	UnitAny* lpTargetUnit;
+	DWORD dwTargetX;
+	DWORD dwTargetY;
+	DWORD _1;
+	DWORD _2;
+	//Skill *pSkill; //need to fix this, compiler error
+};
+
 struct AutomapCell {
 	DWORD fSaved;					//0x00
 	WORD nCellNo;					//0x04
@@ -421,14 +437,14 @@ struct SkillInfo {
 };
 
 struct Skill {
-	SkillInfo *pSkillInfo;         //0x00
-	Skill *pNextSkill;            //0x04
-	DWORD _1[8];            //0x08
-	DWORD dwSkillLevel;         //0x28
-	DWORD _2[2];            //0x2C
-	DWORD ItemId;            //0x34 0xFFFFFFFF if not a charge
-	DWORD ChargesLeft;         //0x38 
-	DWORD IsCharge;            //0x3C 1 for charge, else 0
+	SkillInfo *pSkillInfo;			//0x00
+	Skill *pNextSkill;				//0x04
+	DWORD _1[8];						//0x08
+	DWORD dwSkillLevel;				//0x28
+	DWORD _2[2];						//0x2C
+	DWORD ItemId;					//0x34 0xFFFFFFFF if not a charge
+	DWORD ChargesLeft;				//0x38 
+	DWORD IsCharge;					//0x3C 1 for charge, else 0
 };//size = 0x40
 
 struct Info {

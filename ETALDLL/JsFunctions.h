@@ -34,6 +34,6 @@ JS_FUNC(CSelectChar);
 JS_FUNC(CGetText);
 JS_FUNC(CSetText);
 JS_FUNC(CClientState);
-
+JS_FUNC(CTESTWAYPOINT);
 
 

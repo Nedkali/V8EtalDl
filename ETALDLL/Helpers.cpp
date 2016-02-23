@@ -6,11 +6,6 @@
 #include "Input.h"
 #include "D2Helpers.h"
 
-int GetPlayerArea(void)
-{
-	return fpGetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->dwLevelNo;
-}
-
 char* UnicodeToAnsi(const wchar_t* str)
 {
 	char* buf = NULL;

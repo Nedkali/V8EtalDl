@@ -183,6 +183,20 @@ FPTR(HWND __stdcall, GetHwnd, (void), "D2gfx.dll", 0xB0C0)
 #define _D2PTRS_START	D2WIN_InitMPQ
 FUNCPTR(D2WIN, InitMPQ, DWORD __stdcall, (char *dll, const char *mpqfile, char *mpqname, int v4, int v5), 0x7E50)
 FUNCPTR(D2COMMON, GetLevel, Level * __fastcall, (ActMisc *pMisc, DWORD dwLevelNo), 0x6D440)
+
+FUNCPTR(D2COMMON, GetStatList, StatList* __stdcall, (UnitAny* pUnit, DWORD dwUnk, DWORD dwMaxEntries), 0x57830)
+FUNCPTR(D2COMMON, CopyStatList, DWORD __stdcall, (StatList* pStatList, Stat* pStatArray, DWORD dwMaxEntries), 0x57D30)
+FUNCPTR(D2COMMON, GetUnitStat, long __stdcall, (UnitAny* pUnit, DWORD dwStat, DWORD dwStat2), 0x584E0)
+FUNCPTR(D2COMMON, GetUnitState, int __stdcall, (UnitAny *pUnit, DWORD dwStateNo), 0x2F310)
+FUNCPTR(D2CLIENT, GetMonsterOwner, DWORD __fastcall, (DWORD nMonsterId), 0x8E3D0)
+FUNCPTR(D2COMMON, GetLevelText, LevelText * __stdcall, (DWORD levelno), 0x30CA0)
+FUNCPTR(D2COMMON, AddRoomData, void __stdcall, (Act * ptAct, int LevelId, int Xpos, int Ypos, Room1 * pRoom), 0x24990)
+FUNCPTR(D2COMMON, RemoveRoomData, void __stdcall, (Act* ptAct, int LevelId, int Xpos, int Ypos, Room1* pRoom), 0x24930)
+FUNCPTR(D2CLIENT, GetLevelName_I, wchar_t* __fastcall, (DWORD levelId), 0x18250)
+VARPTR(D2CLIENT, ServerSideUnitHashTables, UnitHashTable, 0x1047B8)
+VARPTR(D2CLIENT, ClientSideUnitHashTables, UnitHashTable, 0x103BB8)
+
+
 ASMPTR(BNCLIENT, DClass, 0x15EB8)
 ASMPTR(BNCLIENT, DName, 0x1607D)
 ASMPTR(BNCLIENT, DLod, 0x161BD)

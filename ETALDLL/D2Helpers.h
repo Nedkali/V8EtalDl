@@ -21,6 +21,7 @@ DWORD WINAPI MainThread(VOID*);
 void LoadMPQ(const char* mpq);
 void  Logincontrol();
 void SendDataCopy(char* app, int  code, char* data);
+void __fastcall Say(const char* szMessage);
 
 
 

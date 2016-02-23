@@ -13,6 +13,27 @@ D2Funcs::D2Funcs()
 D2Funcs::~D2Funcs()
 {
 }
+
+//bool D2Funcs::Say()
+//{
+//
+//	return 1;
+//}
+
+int D2Funcs::Random(WORD a, WORD b)
+{
+	int random = rand() % a + b;
+	return random;
+}
+int D2Funcs::GetArea()
+{
+	int nArea = GetPlayerArea();	
+	////Level* pLevel = GetLevel(nArea);	
+	//myArea* pArea = new myArea;
+	//pArea->AreaId = nArea;
+	////pArea->ExitArray = NULL;
+	return nArea;
+}
 UnitAny D2Funcs::GetPlayerUnit()
 {
 	UnitAny *pUnit = fpGetPlayerUnit();
@@ -51,22 +72,26 @@ bool D2Funcs::TeleTo(WORD x, WORD y, bool Left) {
 	delete[] aPacket;
 	return 1;
 }
-bool D2Funcs::SetSkill(WORD wSkillId, bool Left)
+bool D2Funcs::SetSkill(WORD wSkillId, bool bLeft)
 {
+
+	if (!GetSkill(wSkillId))
+		return FALSE;
+
 	if (!fpGetPlayerUnit())
-		return 0;
+		return FALSE;
 
 	BYTE PutSkill[9] = { 0x3c, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF };
 	if (GetSkill(wSkillId))
 	{
 		*(WORD*)&PutSkill[1] = wSkillId;
-		if (Left)
+		if (bLeft)
 			*(BYTE*)&PutSkill[4] = 0x80;
 		fpSendPacket(9, 0, PutSkill);
 	}
-	else return 0;
+	else return FALSE;
 
-	return 1;
+	return TRUE;
 }
 bool D2Funcs::GetSkill(WORD wSkillId)
 {

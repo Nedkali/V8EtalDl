@@ -8,6 +8,7 @@
 
 #include <Windows.h>
 #include "D2Structs.h"
+#include "D2Funcs.h"
 
 #pragma warning ( push )
 #pragma warning ( disable: 4245 )
@@ -74,7 +75,7 @@ FPTR(void __fastcall, CloseNPCInteract, (void), "D2Client.dll", 0x7BC10)
 FPTR(void __stdcall, CloseNPCTalk, (void* unk), "D2Client.dll", 0x77AB0)
 //FPTR(void __fastcall, ClearScreen, (void), "D2Client.dll", 0x7AB80)
 FPTR(void __fastcall, CloseInteract, (void), "D2Client.dll", 0x44980)
-FPTR(void __stdcall, ClickMap, (DWORD MouseFlag, DWORD x, DWORD y, DWORD Type), "D2Client.dll", 0x2B420);
+FPTR(void __stdcall, ClickMap, (DWORD MouseFlag, DWORD x, DWORD y, DWORD Type), "D2Client.dll", 0x2B420)
 FPTR(void __stdcall, ClickItem, (UnitAny* pPlayer, Inventory* pInventory, int x, int y, DWORD dwClickType, InventoryLayout* pLayout, DWORD Location), "D2Client.dll", 0x9AFF0)
 FPTR(DWORD __fastcall, GetMouseXOffset, (void), "D2Client.dll", 0x5BC20)
 FPTR(DWORD __fastcall, GetMouseYOffset, (void), "D2Client.dll", 0x5BC30)
@@ -187,6 +188,12 @@ VARPTR(BNCLIENT, ClassicKey, char*, 0x1E928)
 VARPTR(BNCLIENT, XPacKey, char*, 0x1E930)
 VARPTR(BNCLIENT, KeyOwner, char*, 0x1E934)
 FUNCPTR(BNCLIENT, DecodeAndLoadKeys, char __cdecl, (), 0x10920)
+ASMPTR(D2CLIENT, Say_I, 0xB27A6)
+ASMPTR(D2CLIENT, Say_II, 0x8C60)
+VARPTR(D2CLIENT, ChatMsg, wchar_t*, 0x11D650)
+VARPTR(D2CLIENT, PlayerUnit, UnitAny*, 0x11D050)
+ASMPTR(D2CLIENT, SendGamePacket_I, 0xB61F0)
+FUNCPTR(D2COMMON, InitLevel, void __stdcall, (Level *pLevel), 0x6DDF0)
 #define _D2PTRS_END	BNCLIENT_DecodeAndLoadKeys
 
 #undef FPTR
@@ -209,7 +216,7 @@ FUNCPTR(BNCLIENT, DecodeAndLoadKeys, char __cdecl, (), 0x10920)
 #define D2CLIENT_ClickBeltRight(pPlayer, pInventory, dwShift, dwPotPos)	D2CLIENT_ClickBeltRight_ASM((DWORD)pPlayer, (DWORD)pInventory, dwShift, dwPotPos)
 #define D2CLIENT_GetItemDesc(pUnit, pBuffer)			D2CLIENT_GetItemDesc_ASM((DWORD)pUnit, pBuffer)
 #define D2CLIENT_MercItemAction(bPacketType, dwSlotId)	D2CLIENT_MercItemAction_ASM(bPacketType, dwSlotId)
-#define D2CLIENT_SendGamePacket(dwLen, bPacket)			D2CLIENT_SendGamePacket_ASM(dwLen, bPacket)
+#define SendGamePacket(dwLen, bPacket)					D2Funcs::SendGamePacket_ASM(dwLen, bPacket)
 
 #pragma warning ( pop )
 #pragma optimize ( "", on )

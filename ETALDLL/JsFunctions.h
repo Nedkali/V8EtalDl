@@ -23,4 +23,7 @@ JS_FUNC(CMove);
 JS_FUNC(CSetSkill);
 JS_FUNC(CExitGame);
 JS_FUNC(CGetPlayerUnit);
+JS_FUNC(CGetArea);
+JS_FUNC(CSay);
+JS_FUNC(CRandom);
 

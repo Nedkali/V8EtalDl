@@ -6,7 +6,8 @@
 #include "D2Helpers.h"
 #include <shlwapi.h>
 #include "D2Funcs.h"
-
+#include "Helpers.h"
+#include <time.h>
 
 void StringReplace(char* str, const char find, const char replace, size_t buflen)
 {
@@ -34,16 +35,53 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CSetSkill, "SetSkill");
 	JS_FLINK(CExitGame, "ExitGame");
 	JS_FLINK(CGetPlayerUnit, "GetPlayerUnit");
+	JS_FLINK(CGetArea, "GetArea");
+	JS_FLINK(CSay, "Say");
+	JS_FLINK(CRandom, "Random");
 	return Context::New(isolate, NULL, global);
 }
+
+JS_FUNC(CRandom)
+{
+	HandleScope handle_scope(args.GetIsolate());
+	INT32 range_min = args[0]->Uint32Value();
+	INT32 range_max = args[1]->Uint32Value();
+
+	srand((unsigned int)time(NULL));
+	INT32 u = rand() / (RAND_MAX + 1) * (range_max - range_min) + range_min;
+	args.GetReturnValue().Set(u);
+
+}
+
+JS_FUNC(CSay)
+{
+	if (args.Length() == 1)
+	{
+		HandleScope handle_scope(args.GetIsolate());
+		String::Utf8Value str(args[0]);
+		char* cstr = (char*)ToCString(str);
+		Say(cstr);
+		args.GetReturnValue().Set(Boolean::New(true));
+	}
+	args.GetReturnValue().Set(Boolean::New(false));
+	return;
+}
+
+JS_FUNC(CGetArea)
+{
+	D2Funcs::GetArea();
+}
+
 JS_FUNC(CGetPlayerUnit)
 {
 	D2Funcs::GetPlayerUnit();
 }
+
 JS_FUNC(CExitGame)
 {
 	D2Funcs::ExitGame();
 }
+
 JS_FUNC(CSetSkill)
 {
 	HandleScope handle_scope(args.GetIsolate());
@@ -64,6 +102,7 @@ JS_FUNC(CSetSkill)
 	args.GetReturnValue().Set(Boolean::New(false));
 	return;
 }
+
 JS_FUNC(CMove)
 {
 	HandleScope handle_scope(args.GetIsolate());

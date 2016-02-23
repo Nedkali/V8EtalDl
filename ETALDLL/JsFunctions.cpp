@@ -46,9 +46,57 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CClickControl, "ClickControl");
 	JS_FLINK(CGetLocation, "GetLocation");
 	JS_FLINK(CSelectChar, "SelectChar");
+	JS_FLINK(CGetText, "GetText");
+	JS_FLINK(CSetText, "SetText");
+	JS_FLINK(CClientState, "ClientState");
 	return Context::New(isolate, NULL, global);
 }
 
+JS_FUNC(CClientState)
+{
+	
+	args.GetReturnValue().Set(v8::Int32::New(MENU::ClientState()));
+
+}
+
+JS_FUNC(CSetText)
+{
+
+	Handle<v8::Value> obj(args[0]);
+
+	if (obj->IsArray()) {
+
+		Local<v8::Array> arr = v8::Local<v8::Array>::Cast(args[0]);
+
+		int Type = (int)(arr->Get(0)->Int32Value());
+		String::Utf8Value str(arr->Get(1));
+		char* cstr = (char*)ToCString(str);
+		int Disabled = (int)(arr->Get(2)->Int32Value());
+		int PosX = (int)(arr->Get(3)->Int32Value());
+		int PosY = (int)(arr->Get(4)->Int32Value());
+		int SizeX = (int)(arr->Get(5)->Int32Value());
+		int SizeY = (int)(arr->Get(6)->Int32Value());
+
+		String::Utf8Value str2(args[1]);
+		char* cstr2 = (char*)ToCString(str2);
+
+		Control* pControl = MENU::findControl(Type, cstr, Disabled, PosX, PosY, SizeX, SizeY);
+
+		if (true)
+		{
+			MENU::SetControlText(pControl, cstr);
+		}
+		
+
+	}
+}
+
+JS_FUNC(CGetText)
+{
+	
+
+
+}
 
 JS_FUNC(CSelectChar)
 {

@@ -31,5 +31,9 @@ JS_FUNC(CGetLevel);
 JS_FUNC(CClickControl);
 JS_FUNC(CGetLocation);
 JS_FUNC(CSelectChar);
+JS_FUNC(CGetText);
+JS_FUNC(CSetText);
+JS_FUNC(CClientState);
+
 
 

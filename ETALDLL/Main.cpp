@@ -70,7 +70,7 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 		{
 			Vars.bzUseRawKeys = false;
 		}
-
+		
 		Pointer::DefineOffsets();
 
 		//CheckStruct();// comment out or remove later

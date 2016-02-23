@@ -11,34 +11,14 @@ int GetPlayerArea(void)
 	return fpGetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->dwLevelNo;
 }
 
-//Level* GetLevel(DWORD dwLevelNo)
-//{
-//	//AutoCriticalRoom* cRoom = new AutoCriticalRoom;
-//	
-//	Level* pLevel = fpGetPlayerUnit()->pAct->pMisc->pLevelFirst;
-//
-//	while (pLevel)
-//	{
-//		if (pLevel->dwLevelNo == dwLevelNo)
-//		{
-//			if (!pLevel->pRoom2First)
-//				D2COMMON_InitLevel(pLevel);
-//
-//			if (!pLevel->pRoom2First)
-//				break;
-//			//delete cRoom;
-//			return pLevel;
-//		}
-//		pLevel = pLevel->pNextLevel;
-//	}
-//
-//	// this crashes pretty much every time it's called
-//	//pLevel = D2COMMON_GetLevel(D2CLIENT_GetPlayerUnit()->pAct->pMisc, dwLevelNo);
-//	//delete cRoom;
-//	return pLevel;
-//
-//}
-
+char* UnicodeToAnsi(const wchar_t* str)
+{
+	char* buf = NULL;
+	int len = WideCharToMultiByte(CP_ACP, 0, str, -1, buf, 0, "?", NULL);
+	buf = new char[len];
+	WideCharToMultiByte(CP_ACP, 0, str, -1, buf, len, "?", NULL);
+	return buf;
+}
 wchar_t* AnsiToUnicode(const char* str)
 {
 	wchar_t* buf = NULL;

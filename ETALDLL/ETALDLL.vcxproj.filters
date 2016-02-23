@@ -4,95 +4,111 @@
     <ClCompile Include="Common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D2Functions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D2Pointers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="JsFunctions.cpp">
+      <Filter>V8 Engine\JSFunctions</Filter>
     </ClCompile>
-    <ClCompile Include="D2Intercepts.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="D2Funcs.cpp">
+      <Filter>Diablo II</Filter>
+    </ClCompile>
+    <ClCompile Include="D2Functions.cpp">
+      <Filter>Diablo II</Filter>
     </ClCompile>
     <ClCompile Include="D2Helpers.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Diablo II\Handlers</Filter>
     </ClCompile>
-    <ClCompile Include="JsFunctions.cpp">
-      <Filter>JSFunctions</Filter>
+    <ClCompile Include="D2Intercepts.cpp">
+      <Filter>Diablo II\Patches</Filter>
     </ClCompile>
-    <ClCompile Include="V8Script.cpp" />
-    <ClCompile Include="D2Funcs.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="D2Pointers.cpp">
+      <Filter>Diablo II</Filter>
     </ClCompile>
     <ClCompile Include="Helpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="V8Script.cpp">
+      <Filter>V8 Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D2Structs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Main.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Constants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D2Pointers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Patch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D2Intercepts.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Offset.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D2Helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="JsDefines.h">
-      <Filter>JSFunctions</Filter>
+      <Filter>V8 Engine\JSFunctions</Filter>
     </ClInclude>
     <ClInclude Include="JsFunctions.h">
-      <Filter>JSFunctions</Filter>
+      <Filter>V8 Engine\JSFunctions</Filter>
     </ClInclude>
-    <ClInclude Include="V8Script.h" />
+    <ClInclude Include="Main.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Patch.h">
+      <Filter>Diablo II\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="D2Intercepts.h">
+      <Filter>Diablo II\Patches</Filter>
+    </ClInclude>
+    <ClInclude Include="D2Pointers.h">
+      <Filter>Diablo II</Filter>
+    </ClInclude>
+    <ClInclude Include="D2Skills.h">
+      <Filter>Diablo II</Filter>
+    </ClInclude>
+    <ClInclude Include="D2Helpers.h">
+      <Filter>Diablo II\Handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="D2Structs.h">
+      <Filter>Diablo II</Filter>
+    </ClInclude>
+    <ClInclude Include="Offset.h">
+      <Filter>Diablo II\Patches</Filter>
+    </ClInclude>
     <ClInclude Include="D2Funcs.h">
-      <Filter>Source Files</Filter>
+      <Filter>Diablo II</Filter>
     </ClInclude>
     <ClInclude Include="Helpers.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="D2Skills.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Constants.h">
+      <Filter>Diablo II</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="V8Script.h">
+      <Filter>V8 Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{f6e290e9-dc3b-498b-85b0-fa64e2834949}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{37247088-a702-49fa-a130-a9c4cb603a00}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JSFunctions">
+    <Filter Include="Main">
+      <UniqueIdentifier>{e52d6c66-4e19-43d7-813a-a7c66ca38f6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="V8 Engine">
+      <UniqueIdentifier>{3045fdfe-1df4-4e15-8aee-bed68c7e6fb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="V8 Engine\JSFunctions">
       <UniqueIdentifier>{feb42b6e-73e6-4a5a-8f84-cd7f888f38d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Diablo II">
+      <UniqueIdentifier>{298b811f-fd01-4194-87a5-e1c6e4479411}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Diablo II\Patches">
+      <UniqueIdentifier>{8a0f10bc-a8a7-4692-af06-138599818d11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Diablo II\Handlers">
+      <UniqueIdentifier>{49ebbbd5-6113-49e2-a2aa-0ce832372773}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

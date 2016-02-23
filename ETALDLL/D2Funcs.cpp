@@ -14,30 +14,60 @@ D2Funcs::~D2Funcs()
 {
 }
 
-//bool D2Funcs::Say()
-//{
-//
-//	return 1;
-//}
+Level* D2Funcs::GetLevel(Act* pAct, int level) {
+	//Insure that the shit we are getting is good.
+	if (level < 0 || !pAct)
+		return NULL;
+
+	//Loop all the levels in this act
+
+	for (Level* pLevel = pAct->pMisc->pLevelFirst; pLevel; pLevel = pLevel->pNextLevel) {
+		//Check if we have reached a bad level.
+		if (!pLevel)
+			break;
+
+		//If we have found the level, return it!
+		if (pLevel->dwLevelNo == level && pLevel->dwPosX > 0)
+			return pLevel;
+	}
+	//Default old-way of finding level.
+	return D2COMMON_GetLevel(pAct->pMisc, level);
+}
 
 int D2Funcs::Random(WORD a, WORD b)
 {
 	int random = rand() % a + b;
 	return random;
 }
-int D2Funcs::GetArea()
+Level* D2Funcs::GetArea()
 {
-	int nArea = GetPlayerArea();	
-	////Level* pLevel = GetLevel(nArea);	
-	//myArea* pArea = new myArea;
-	//pArea->AreaId = nArea;
-	////pArea->ExitArray = NULL;
-	return nArea;
+	UnitAny* pUnit = GetPlayerUnit();
+	Act* pAct = pUnit->pAct;
+	int level = pAct->dwAct;
+	
+	
+	//Insure that the shit we are getting is good.
+	if (level < 0 || !pAct)
+		return NULL;
+
+	//Loop all the levels in this act
+
+	for (Level* pLevel = pAct->pMisc->pLevelFirst; pLevel; pLevel = pLevel->pNextLevel) {
+		//Check if we have reached a bad level.
+		if (!pLevel)
+			break;
+
+		//If we have found the level, return it!
+		if (pLevel->dwLevelNo == level && pLevel->dwPosX > 0)
+			return pLevel;
+	}
+	//Default old-way of finding level.
+	return D2COMMON_GetLevel(pAct->pMisc, level);
 }
-UnitAny D2Funcs::GetPlayerUnit()
+UnitAny* D2Funcs::GetPlayerUnit()
 {
 	UnitAny *pUnit = fpGetPlayerUnit();
-	return *pUnit;
+	return pUnit;
 }
 bool D2Funcs::ExitGame() {
 
@@ -113,20 +143,20 @@ bool D2Funcs::MoveTo(WORD x, WORD y) {
 	delete[] aPacket;
 	return 1;
 }
-void D2Funcs::Print(const char * szFormat, ...)
+void D2Funcs::Print(const char * szText, ...)
 {
 	using namespace std;
 	const char REPLACE_CHAR = (char)(unsigned char)0xFE;
 
 	va_list vaArgs;
-	va_start(vaArgs, szFormat);
-	int len = _vscprintf(szFormat, vaArgs);
+	va_start(vaArgs, szText);
+	int len = _vscprintf(szText, vaArgs);
 	char* str = new char[len + 1];
-	vsprintf_s(str, len + 1, szFormat, vaArgs);
+	vsprintf_s(str, len + 1, szText, vaArgs);
 	va_end(vaArgs);
 
 	replace(str, str + len, REPLACE_CHAR, '%');
-
+	
 	const int maxlen = 98;
 
 	// Break into lines through \n.

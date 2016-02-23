@@ -10,6 +10,7 @@ using namespace v8;
 // **Context
 Handle<Context>CreateContext(Isolate* isolate);
 
+JS_FUNC(CLoad);
 JS_FUNC(CInclude);
 JS_FUNC(CSetTitle);
 JS_FUNC(CSendCopyData);
@@ -26,4 +27,4 @@ JS_FUNC(CGetPlayerUnit);
 JS_FUNC(CGetArea);
 JS_FUNC(CSay);
 JS_FUNC(CRandom);
-
+JS_FUNC(CGetLevel);

@@ -4,10 +4,12 @@
 #include "JSFunctions.h"
 #include "V8Script.h"
 #include "D2Helpers.h"
+#include "Helpers.h"
 #include <shlwapi.h>
 #include "D2Funcs.h"
-#include "Helpers.h"
 #include <time.h>
+#include <algorithm>
+#include <assert.h>
 
 void StringReplace(char* str, const char find, const char replace, size_t buflen)
 {
@@ -22,6 +24,7 @@ void StringReplace(char* str, const char find, const char replace, size_t buflen
 v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 {
 	Handle<ObjectTemplate>global = ObjectTemplate::New();
+	JS_FLINK(CLoad, "Load");
 	JS_FLINK(CInclude, "Include");
 	JS_FLINK(CSetTitle, "SetTitle");
 	JS_FLINK(CSendCopyData, "SendCopyData");
@@ -38,9 +41,15 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CGetArea, "GetArea");
 	JS_FLINK(CSay, "Say");
 	JS_FLINK(CRandom, "Random");
+	JS_FLINK(CGetLevel, "GetLevel");
 	return Context::New(isolate, NULL, global);
 }
 
+JS_FUNC(CGetLevel)
+{
+	int Lvl = args[0]->Uint32Value();
+	D2Funcs::GetLevel(D2Funcs::GetPlayerUnit()->pAct, Lvl);
+}
 JS_FUNC(CRandom)
 {
 	HandleScope handle_scope(args.GetIsolate());
@@ -69,12 +78,20 @@ JS_FUNC(CSay)
 
 JS_FUNC(CGetArea)
 {
-	D2Funcs::GetArea();
+	DWORD area = D2Funcs::GetArea()->dwLevelNo;
+	UnitAny* unit = D2Funcs::GetPlayerUnit();
+	char Area[128];
+	sprintf_s(Area, "%u", unit->pAct->dwAct);
+	D2Funcs::Print(Area);
+
+	char Area1[128];
+	sprintf_s(Area1, "%u", area);
+	D2Funcs::Print(Area1);
 }
 
 JS_FUNC(CGetPlayerUnit)
 {
-	D2Funcs::GetPlayerUnit();
+	D2Funcs::GetPlayerUnit()->pInfo;
 }
 
 JS_FUNC(CExitGame)
@@ -85,17 +102,11 @@ JS_FUNC(CExitGame)
 JS_FUNC(CSetSkill)
 {
 	HandleScope handle_scope(args.GetIsolate());
-	bool left = false;
 	if (args.Length() == 2)
 	{
 		int skillid = args[0]->Uint32Value();
-		String::Utf8Value str(args[1]);
-		char* cstr = (char*)ToCString(str);
-		if (cstr == "true")
-			left = true;
-		else
-			left = false;
-		D2Funcs::SetSkill(skillid, left);
+		bool bLeft = args[1]->BooleanValue();
+		D2Funcs::SetSkill(skillid, bLeft);
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
 
@@ -156,6 +167,39 @@ JS_FUNC(CDelay)
 	return;
 }
 
+JS_FUNC(CLoad) {
+
+	HandleScope handle_scope(args.GetIsolate());
+	String::Utf8Value str(args[0]);
+	char* cstr = (char*)ToCString(str);
+	Isolate* isolate = Isolate::GetCurrent();
+	StringReplace(cstr, '/', '\\', strlen(cstr));
+	RunScript(isolate, Vars.szScriptPath, cstr);
+	Handle<Context> context = CreateContext(args.GetIsolate());
+	V8::Initialize();
+	TryCatch try_catch;
+	if (context.IsEmpty())
+	{
+		//ReportException(isolate, &try_catch);
+		MessageBox(NULL, "Error Creating Context", "Debug", NULL);
+	}
+	else
+	{
+		context->Enter();
+	}
+
+	RunScript(isolate, Vars.szScriptPath, Prof.ScriptFile);
+	Handle<v8::Object> global = context->Global();
+	Handle<v8::Value> value = global->Get(String::New("NTMain"));
+	if (value->IsFunction()) {
+		Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(value);
+		func->Call(global, 0, NULL);
+	}
+
+
+	context->Exit();
+	V8::Dispose();
+}
 JS_FUNC(CInclude) {
 
 	HandleScope handle_scope(args.GetIsolate());
@@ -235,6 +279,5 @@ JS_FUNC(CPrint)
 	HandleScope handle_scope(args.GetIsolate());
 	String::Utf8Value str(args[0]);
 	char* cstr = (char*)ToCString(str);
-	//std::replace(cstr, cstr + strlen(cstr), '%', (char)(unsigned char)0xFE);
-	D2Funcs::Print(cstr);
+	D2Funcs::Print("%s", cstr);;
 }

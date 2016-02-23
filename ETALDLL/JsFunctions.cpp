@@ -93,7 +93,7 @@ JS_FUNC(CSetText)
 
 JS_FUNC(CGetText)
 {
-	
+	MENU::GetText(Prof.Charloc,Prof.Realm);
 
 
 }

@@ -335,3 +335,43 @@ ClientGameState MENU::ClientState(void)
 
 	return state;
 }
+
+char * MENU::GetText(int x, int a)
+{
+	int count = 0;
+	char* Text2 = "";
+	char* Line5 = "";
+	Control* pControl = findControl(CONTROL_TEXTBOX, (char *)NULL, -1, 237, 178, 72, 93);
+	ControlText* pControlText;
+
+	while (pControl != NULL)
+	{
+		if (pControl->dwType == CONTROL_TEXTBOX && pControl->pFirstText != NULL && pControl->pFirstText->pNext != NULL)
+		{
+			if (count == x)
+			{
+				pControlText = pControl->pFirstText;
+
+				char* Line = wchart_to_char(pControlText->wText);
+				char* Line2 = wchart_to_char(pControlText->pNext->wText);
+				char* Line3 = wchart_to_char(pControlText->pNext->pNext->wText);
+				char* Line4 = wchart_to_char(pControlText->pNext->pNext->pNext->wText);
+				if (a > 0)//crashes on single player on next read
+				{
+					Line5 = wchart_to_char(pControlText->pNext->pNext->pNext->pNext->wText);
+				}
+
+					MessageBox(NULL, Line, "Testing", NULL);
+					MessageBox(NULL, Line2, "Testing", NULL);
+					MessageBox(NULL, Line3, "Testing", NULL);
+					MessageBox(NULL, Line4, "Testing", NULL);
+					MessageBox(NULL, Line5, "Testing", NULL);
+					return Text2;
+			}
+			++count;
+		}		
+		pControl = pControl->pNext;
+	}
+	
+	return Text2;
+}

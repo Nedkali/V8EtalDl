@@ -29,6 +29,7 @@ public:
 	static bool clickControl(Control* pControl);
 	static void SetControlText(Control* pControl, const char* Text);
 	static ClientGameState ClientState(void);
+	static char * GetText(int x, int a);	
 };
 
 ///////////////////////////////////////////////////

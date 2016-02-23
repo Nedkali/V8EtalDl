@@ -2,6 +2,7 @@
 // JS Functions
 //////////////////////////////////////////////////////////////////////
 #include "JSFunctions.h"
+#include "MenuControls.h"
 #include "V8Script.h"
 #include "D2Helpers.h"
 #include "Helpers.h"
@@ -42,8 +43,74 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CSay, "Say");
 	JS_FLINK(CRandom, "Random");
 	JS_FLINK(CGetLevel, "GetLevel");
+	JS_FLINK(CClickControl, "ClickControl");
+	JS_FLINK(CGetLocation, "GetLocation");
+	JS_FLINK(CSelectChar, "SelectChar");
 	return Context::New(isolate, NULL, global);
 }
+
+
+JS_FUNC(CSelectChar)
+{
+	int x = 175; int y = 125;
+	int charpos = Prof.Charloc;
+	if (args.Length() > 0)
+	{
+		charpos = args[0]->Uint32Value();
+	}
+	////char numberstring[(((sizeof charpos) * CHAR_BIT) + 2) / 3 + 2];
+	////sprintf(numberstring, "%d", charpos);
+
+	////MessageBox(NULL, numberstring, "Debug", NULL);
+	if (charpos == 1) { x = 445; }
+	if (charpos == 3) { x = 445; }
+	if (charpos == 5) { x = 445; }
+	if (charpos == 7) { x = 445; }
+	if (charpos == 2) { y = 215; }
+	if (charpos == 4) { y = 305; }
+	if (charpos == 6) { y = 395; }
+	Input::SendMouseClick(x, y, 0);
+	Sleep(100);
+	Input::SendMouseClick(x, y, 0);
+}
+
+
+JS_FUNC(CGetLocation)
+{
+	int id = MENU::GetLocationID();
+	args.GetReturnValue().Set(id);
+	return;
+}
+
+JS_FUNC(CClickControl)
+{
+	Handle<v8::Value> obj(args[0]);
+
+	if (obj->IsArray()) {
+
+		Local<v8::Array> arr = v8::Local<v8::Array>::Cast(args[0]);
+
+		int Type = (int)(arr->Get(0)->Int32Value());
+		String::Utf8Value str(arr->Get(1));
+		char* cstr = (char*)ToCString(str);
+		int Disabled = (int)(arr->Get(2)->Int32Value());
+		int PosX = (int)(arr->Get(3)->Int32Value());
+		int PosY = (int)(arr->Get(4)->Int32Value());
+		int SizeX = (int)(arr->Get(5)->Int32Value());
+		int SizeY = (int)(arr->Get(6)->Int32Value());
+		
+		Control* pControl = MENU::findControl(Type, cstr, Disabled, PosX, PosY, SizeX, SizeY);
+
+		if (pControl)
+		{
+			MENU::clickControl(pControl);
+			args.GetReturnValue().Set(Boolean::New(true));
+		}		
+	}
+
+	args.GetReturnValue().Set(Boolean::New(false));
+}
+
 
 JS_FUNC(CGetLevel)
 {

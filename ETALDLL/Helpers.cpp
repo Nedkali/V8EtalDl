@@ -68,3 +68,9 @@ bool SplitLines(const std::string & str, size_t maxlen, const char delim, std::l
 
 	return true;
 }
+//char * IntoChar(int x)
+//{
+//	char numberstring[(((sizeof x) * CHAR_BIT) + 2) / 3 + 2];
+//	sprintf(numberstring, "%d", x);
+//	return numberstring;
+//}

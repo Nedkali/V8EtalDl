@@ -74,6 +74,7 @@
     <TargetName>D2ETAL</TargetName>
     <LibraryWPath />
     <IncludePath>V8\lib\Debug;$(IncludePath)</IncludePath>
+    <OutDir>..\..\EtalManager\Etal Manager\bin\Debug\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -180,6 +181,7 @@
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="JsDefines.h" />
     <ClInclude Include="JsFunctions.h" />
+    <ClInclude Include="MenuControls.h" />
     <ClInclude Include="Offset.h" />
     <ClInclude Include="D2Helpers.h" />
     <ClInclude Include="D2Pointers.h" />
@@ -214,6 +216,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="MenuControls.cpp" />
     <ClCompile Include="V8Script.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

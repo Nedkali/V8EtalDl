@@ -9,3 +9,4 @@ bool SplitLines(const std::string & str, size_t maxlen, const char delim, std::l
 wchar_t* AnsiToUnicode(const char* str);
 char* UnicodeToAnsi(const wchar_t* str);
 int GetPlayerArea(void);
+//char * IntoChar(int x);

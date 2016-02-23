@@ -28,3 +28,8 @@ JS_FUNC(CGetArea);
 JS_FUNC(CSay);
 JS_FUNC(CRandom);
 JS_FUNC(CGetLevel);
+JS_FUNC(CClickControl);
+JS_FUNC(CGetLocation);
+JS_FUNC(CSelectChar);
+
+

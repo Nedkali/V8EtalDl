@@ -162,8 +162,12 @@ JS_FUNC(CClickControl)
 
 JS_FUNC(CGetLevel)
 {
+	//Just testing for now
+	HandleScope handle_scope(args.GetIsolate());
 	int Lvl = args[0]->Uint32Value();
-	D2Funcs::GetLevel(D2Funcs::GetPlayerUnit()->pAct, Lvl);
+	Level* lvl = D2Funcs::GetLevel(fpGetPlayerUnit()->pAct, Lvl);
+	INT32  lvlno = lvl->dwLevelNo;
+	args.GetReturnValue().Set(lvlno);
 }
 JS_FUNC(CRandom)
 {
@@ -171,8 +175,14 @@ JS_FUNC(CRandom)
 	INT32 range_min = args[0]->Uint32Value();
 	INT32 range_max = args[1]->Uint32Value();
 
-	srand((unsigned int)time(NULL));
-	INT32 u = rand() / (RAND_MAX + 1) * (range_max - range_min) + range_min;
+	//Just testing for now
+	INT32 u = D2Funcs::Random(range_min, range_max);
+
+	//for some reason this isn't working correctly
+
+	//srand((unsigned int)time(NULL));
+	//INT32 u = rand() / (RAND_MAX + 1) * (range_max - range_min) + range_min;
+
 	args.GetReturnValue().Set(u);
 
 }
@@ -193,25 +203,37 @@ JS_FUNC(CSay)
 
 JS_FUNC(CGetArea)
 {
-	DWORD area = D2Funcs::GetArea()->dwLevelNo;
-	UnitAny* unit = D2Funcs::GetPlayerUnit();
-	char Area[128];
-	sprintf_s(Area, "%u", unit->pAct->dwAct);
-	D2Funcs::Print(Area);
+	HandleScope handle_scope(args.GetIsolate());
+	//Just testing for now
+	INT32 areaid = D2Funcs::GetArea()->dwLevelNo;//Player Area num
+	char AreaID[128];//Player Area num
+	sprintf_s(AreaID, "%u", areaid);
 
-	char Area1[128];
-	sprintf_s(Area1, "%u", area);
-	D2Funcs::Print(Area1);
+	D2Funcs::Print(AreaID);
+
+	DWORD unit = fpGetPlayerUnit()->pAct->dwAct;//Player Act
+	char act[128];//Player Act
+	sprintf_s(act, "%u", unit);
+
+	D2Funcs::Print(act);
+
+	args.GetReturnValue().Set(v8::Int32::New(areaid));
 }
 
 JS_FUNC(CGetPlayerUnit)
 {
-	D2Funcs::GetPlayerUnit()->pInfo;
+	HandleScope handle_scope(args.GetIsolate());
+	//Just testing for now
+	char* name = fpGetPlayerUnit()->pPlayerData->szName; //Player Name
+	char Name[128];//Player Act
+	sprintf_s(Name, "%u", name);
+	args.GetReturnValue().Set(String::New(name));
 }
 
 JS_FUNC(CExitGame)
 {
-	D2Funcs::ExitGame();
+	if (ClientGameState() != ClientStateMenu)
+		D2Funcs::ExitGame();
 }
 
 JS_FUNC(CSetSkill)
@@ -231,17 +253,26 @@ JS_FUNC(CSetSkill)
 
 JS_FUNC(CMove)
 {
-	HandleScope handle_scope(args.GetIsolate());
+	//HandleScope handle_scope(args.GetIsolate());
 
-	if (args.Length() == 2)
-	{
-		int x = args[0]->Uint32Value();
-		int y = args[1]->Uint32Value();
-		D2Funcs::MoveTo(static_cast<WORD>(x), static_cast<WORD>(y));
-		args.GetReturnValue().Set(Boolean::New(true));
-	}
+	//if (args.Length() == 2)
+	//{
+	//	int x = args[0]->Uint32Value();
+	//	int y = args[1]->Uint32Value();
+	//	D2Funcs::MoveTo(x, y);
+	//	args.GetReturnValue().Set(Boolean::New(true));
+	//}
+	//args.GetReturnValue().Set(Boolean::New(false));
 
-	args.GetReturnValue().Set(Boolean::New(false));
+
+	UnitAny* me = D2Funcs::GetPlayerUnit();
+	int mex = me->wX;
+	int meY = me->wY;
+
+	D2Funcs::MoveTo(mex + 4, meY - 2);
+
+	args.GetReturnValue().Set(Boolean::New(true));
+
 	return;
 }
 JS_FUNC(CScreenSize)
@@ -260,8 +291,9 @@ JS_FUNC(CScreenSize)
 
 JS_FUNC(CCloseD2)
 {
-
-	
+	if (ClientGameState() != ClientStateMenu)
+		D2Funcs::ExitGame();
+	TerminateProcess(GetCurrentProcess(), 0);
 }
 
 JS_FUNC(CDelay)
@@ -284,34 +316,22 @@ JS_FUNC(CDelay)
 
 JS_FUNC(CLoad) {
 
+	// Somethings going wrong here throwing and exception in diablo
+	V8::Initialize();
 	HandleScope handle_scope(args.GetIsolate());
 	String::Utf8Value str(args[0]);
 	char* cstr = (char*)ToCString(str);
-	Isolate* isolate = Isolate::GetCurrent();
+	Isolate* isolate = args.GetIsolate();
 	StringReplace(cstr, '/', '\\', strlen(cstr));
-	RunScript(isolate, Vars.szScriptPath, cstr);
-	Handle<Context> context = CreateContext(args.GetIsolate());
-	V8::Initialize();
-	TryCatch try_catch;
-	if (context.IsEmpty())
-	{
-		//ReportException(isolate, &try_catch);
-		MessageBox(NULL, "Error Creating Context", "Debug", NULL);
-	}
-	else
-	{
-		context->Enter();
-	}
+	Handle<Context> context = CreateContext(isolate);
 
-	RunScript(isolate, Vars.szScriptPath, Prof.ScriptFile);
+	RunScript(isolate, Vars.szScriptPath, cstr);
 	Handle<v8::Object> global = context->Global();
 	Handle<v8::Value> value = global->Get(String::New("NTMain"));
 	if (value->IsFunction()) {
 		Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(value);
 		func->Call(global, 0, NULL);
 	}
-
-
 	context->Exit();
 	V8::Dispose();
 }

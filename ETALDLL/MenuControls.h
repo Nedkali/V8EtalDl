@@ -7,7 +7,7 @@
 #include <Windows.h>
 #include <string>
 #include <vector>
-
+#include "v8.h"
 
 #define BUTTON_SP findControl(CONTROL_BUTTON, 5106, -1, 264,324,272,35)
 
@@ -29,7 +29,7 @@ public:
 	static bool clickControl(Control* pControl);
 	static void SetControlText(Control* pControl, const char* Text);
 	static ClientGameState ClientState(void);
-	static char * GetText(int x, int a);	
+	static v8::Local<v8::Array> GetText(int x, int a);
 };
 
 ///////////////////////////////////////////////////

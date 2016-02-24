@@ -4,6 +4,8 @@
 #include "MenuControls.h"
 #include "Input.h"
 
+using namespace v8;
+
 MENU::MENU(void)
 {
 
@@ -336,11 +338,12 @@ ClientGameState MENU::ClientState(void)
 	return state;
 }
 
-char * MENU::GetText(int x, int a)
+v8::Local<v8::Array> MENU::GetText(int x, int a)
 {
 	int count = 0;
 	char* Text2 = "";
 	char* Line5 = "";
+	v8::Local<v8::Array> arguments = v8::Array::New(5);
 	Control* pControl = findControl(CONTROL_TEXTBOX, (char *)NULL, -1, 237, 178, 72, 93);
 	ControlText* pControlText;
 
@@ -361,17 +364,17 @@ char * MENU::GetText(int x, int a)
 					Line5 = wchart_to_char(pControlText->pNext->pNext->pNext->pNext->wText);
 				}
 
-					MessageBox(NULL, Line, "Testing", NULL);
-					MessageBox(NULL, Line2, "Testing", NULL);
-					MessageBox(NULL, Line3, "Testing", NULL);
-					MessageBox(NULL, Line4, "Testing", NULL);
-					MessageBox(NULL, Line5, "Testing", NULL);
-					return Text2;
+				arguments->Set(0, String::New(Line, strlen(Line)));
+				arguments->Set(1, String::New(Line2, strlen(Line2)));
+				arguments->Set(2, String::New(Line3, strlen(Line3)));
+				arguments->Set(3, String::New(Line4, strlen(Line4)));
+				arguments->Set(4, String::New(Line5, strlen(Line5)));
+				return arguments;
 			}
 			++count;
-		}		
+		}
 		pControl = pControl->pNext;
 	}
-	
-	return Text2;
+
+	return arguments;
 }

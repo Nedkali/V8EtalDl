@@ -98,8 +98,10 @@ JS_FUNC(CSetText)
 
 JS_FUNC(CGetText)
 {
-	MENU::GetText(Prof.Charloc,Prof.Realm);
-
+	Isolate* isolate = Isolate::GetCurrent();
+	HandleScope scope(isolate);
+	Local<v8::Array> arr = v8::Local<v8::Array>::Cast(MENU::GetText(Prof.Charloc, Prof.Realm));
+	args.GetReturnValue().Set(arr);
 
 }
 

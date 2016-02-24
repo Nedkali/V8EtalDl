@@ -52,9 +52,6 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CTESTWAYPOINT, "WayPoint");
 	return Context::New(isolate, NULL, global);
 
-	Handle<ObjectTemplate>property = ObjectTemplate::New();
-	JS_FLINK(CLoad, "Load");
-	return Context::New(isolate, NULL, property);
 }
 
 JS_FUNC(CClientState)
@@ -113,10 +110,7 @@ JS_FUNC(CSelectChar)
 	{
 		charpos = args[0]->Uint32Value();
 	}
-	////char numberstring[(((sizeof charpos) * CHAR_BIT) + 2) / 3 + 2];
-	////sprintf(numberstring, "%d", charpos);
 
-	////MessageBox(NULL, numberstring, "Debug", NULL);
 	if (charpos == 1) { x = 445; }
 	if (charpos == 3) { x = 445; }
 	if (charpos == 5) { x = 445; }
@@ -338,32 +332,44 @@ JS_FUNC(CDelay)
 
 JS_FUNC(CLoad) {
 
-	// Somethings going wrong here throwing and exception in diablo
-	V8::Initialize();
 	HandleScope handle_scope(args.GetIsolate());
 	String::Utf8Value str(args[0]);
-	char* cstr = (char*)ToCString(str);
-	Isolate* isolate = args.GetIsolate();
+	char* cstr = (char*)ToCString(str);	
 	StringReplace(cstr, '/', '\\', strlen(cstr));
-	Handle<Context> context = CreateContext(isolate);
+
+	Isolate* isolate = Isolate::GetCurrent();
+	Handle<Context> context = CreateContext(args.GetIsolate());
+	TryCatch try_catch;
+	if (context.IsEmpty())
+	{
+		ReportException(isolate, &try_catch);
+	}
+	else
+	{
+		context->Enter(); 
+	}
 
 	RunScript(isolate, Vars.szScriptPath, cstr);
+
 	Handle<v8::Object> global = context->Global();
 	Handle<v8::Value> value = global->Get(String::New("NTMain"));
 	if (value->IsFunction()) {
 		Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(value);
 		func->Call(global, 0, NULL);
+
 	}
 	context->Exit();
-	V8::Dispose();
 }
+
 JS_FUNC(CInclude) {
 
 	HandleScope handle_scope(args.GetIsolate());
 	String::Utf8Value str(args[0]);
 	char* cstr = (char*)ToCString(str);
+	StringReplace(cstr, '/', '\\', strlen(cstr));
+
 	Isolate* isolate = Isolate::GetCurrent();
-	StringReplace(cstr , '/', '\\', strlen(cstr));
+	
 	RunScript(isolate, Vars.szScriptPath, cstr);
 
 }

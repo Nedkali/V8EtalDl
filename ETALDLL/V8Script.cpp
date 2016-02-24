@@ -18,7 +18,7 @@ Handle<Value> RunScript(Isolate* isolate, const char* SCRIPT_PATH, const char* S
 	
 	v8::HandleScope handle_scope(isolate);
 	TryCatch try_catch;
-	Handle<Value> name = String::New(SCRIPT_PATH);
+	Handle<Value> name = String::New(SCRIPT_NAME);
 	String::Utf8Value file(String::New(str));
 	Handle<String> source = JSReadFile(str);
 	if (source.IsEmpty())
@@ -28,6 +28,7 @@ Handle<Value> RunScript(Isolate* isolate, const char* SCRIPT_PATH, const char* S
 	else
 	{
 		Handle<Script> script = Script::Compile(source, name);
+
 		if (script.IsEmpty())
 		{
 			ReportException(isolate, &try_catch);
@@ -75,26 +76,27 @@ void ReportException(v8::Isolate* isolate, v8::TryCatch* try_catch)
 {
 	v8::HandleScope handle_scope(isolate);
 	v8::String::Utf8Value exception(try_catch->Exception());
-	const char* exception_string = ToCString(exception);
 	v8::Handle<v8::Message> message = try_catch->Message();
 	if (message.IsEmpty())
 	{
-			MessageBox(NULL, exception_string, "V8 Error", NULL);
+		// V8 didn't provide any extra information about this error; just print the exception.
+		char* cstr = (char*)ToCString(exception);
+		SendDataCopy("Etal Manager", 11, cstr);
 	}
 	else
 	{
-		// Print (filename):(line number): (message).
+		//Print (filename):(line number): (message).
 		v8::String::Utf8Value filename(message->GetScriptResourceName());
-		const char* filename_string = ToCString(filename);
-		MessageBox(NULL, filename_string, "V8 Exception", NULL);
-		////int linenum = message->GetLineNumber();
-		////char astmp[512];
-		////int snewn = sprintf_s(astmp, "%s%s%s%i", "File: ", filename_string, "   Line: ", linenum);
-		////char* tmp = new char[snewn + 1];
-		////tmp[snewn] = '\0';
-		////SendCopyData(11, tmp);
+		char* cstr = (char*)ToCString(filename);
+		int iNumber = message->GetLineNumber();
+		char buffer[20]; _itoa(iNumber, buffer, 10);
+		char fn[100];
+		strcpy(fn, "ÿc1ERROR   File: ");
+		strcat(fn, cstr); strcat(fn, " Line: ");
+		strcat(fn, buffer);
+		SendDataCopy("Etal Manager", 11, fn);
+		D2Funcs::Print("%s", fn);
 
-		////MessageBox(NULL, tmp, "V8 Exception", NULL);
 	}
 	v8::String::Utf8Value stack_trace(try_catch->StackTrace());
 	if (stack_trace.length() > 0)
@@ -103,4 +105,6 @@ void ReportException(v8::Isolate* isolate, v8::TryCatch* try_catch)
 		MessageBox(NULL, stack_trace_string, "V8 Stack Trace", NULL);
 
 	}
+
+	isolate->Exit();
 }

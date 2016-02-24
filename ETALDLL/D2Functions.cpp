@@ -46,23 +46,23 @@ DWORD WINAPI MainThread(VOID* param)
 		if (Pointer::ADDRawKeys(Prof.KeyOwner, Prof.Classic, Prof.Lod))
 		{
 			SendDataCopy("Etal Manager", 11, "Loaded Raw Keys");
+		}
+		else {
+			SendDataCopy("Etal Manager", 11, "Error loading Raw Keys");
 			SendDataCopy("Etal Manager", 11, Vars.szKeyOwner);
 			SendDataCopy("Etal Manager", 11, Vars.szClassic);
 			SendDataCopy("Etal Manager", 11, Vars.szLod);
-		}
-		else {
-			SendDataCopy("Etal Manager", 11, "Error Loading Raw Keys");
 		}
 	}
 	else if (Vars.bzUseRawKeys == false)
 	{
 		if (Pointer::LoadCDKeyMPQ(Prof.MpqFile))
 		{
-			SendDataCopy("Etal Manager", 11, "Loaded Key MPQ");
-			SendDataCopy("Etal Manager", 11, Vars.szMpqfile);
+			SendDataCopy("Etal Manager", 11, "Loaded Key MPQ");			
 		}
 		else {
 			SendDataCopy("Etal Manager", 11, "Error Loading Key MPQ");
+			SendDataCopy("Etal Manager", 11, Vars.szMpqfile);
 		}
 		
 	}
@@ -80,8 +80,7 @@ DWORD WINAPI MainThread(VOID* param)
 
 	if(context.IsEmpty())
 	{
-		//ReportException(isolate, &try_catch);
-		MessageBox(NULL, "Error Creating Context", "Debug", NULL);
+		ReportException(isolate, &try_catch);
 	}
 	else
 	{
@@ -93,10 +92,10 @@ DWORD WINAPI MainThread(VOID* param)
 	Handle<v8::Value> value = global->Get(String::New("NTMain"));
 	if (value->IsFunction()) {
 		Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(value);
-		func->Call(global, 0, NULL);
+		func->Call(global, 0, NULL);		
 	}
 
-
+	
 	context->Exit();
 	V8::Dispose();
 

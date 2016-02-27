@@ -1,14 +1,101 @@
 #pragma once
 #include "JsFunctions.h"
 
+//Unit Global Accessors
+#pragma region Unit
 void GetName(Local<String> property, const PropertyCallbackInfo<Value>& info);
-void SetName(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
 
 void GetAreaId(Local<String> property, const PropertyCallbackInfo<Value>& info);
-void SetAreaId(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
 
 void GetX(Local<String> property, const PropertyCallbackInfo<Value>& info);
-void SetX(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
 
 void GetY(Local<String> property, const PropertyCallbackInfo<Value>& info);
-void SetY(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
+
+void GetHP(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetMP(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetHPMax(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetMPMax(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetAct(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetClassid(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetXsize(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetYsize(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetCode(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetGID(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetItemtype(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetMode(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetQuality(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetShrinetype(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetSpectype(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetSubareaid(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetType(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetItemclass(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetItemdesc(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetItemflag(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetItemlevel(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetItemloc(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetItemprefix(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetItemsuffix(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetItemXsize(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+void GetItemYsize(Local<String> property, const PropertyCallbackInfo<Value>& info);
+
+
+
+// add and figure these out later
+//[+] Unit.GetItemCost()
+//[+] Unit.GetItems()
+//[+] Unit.GetMerc()
+//[+] Unit.GetNext()
+//[+] Unit.GetOptimalAttackPos()
+//[+] Unit.GetParent()
+//[+] Unit.GetRoom()
+//[+] Unit.GetSkill()
+//[+] Unit.GetStat()
+//[+] Unit.GetState()
+//[+] Unit.IsAttackable()
+
+#pragma endregion
+
+//Me Accessors
+#pragma region Me
+
+#pragma endregion
+
+//PresetUnit Accessors
+#pragma region PresetUnit
+
+#pragma endregion
+
+//PlayerUnit Accessors
+#pragma region PlayerUnit
+
+#pragma endregion
+
+//Script Accessors
+#pragma region Script
+
+#pragma endregion

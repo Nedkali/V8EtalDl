@@ -1,6 +1,8 @@
 //////////////////////////////////////////////////////////////////////
 // JS Functions
 //////////////////////////////////////////////////////////////////////
+#pragma once
+
 #include "v8.h"
 #include "JsDefines.h"
 #include "D2Pointers.h"
@@ -34,6 +36,8 @@ JS_FUNC(CSelectChar);
 JS_FUNC(CGetText);
 JS_FUNC(CSetText);
 JS_FUNC(CClientState);
+JS_FUNC(CSubmitItem);
+JS_FUNC(CTransmute);
 JS_FUNC(CTESTWAYPOINT);
 
 

@@ -14,4 +14,5 @@
 #define JSString v8::Handle<v8::String>
 #define JSArray(ARRAYNAME, ARRAYLENGTH) v8::Handle<v8::Array> ARRAYNAME = v8::Array::New(ARRAYLENGTH)
 
-#define JSObject v8::Handle<v8::Object> // this is just me testing, not sure
+#define JSHObject v8::Handle<v8::Object> // Handle Objects
+#define JSLObject v8::Local<v8::Object> // Local Objects

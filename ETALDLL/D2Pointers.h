@@ -195,6 +195,18 @@ FUNCPTR(D2COMMON, RemoveRoomData, void __stdcall, (Act* ptAct, int LevelId, int 
 FUNCPTR(D2CLIENT, GetLevelName_I, wchar_t* __fastcall, (DWORD levelId), 0x18250)
 VARPTR(D2CLIENT, ServerSideUnitHashTables, UnitHashTable, 0x1047B8)
 VARPTR(D2CLIENT, ClientSideUnitHashTables, UnitHashTable, 0x103BB8)
+FUNCPTR(D2COMMON, GetItemMagicalMods, char* __stdcall, (WORD wPrefixNum), 0x62AF0)
+FUNCPTR(D2COMMON, GetItemText, ItemText *__stdcall, (DWORD dwItemNo), 0x62C70)
+FUNCPTR(D2COMMON, GetRoomFromUnit, Room1* __stdcall, (UnitAny * ptUnit), 0x16530)
+FUNCPTR(D2COMMON, GetLevelNoFromRoom, BOOL __stdcall, (Room1* pRoom1), 0x23B80)
+//FUNCPTR(D2CLIENT, SubmitItem, void __fastcall, (DWORD dwItemId), 0x79670)
+//FUNCPTR(D2CLIENT, Transmute, void __fastcall, (void), 0x94370)
+//FUNCPTR(D2CLIENT, GetCursorItem, UnitAny* __fastcall, (void), 0x144A0)
+//VARPTR(D2CLIENT, OrificeId, DWORD, 0x11C9B8)
+//VARPTR(D2CLIENT, CursorItemMode, DWORD, 0x11C9B0)
+//VARPTR(D2CLIENT, RecentInteractId, DWORD, 0x101895)
+//FUNCPTR(D2COMMON, IsTownByLevelNo, BOOL __stdcall, (DWORD dwLevelNo), 0x23950)
+//FUNCPTR(D2CLIENT, SetUIVar, DWORD __fastcall, (DWORD varno, DWORD howset, DWORD unknown1), 0x1C190)
 
 
 ASMPTR(BNCLIENT, DClass, 0x15EB8)

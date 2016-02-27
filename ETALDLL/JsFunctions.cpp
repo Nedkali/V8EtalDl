@@ -49,19 +49,71 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CGetText, "GetText");
 	JS_FLINK(CSetText, "SetText");
 	JS_FLINK(CClientState, "ClientState");
+	JS_FLINK(CSubmitItem, "SubmitItem");
+	JS_FLINK(CTransmute, "Transmute");
 	JS_FLINK(CTESTWAYPOINT, "WayPoint");
 	return Context::New(isolate, NULL, global);
 }
 
-//struct Player
-//{
-//	char* name;
-//	DWORD dwAreaID;
-//	DWORD dw_X;
-//	DWORD dw_Y;
-//};
-//
-//Player* me = new Player();
+JS_FUNC(CSubmitItem)
+{
+	//Isolate* isolate = Isolate::GetCurrent();
+	//HandleScope scope(isolate);
+
+	//if (UnitAny* pUnit = D2CLIENT_GetCursorItem())
+	//{
+	//	if (fpGetPlayerUnit()->dwAct == 1)
+	//	{
+	//		if (GetPlayerArea() == fpGetPlayerUnit()->pAct->pMisc->dwStaffTombLevel)
+	//		{
+	//			*p_D2CLIENT_CursorItemMode = 3;
+	//			BYTE aPacket[17] = { NULL };
+	//			aPacket[0] = 0x44;
+	//			*(DWORD*)&aPacket[1] = fpGetPlayerUnit()->dwUnitId;
+	//			*(DWORD*)&aPacket[5] = *p_D2CLIENT_OrificeId;
+	//			*(DWORD*)&aPacket[9] = pUnit->dwUnitId;
+	//			*(DWORD*)&aPacket[13] = 3;
+	//			fpSendPacket(17, 1, aPacket);
+	//			args.GetReturnValue().Set(Boolean::New(true));
+	//		}
+	//		else
+	//			args.GetReturnValue().Set(Boolean::New(false));
+	//	}
+	//	else if (fpGetPlayerUnit()->dwAct == 0 || fpGetPlayerUnit()->dwAct == 4) // dwAct is 0-4, not 1-5
+	//	{
+	//		if (*p_D2CLIENT_RecentInteractId && D2COMMON_IsTownByLevelNo(GetPlayerArea()))
+	//		{
+	//			D2CLIENT_SubmitItem(pUnit->dwUnitId);
+	//			args.GetReturnValue().Set(Boolean::New(true));
+	//		}
+	//		else
+	//			args.GetReturnValue().Set(Boolean::New(false));
+	//	}
+	//	else
+	//		args.GetReturnValue().Set(Boolean::New(false));
+	//}
+	//else
+	//	args.GetReturnValue().Set(Boolean::New(false));
+
+	//args.GetReturnValue().Set(Boolean::New(true));
+}
+
+JS_FUNC(CTransmute)
+{
+	/*Isolate* isolate = Isolate::GetCurrent();
+	HandleScope scope(isolate);
+
+	bool cubeOn = !!D2CLIENT_GetUIState(UI_CUBE);
+	if (!cubeOn)
+		D2CLIENT_SetUIState(UI_CUBE, TRUE);
+
+	D2CLIENT_Transmute();
+
+	if (!cubeOn)
+		D2CLIENT_SetUIState(UI_CUBE, FALSE);
+
+	args.GetReturnValue().Set(Boolean::New(true));*/
+}
 
 JS_FUNC(CClientState)
 {
@@ -118,10 +170,7 @@ JS_FUNC(CSelectChar)
 	{
 		charpos = args[0]->Uint32Value();
 	}
-	////char numberstring[(((sizeof charpos) * CHAR_BIT) + 2) / 3 + 2];
-	////sprintf(numberstring, "%d", charpos);
 
-	////MessageBox(NULL, numberstring, "Debug", NULL);
 	if (charpos == 1) { x = 445; }
 	if (charpos == 3) { x = 445; }
 	if (charpos == 5) { x = 445; }
@@ -253,13 +302,20 @@ JS_FUNC(CGetPlayerUnit)
 {
 	Isolate* isolate = args.GetIsolate();
 	HandleScope handle_scope(isolate);
-
-	Local<Function> fc = Function::New(isolate, CGetPlayerUnit);
-	fc->SetAccessor(String::New("myname"), GetName, SetName);
-	fc->SetAccessor(String::New("areaid"), GetAreaId, SetAreaId);
-	fc->SetAccessor(String::New("x"), GetX, SetX);
-	fc->SetAccessor(String::New("y"), GetY, SetY);
-	Local<String> myname = Handle<String>::Cast(fc);
+	v8::Local<v8::Object> fc = Object::New();
+	//still missing some
+	fc->SetAccessor(String::New("act"), GetAct);
+	fc->SetAccessor(String::New("name"), GetName);
+	fc->SetAccessor(String::New("areaid"), GetAreaId);
+	fc->SetAccessor(String::New("x"), GetX);
+	fc->SetAccessor(String::New("y"), GetY);
+	fc->SetAccessor(String::New("hp"), GetHP);
+	fc->SetAccessor(String::New("mp"), GetMP);
+	fc->SetAccessor(String::New("hpmax"), GetHPMax);
+	fc->SetAccessor(String::New("mpmax"), GetMPMax);
+	fc->SetAccessor(String::New("classid"), GetClassid);
+	fc->SetAccessor(String::New("mode"), GetMode);
+	Local<String> props = Handle<String>::Cast(fc);
 	args.GetReturnValue().Set(fc);
 }
 JS_FUNC(CExitGame)
@@ -296,9 +352,7 @@ JS_FUNC(CMove)
 	}
 	else {
 		UnitAny* me = D2Funcs::GetPlayerUnit();
-		int mex = me->wX;
-		int meY = me->wY;
-		D2Funcs::MoveTo(mex + 4, meY - 2);
+		D2Funcs::MoveTo(fpGetUnitX(me) + 4, fpGetUnitY(me) - 2);
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
 	return;
@@ -373,7 +427,8 @@ JS_FUNC(CLoad) {
 		func->Call(global, 0, NULL);
 
 	}
-	isolate->Dispose();
+	context->Exit();
+	newisolate->Dispose();
 }
 
 JS_FUNC(CInclude) {

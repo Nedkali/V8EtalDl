@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Accessors.h"
 #include "Constants.h"
 
@@ -11,110 +9,60 @@ void GetName(Local<String> property, const PropertyCallbackInfo<Value>& info)
 	char* value = fpGetPlayerUnit()->pPlayerData->szName;
 	return info.GetReturnValue().Set(String::New(value));
 }
-//void SetName(Local<String> property, Local<Value> value,
-//	const PropertyCallbackInfo<void>& info)
-//{
-//	char* res = fpGetPlayerUnit()->pPlayerData->szName;
-//	return info.GetReturnValue().Set(String::New(res));
-//}
+
 void GetAreaId(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	DWORD value = fpGetPlayerUnit()->pAct->pRoom1->pRoom2->pLevel->dwLevelNo;
 	return info.GetReturnValue().Set(Integer::New(value));
 }
-//void SetAreaId(Local<Integer> property, Local<Value> value,
-//	const PropertyCallbackInfo<void>& info)
-//{
-//	DWORD area = fpGetPlayerUnit()->pAct->pRoom1->pRoom2->pLevel->dwLevelNo;
-//	return info.GetReturnValue().Set(Integer::New(area));
-//}
+
 void GetX(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	DWORD value = fpGetUnitX(fpGetPlayerUnit());
 	return info.GetReturnValue().Set(Integer::New(value));
 }
-//void SetX(Local<Integer> property, Local<Value> value,
-//	const PropertyCallbackInfo<void>& info)
-//{
-//	DWORD x = fpGetUnitX(fpGetPlayerUnit());
-//	return info.GetReturnValue().Set(Integer::New(x));
-//}
+
 void GetY(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	DWORD value = fpGetUnitY(fpGetPlayerUnit());
 	return info.GetReturnValue().Set(Integer::New(value));
 }
-//void SetY(Local<Integer> property, Local<Value> value,
-//	const PropertyCallbackInfo<void>& info)
-//{
-//	DWORD y = fpGetUnitY(fpGetPlayerUnit());
-//	return info.GetReturnValue().Set(Integer::New(y));
-//}
+
 void GetHP(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	DWORD value = (D2COMMON_GetUnitStat(fpGetPlayerUnit(), 6, 0) >> 8);
 	return info.GetReturnValue().Set(Integer::New(value));
 }
-//void SetHP(Local<Integer> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
-//{
-//	DWORD res = (D2COMMON_GetUnitStat(fpGetPlayerUnit(), 6, 0) >> 8);
-//	return info.GetReturnValue().Set(Integer::New(res));
-//}
 
 void GetMP(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	DWORD value = (D2COMMON_GetUnitStat(fpGetPlayerUnit(), 8, 0) >> 8);
 	return info.GetReturnValue().Set(Integer::New(value));
 }
-//void SetMP(Local<Integer> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
-//{
-//	DWORD res = (D2COMMON_GetUnitStat(fpGetPlayerUnit(), 8, 0) >> 8);
-//	return info.GetReturnValue().Set(Integer::New(res));
-//}
 
 void GetHPMax(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	DWORD value = (D2COMMON_GetUnitStat(fpGetPlayerUnit(), 7, 0) >> 8);
 	return info.GetReturnValue().Set(Integer::New(value));
 }
-//void SetHPMax(Local<Integer> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
-//{
-//	DWORD res = (D2COMMON_GetUnitStat(fpGetPlayerUnit(), 7, 0) >> 8);
-//	return info.GetReturnValue().Set(Integer::New(res));
-//}
 
 void GetMPMax(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	DWORD value = (D2COMMON_GetUnitStat(fpGetPlayerUnit(), 9, 0) >> 8);
 	return info.GetReturnValue().Set(Integer::New(value));
 }
-//void SetMPMax(Local<Integer> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
-//{
-//	DWORD res = (D2COMMON_GetUnitStat(fpGetPlayerUnit(), 9, 0) >> 8);
-//	return info.GetReturnValue().Set(Integer::New(res));
-//}
 
 void GetAct(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	DWORD value = (fpGetPlayerUnit()->dwAct + 1);
 	return info.GetReturnValue().Set(Integer::New(value));
 }
-//void SetAct(Local<Integer> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
-//{
-//	DWORD res = (fpGetPlayerUnit()->dwAct + 1);
-//	return info.GetReturnValue().Set(Integer::New(res));
-//}
 
 void GetClassid(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	DWORD res = (fpGetPlayerUnit()->dwTxtFileNo);
 	return info.GetReturnValue().Set(Integer::New(res));
 }
-//void SetClassid(Local<Integer> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
-//{
-//	DWORD res = (fpGetPlayerUnit()->dwTxtFileNo);
-//	return info.GetReturnValue().Set(Integer::New(res));
-//}
 
 void GetXsize(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {

@@ -66,9 +66,13 @@ DWORD WINAPI MainThread(VOID* param)
 		}
 		
 	}
-
-
 	#pragma endregion
+
+	ClientGameState state = MENU::ClientState();
+	while (state == ClientStateInGame)
+	{
+		Sleep(1000);
+	}
 
 
 	// **V8

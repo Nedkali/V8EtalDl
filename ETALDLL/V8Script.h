@@ -4,7 +4,6 @@
 #include "v8.h"
 #include "JSDefines.h"
 
-
 using namespace v8;
 
 #define DBG(MSG) MessageBox(NULL, MSG, "Debug", NULL)

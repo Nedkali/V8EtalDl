@@ -85,11 +85,6 @@ void GetItemYsize(Local<String> property, const PropertyCallbackInfo<Value>& inf
 
 #pragma endregion
 
-//PresetUnit Accessors
-#pragma region PresetUnit
-
-#pragma endregion
-
 //PlayerUnit Accessors
 #pragma region PlayerUnit
 

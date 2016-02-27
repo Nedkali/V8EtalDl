@@ -302,3 +302,65 @@ __declspec(naked) void __stdcall D2CLIENT_TakeWaypoint(DWORD dwWaypointId, DWORD
 			RETN 8
 	}
 }
+
+DWORD GoldDialogAction = Pointer::GetDllOffset("D2Client.dll", 0x11C86C);
+DWORD GoldDialogAmount = Pointer::GetDllOffset("D2Client.dll", 0x11D568);
+void SendGold(int nGold, int nMode)
+{
+	GoldDialogAction = nGold;
+	GoldDialogAmount = nMode;
+	D2CLIENT_PerformGoldDialogAction();
+}
+
+void __fastcall UseStatPoint(WORD stat, int count)
+{
+	if (D2COMMON_GetUnitStat(fpGetPlayerUnit(), STAT_STATPOINTSLEFT, 0) < count)
+		return;
+
+	BYTE packet[3] = { 0x3A };
+	*(WORD*)&packet[1] = stat;
+
+	for (int i = 0; i < count; i++)
+	{
+		D2CLIENT_SendGamePacket(3, packet);
+		if (i != count - 1) Sleep(500);
+	}
+}
+
+void __fastcall UseSkillPoint(WORD skill, int count)
+{
+	if (D2COMMON_GetUnitStat(fpGetPlayerUnit(), STAT_SKILLPOINTSLEFT, 0) < count)
+		return;
+
+	BYTE packet[3] = { 0x3B };
+	*(WORD*)&packet[1] = skill;
+
+	for (int i = 0; i < count; i++)
+	{
+		D2CLIENT_SendGamePacket(3, packet);
+		if (i != count - 1) Sleep(500);
+	}
+}
+
+DWORD SendGamePacket_I = Pointer::GetDllOffset("D2Client.dll", 0xB61F0);
+__declspec(naked) DWORD __fastcall D2CLIENT_SendGamePacket_ASM(DWORD dwLen, BYTE* bPacket)
+{
+	__asm
+	{
+		push ebx
+		mov ebx, ecx
+			push edx
+			call SendGamePacket_I
+			pop ebx
+			ret
+	}
+}
+
+void __declspec(naked) __fastcall D2CLIENT_SetSelectedUnit_STUB(DWORD UnitAny)
+{
+	__asm
+	{
+		mov eax, ecx
+		jmp D2CLIENT_SetSelectedUnit_I
+	}
+}

@@ -1,5 +1,6 @@
 #include "Accessors.h"
 #include "Constants.h"
+#include "D2Helpers.h"
 
 //Unit Global Accessors
 #pragma region Unit

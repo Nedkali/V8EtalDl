@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <assert.h>
 #include "Accessors.h"
+
 void StringReplace(char* str, const char find, const char replace, size_t buflen)
 {
 	for (size_t i = 0; i < buflen; i++)
@@ -20,7 +21,6 @@ void StringReplace(char* str, const char find, const char replace, size_t buflen
 			str[i] = replace;
 	}
 }
-
 
 v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 {
@@ -52,55 +52,266 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CSubmitItem, "SubmitItem");
 	JS_FLINK(CTransmute, "Transmute");
 	JS_FLINK(CTESTWAYPOINT, "WayPoint");
+	JS_FLINK(CGetPath, "GetPath");
+	JS_FLINK(CGetPresetUnits, "GetPresetUnits");
+	JS_FLINK(CGetBaseStat, "GetBaseStat");
+	JS_FLINK(CGetLocaleString, "GetLocaleString");
+	JS_FLINK(CUseStatPoint, "UseStatPoint");
+	JS_FLINK(CUseSkillPoint, "UseSkillPoint");
+	JS_FLINK(CSetUIState, "SetUIState");
+	JS_FLINK(CGetUIState, "GetUIState");
 	return Context::New(isolate, NULL, global);
+}
+
+JS_FUNC(CGetLocaleString)
+{
+	if (args.Length() < 1)
+		args.GetReturnValue().Set(Boolean::New(true));
+
+	uint16_t localeId = args[0]->Uint32Value();
+	wchar_t* wString = fpGetLocaleText(localeId);
+	char* szTmp = UnicodeToAnsi(wString);
+	args.GetReturnValue().Set(String::New(szTmp));
+
+}
+JS_FUNC(CSetUIState)
+{
+	DWORD state = args[0]->Uint32Value();
+	bool set = args[1]->BooleanValue();
+	if (set == false)
+		D2CLIENT_SetUIState(state, TRUE);
+	else if(set == true) {
+		D2CLIENT_SetUIState(state, FALSE);
+		if (!D2CLIENT_GetUIState(UI_GAME))
+			fpCloseInteract();
+	}
+}
+JS_FUNC(CGetUIState)
+{
+	DWORD state = args[0]->Uint32Value();
+	args.GetReturnValue().Set(Boolean::New(D2CLIENT_GetUIState(state)));
+}
+JS_FUNC(CUseStatPoint)
+{
+	uint32_t stat = 0;
+	uint32_t count = 1;
+	if (args.Length() != 2)
+	{
+		args.GetReturnValue().Set(Boolean::New(false));
+	}
+	else
+	{
+		stat = args[0]->Uint32Value();
+		count = args[1]->Uint32Value();
+		UseStatPoint(stat, count);
+		D2Funcs::Print("ÿc5Stat Points Added");
+		args.GetReturnValue().Set(Boolean::New(true));
+	}
+}
+
+JS_FUNC(CUseSkillPoint)
+{
+	uint32_t skill = 0;
+	uint32_t count = 1;
+	if (args.Length() != 2)
+	{
+		args.GetReturnValue().Set(Boolean::New(false));
+	}
+	else
+	{
+		skill = args[0]->Uint32Value();
+		count = args[1]->Uint32Value();
+		UseSkillPoint(skill, count);
+		D2Funcs::Print("ÿc5Skill Points Added");
+		args.GetReturnValue().Set(Boolean::New(true));
+	}
+}
+
+JS_FUNC(CGetBaseStat)
+{
+	/*if (args.Length() > 2)
+	{
+		char *szStatName = NULL, *szTableName = NULL;
+		int32_t nBaseStat = 0;
+		int32_t nClassId = 0;
+		int32_t nStat = -1;
+		if (JSVAL_IS_STRING(JS_ARGV(cx, vp)[0]))
+		{
+			szTableName = JS_EncodeString(cx, JS_ValueToString(cx, JS_ARGV(cx, vp)[0]));
+			if (!szTableName)
+			{
+				JS_EndRequest(cx);
+				THROW_ERROR(cx, "Invalid table value");
+
+			}
+		}
+		else if (JSVAL_IS_NUMBER(JS_ARGV(cx, vp)[0]))
+			JS_ValueToECMAInt32(cx, JS_ARGV(cx, vp)[0], &nBaseStat);
+		else
+		{
+			JS_EndRequest(cx);
+			THROW_ERROR(cx, "Invalid table value");
+		}
+
+		JS_ValueToECMAInt32(cx, JS_ARGV(cx, vp)[1], &nClassId);
+
+		if (JSVAL_IS_STRING(JS_ARGV(cx, vp)[2]))
+		{
+			szStatName = JS_EncodeString(cx, JS_ValueToString(cx, JS_ARGV(cx, vp)[2]));
+			if (!szStatName)
+			{
+				JS_EndRequest(cx);
+				THROW_ERROR(cx, "Invalid column value");
+			}
+		}
+		else if (JSVAL_IS_NUMBER(JS_ARGV(cx, vp)[2]))
+			JS_ValueToECMAInt32(cx, JS_ARGV(cx, vp)[2], &nStat);
+		else
+		{
+			JS_EndRequest(cx);
+			THROW_ERROR(cx, "Invalid column value");
+		}
+		jsval rval;
+		FillBaseStat(cx, &rval, nBaseStat, nClassId, nStat, szTableName, szStatName);
+		JS_SET_RVAL(cx, vp, rval);
+	}
+
+	return JS_TRUE;*/
+}
+
+JS_FUNC(CGetPath)
+{
+
+}
+
+JS_FUNC(CGetPresetUnits)
+{
+	Isolate* isolate = args.GetIsolate();
+	HandleScope handle_scope(isolate);	
+
+	Local<Object> node = Object::New();
+
+	uint32_t levelId = NULL;
+	uint32_t nClassId = NULL;
+	uint32_t nType = NULL;
+
+	if(args.Length() == 0)
+		args.GetReturnValue().Set(Boolean::New(false));
+
+	if (args.Length() >= 1)
+		levelId = args[0]->Uint32Value();
+
+	if(levelId == 0)
+		args.GetReturnValue().Set(Boolean::New(false));
+
+	Level* pLevel = GetLevel(levelId);
+
+	if (!pLevel)
+		args.GetReturnValue().Set(Boolean::New(false));
+
+	if (args.Length() >= 2)
+		nType = args[1]->Uint32Value();
+
+	if (args.Length() >= 3)
+		nClassId = args[2]->Uint32Value();
+	
+	bool bAddedRoom = FALSE;
+	DWORD dwArrayCount = NULL;
+
+	for (Room2 *pRoom = pLevel->pRoom2First; pRoom; pRoom = pRoom->pRoom2Next)
+	{
+		bAddedRoom = FALSE;
+
+		if (!pRoom->pPreset)
+		{
+			fpAddRoomData(fpGetPlayerUnit()->pAct, pLevel->dwLevelNo, pRoom->dwPosX, pRoom->dwPosY, fpGetPlayerUnit()->pPath->pRoom1);
+			bAddedRoom = TRUE;
+		}
+
+		for (PresetUnit* pUnit = pRoom->pPreset; pUnit; pUnit = pUnit->pPresetNext)
+		{
+			// Does it fit?
+			if ((nType == NULL || pUnit->dwType == nType) && (nClassId == NULL || pUnit->dwTxtFileNo == nClassId))
+			{
+				myPresetUnit* presetUnit = new myPresetUnit;
+				
+				presetUnit->dwPosX = pUnit->dwPosX;
+				presetUnit->dwPosY = pUnit->dwPosY;
+				presetUnit->dwRoomX = pRoom->dwPosX;
+				presetUnit->dwRoomY = pRoom->dwPosY;
+				presetUnit->dwType = pUnit->dwType;
+				presetUnit->dwId = pUnit->dwTxtFileNo;
+				presetUnit->dwLevel = levelId;
+
+				node->Set(String::NewFromUtf8(isolate, "areaid"), Integer::New(presetUnit->dwLevel));
+				node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(presetUnit->dwType));
+				node->Set(String::NewFromUtf8(isolate, "id"), Integer::New(presetUnit->dwId));
+				node->Set(String::NewFromUtf8(isolate, "x"), Integer::New(presetUnit->dwPosX));
+				node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(presetUnit->dwPosY));
+				node->Set(String::NewFromUtf8(isolate, "roomx"), Integer::New(presetUnit->dwRoomX));
+				node->Set(String::NewFromUtf8(isolate, "roomy"), Integer::New(presetUnit->dwRoomY));
+				//subareaid crashes game atm
+				//node->Set(String::NewFromUtf8(isolate, "subareaid"), Integer::New(fpGetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->pNextLevel->dwLevelNo));
+
+				dwArrayCount++;
+			}
+		}
+
+		if (bAddedRoom)
+		{
+			fpRemoveRoomData(fpGetPlayerUnit()->pAct, pLevel->dwLevelNo, pRoom->dwPosX, pRoom->dwPosY, fpGetPlayerUnit()->pPath->pRoom1);
+			bAddedRoom = FALSE;
+		}
+	}
+	args.GetReturnValue().Set(node);
 }
 
 JS_FUNC(CSubmitItem)
 {
-	//Isolate* isolate = Isolate::GetCurrent();
-	//HandleScope scope(isolate);
+	Isolate* isolate = Isolate::GetCurrent();
+	HandleScope scope(isolate);
 
-	//if (UnitAny* pUnit = D2CLIENT_GetCursorItem())
-	//{
-	//	if (fpGetPlayerUnit()->dwAct == 1)
-	//	{
-	//		if (GetPlayerArea() == fpGetPlayerUnit()->pAct->pMisc->dwStaffTombLevel)
-	//		{
-	//			*p_D2CLIENT_CursorItemMode = 3;
-	//			BYTE aPacket[17] = { NULL };
-	//			aPacket[0] = 0x44;
-	//			*(DWORD*)&aPacket[1] = fpGetPlayerUnit()->dwUnitId;
-	//			*(DWORD*)&aPacket[5] = *p_D2CLIENT_OrificeId;
-	//			*(DWORD*)&aPacket[9] = pUnit->dwUnitId;
-	//			*(DWORD*)&aPacket[13] = 3;
-	//			fpSendPacket(17, 1, aPacket);
-	//			args.GetReturnValue().Set(Boolean::New(true));
-	//		}
-	//		else
-	//			args.GetReturnValue().Set(Boolean::New(false));
-	//	}
-	//	else if (fpGetPlayerUnit()->dwAct == 0 || fpGetPlayerUnit()->dwAct == 4) // dwAct is 0-4, not 1-5
-	//	{
-	//		if (*p_D2CLIENT_RecentInteractId && D2COMMON_IsTownByLevelNo(GetPlayerArea()))
-	//		{
-	//			D2CLIENT_SubmitItem(pUnit->dwUnitId);
-	//			args.GetReturnValue().Set(Boolean::New(true));
-	//		}
-	//		else
-	//			args.GetReturnValue().Set(Boolean::New(false));
-	//	}
-	//	else
-	//		args.GetReturnValue().Set(Boolean::New(false));
-	//}
-	//else
-	//	args.GetReturnValue().Set(Boolean::New(false));
+	if (UnitAny* pUnit = fpGetCursorItem())
+	{
+		if (fpGetPlayerUnit()->dwAct == 1)
+		{
+			if (GetPlayerArea() == fpGetPlayerUnit()->pAct->pMisc->dwStaffTombLevel)
+			{
+				*vpCursorItemMode = 3;
+				BYTE aPacket[17] = { NULL };
+				aPacket[0] = 0x44;
+				*(DWORD*)&aPacket[1] = fpGetPlayerUnit()->dwUnitId;
+				*(DWORD*)&aPacket[5] = *vpOrificeId;
+				*(DWORD*)&aPacket[9] = pUnit->dwUnitId;
+				*(DWORD*)&aPacket[13] = 3;
+				fpSendPacket(17, 1, aPacket);
+				args.GetReturnValue().Set(Boolean::New(true));
+			}
+			else
+				args.GetReturnValue().Set(Boolean::New(false));
+		}
+		else if (fpGetPlayerUnit()->dwAct == 0 || fpGetPlayerUnit()->dwAct == 4) // dwAct is 0-4, not 1-5
+		{
+			if (*vpRecentInteractId && fpIsTownByLevelNo(GetPlayerArea()))
+			{
+				fpSubmitItem(pUnit->dwUnitId);
+				args.GetReturnValue().Set(Boolean::New(true));
+			}
+			else
+				args.GetReturnValue().Set(Boolean::New(false));
+		}
+		else
+			args.GetReturnValue().Set(Boolean::New(false));
+	}
+	else
+		args.GetReturnValue().Set(Boolean::New(false));
 
-	//args.GetReturnValue().Set(Boolean::New(true));
+	args.GetReturnValue().Set(Boolean::New(true));
 }
 
 JS_FUNC(CTransmute)
 {
-	/*Isolate* isolate = Isolate::GetCurrent();
+	Isolate* isolate = Isolate::GetCurrent();
 	HandleScope scope(isolate);
 
 	bool cubeOn = !!D2CLIENT_GetUIState(UI_CUBE);
@@ -112,13 +323,12 @@ JS_FUNC(CTransmute)
 	if (!cubeOn)
 		D2CLIENT_SetUIState(UI_CUBE, FALSE);
 
-	args.GetReturnValue().Set(Boolean::New(true));*/
+	args.GetReturnValue().Set(Boolean::New(true));
 }
 
 JS_FUNC(CClientState)
 {
 	args.GetReturnValue().Set(v8::Int32::New(MENU::ClientState()));
-
 }
 
 JS_FUNC(CSetText)
@@ -148,8 +358,6 @@ JS_FUNC(CSetText)
 		{
 			MENU::SetControlText(pControl, cstr);
 		}
-
-
 	}
 }
 
@@ -182,7 +390,6 @@ JS_FUNC(CSelectChar)
 	Sleep(100);
 	Input::SendMouseClick(x, y, 0);
 }
-
 
 JS_FUNC(CGetLocation)
 {
@@ -220,7 +427,6 @@ JS_FUNC(CClickControl)
 	args.GetReturnValue().Set(Boolean::New(false));
 }
 
-
 JS_FUNC(CGetLevel)
 {
 	//Just testing for now
@@ -237,15 +443,9 @@ JS_FUNC(CRandom)
 	INT32 range_min = args[0]->Uint32Value();
 	INT32 range_max = args[1]->Uint32Value();
 
-	//Just testing for now
-	INT32 u = D2Funcs::Random(range_min, range_max);
+	INT32 random = rand() % range_min + range_max;
 
-	//for some reason this isn't working correctly
-
-	//srand((unsigned int)time(NULL));
-	//INT32 u = rand() / (RAND_MAX + 1) * (range_max - range_min) + range_min;
-
-	args.GetReturnValue().Set(u);
+	args.GetReturnValue().Set(random);
 
 }
 
@@ -292,7 +492,7 @@ JS_FUNC(CTESTWAYPOINT)
 	HandleScope handle_scope(args.GetIsolate());
 	INT32 wp = args[0]->Uint32Value();
 	UnitAny* pUnit = D2CLIENT_FindUnit(fpGetPlayerUnit()->dwUnitId, fpGetPlayerUnit()->dwType);
-	//D2Funcs::Interact();
+	D2Funcs::Interact(2, 119);
 	D2CLIENT_TakeWaypoint(119, wp);
 	if (!D2CLIENT_GetUIState(UI_GAME))
 		fpCloseInteract();
@@ -321,7 +521,7 @@ JS_FUNC(CGetPlayerUnit)
 JS_FUNC(CExitGame)
 {
 	if (ClientGameState() != ClientStateMenu)
-		D2Funcs::ExitGame();
+		fpExitGame();
 }
 
 JS_FUNC(CSetSkill)
@@ -351,7 +551,7 @@ JS_FUNC(CMove)
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
 	else {
-		UnitAny* me = D2Funcs::GetPlayerUnit();
+		UnitAny* me = fpGetPlayerUnit();
 		D2Funcs::MoveTo(fpGetUnitX(me) + 4, fpGetUnitY(me) - 2);
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
@@ -374,7 +574,7 @@ JS_FUNC(CScreenSize)
 JS_FUNC(CCloseD2)
 {
 	if (ClientGameState() != ClientStateMenu)
-		D2Funcs::ExitGame();
+		fpExitGame();
 	TerminateProcess(GetCurrentProcess(), 0);
 }
 

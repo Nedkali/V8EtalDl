@@ -43,8 +43,8 @@ void GetItemCode(UnitAny* pUnit, char* szBuf);
 UnitAny* D2CLIENT_FindUnit(DWORD dwId, DWORD dwType);
 
 
-static inline void AddRoomData(Room2* room) { D2COMMON_AddRoomData(room->pLevel->pMisc->pAct, room->pLevel->dwLevelNo, room->dwPosX, room->dwPosY, room->pRoom1); }
-static inline void RemoveRoomData(Room2* room) { D2COMMON_RemoveRoomData(room->pLevel->pMisc->pAct, room->pLevel->dwLevelNo, room->dwPosX, room->dwPosY, room->pRoom1); }
+static inline void AddRoomData(Room2* room) { fpAddRoomData(room->pLevel->pMisc->pAct, room->pLevel->dwLevelNo, room->dwPosX, room->dwPosY, room->pRoom1); }
+static inline void RemoveRoomData(Room2* room) { fpRemoveRoomData(room->pLevel->pMisc->pAct, room->pLevel->dwLevelNo, room->dwPosX, room->dwPosY, room->pRoom1); }
 static inline char* __stdcall GetLevelName(const Level* level) { return D2COMMON_GetLevelText(level->dwLevelNo)->szName; }
 static inline char* __stdcall GetLevelIdName(DWORD level) { return D2COMMON_GetLevelText(level)->szName; }
 
@@ -52,6 +52,11 @@ void  __fastcall D2CLIENT_Interact_ASM(DWORD Struct);
 DWORD __fastcall D2CLIENT_GetUnitName_STUB(DWORD UnitAny);
 DWORD __fastcall D2CLIENT_GetUIVar_STUB(DWORD varno);
 void __stdcall D2CLIENT_TakeWaypoint(DWORD dwWaypointId, DWORD dwArea);
+void SendGold(int nGold, int nMode);
+void __fastcall UseStatPoint(WORD stat, int count = 1);
+void __fastcall UseSkillPoint(WORD skill, int count = 1);
+DWORD __fastcall D2CLIENT_SendGamePacket_ASM(DWORD dwLen, BYTE* bPacket); 
+void  __fastcall D2CLIENT_SetSelectedUnit_STUB(DWORD UnitAny);
 
 struct SData
 {

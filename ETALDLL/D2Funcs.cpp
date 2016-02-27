@@ -34,14 +34,9 @@ Level* D2Funcs::GetLevel(Act* pAct, int level) {
 	return D2COMMON_GetLevel(pAct->pMisc, level);
 }
 
-int D2Funcs::Random(WORD a, WORD b)
-{
-	int random = rand() % a + b;
-	return random;
-}
 Level* D2Funcs::GetArea()
 {
-	UnitAny* pUnit = GetPlayerUnit();
+	UnitAny* pUnit = fpGetPlayerUnit();
 	Act* pAct = pUnit->pAct;
 	int level = pAct->dwAct;
 	
@@ -64,17 +59,6 @@ Level* D2Funcs::GetArea()
 	//Default old-way of finding level.
 	return D2COMMON_GetLevel(pAct->pMisc, level);
 }
-UnitAny* D2Funcs::GetPlayerUnit()
-{
-	UnitAny *pUnit = fpGetPlayerUnit();
-	return pUnit;
-}
-bool D2Funcs::ExitGame() {
-
-	fpExitGame();
-	return 1;
-}
-
 bool D2Funcs::Interact(WORD dwUnitType, WORD dwUnitID) {
 	LPBYTE aPacket = new BYTE[9];
 	*(BYTE*)&aPacket[0] = (BYTE)0x13;
@@ -104,7 +88,6 @@ bool D2Funcs::TeleTo(WORD x, WORD y, bool Left) {
 }
 bool D2Funcs::SetSkill(WORD wSkillId, bool bLeft)
 {
-
 	if (!GetSkill(wSkillId))
 		return FALSE;
 
@@ -119,7 +102,8 @@ bool D2Funcs::SetSkill(WORD wSkillId, bool bLeft)
 			*(BYTE*)&PutSkill[4] = 0x80;
 		fpSendPacket(9, 0, PutSkill);
 	}
-	else return FALSE;
+	else
+		return FALSE;
 
 	return TRUE;
 }
@@ -130,8 +114,7 @@ bool D2Funcs::GetSkill(WORD wSkillId)
 
 	for (Skill* pSkill = fpGetPlayerUnit()->pInfo->pFirstSkill; pSkill; pSkill = pSkill->pNextSkill)
 		if (pSkill->pSkillInfo->wSkillId == wSkillId)
-			return 1;//D2COMMON_GetSkillLevel(D2CLIENT_GetPlayerUnit(), pSkill, TRUE);
-
+			return 1;
 	return 0;
 }
 bool D2Funcs::MoveTo(WORD x, WORD y) {
@@ -143,8 +126,10 @@ bool D2Funcs::MoveTo(WORD x, WORD y) {
 	delete[] aPacket;
 	return 1;
 }
+
 void D2Funcs::Print(const char * szText, ...)
 {
+	//Still needs work getting correct d2 colors
 	using namespace std;
 	const char REPLACE_CHAR = (char)(unsigned char)0xFE;
 

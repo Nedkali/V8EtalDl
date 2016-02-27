@@ -177,9 +177,16 @@ FPTR(HWND __stdcall, GetHwnd, (void), "D2gfx.dll", 0xB0C0)
 // Bnclient Variable Pointers
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-//these are just added for the LoadMPQ
-//we can rewrite these to use your struct but I think it's nice like this
-//since you can call it like BNCLIENT_CLassicKey or D2WIN_InitMPQ
+FPTR(ObjectTxt * __stdcall, GetObjectText, (DWORD objno), "D2Common.dll", 0x1ADC0)
+FPTR(BOOL __stdcall, IsTownByLevelNo, (DWORD dwLevelNo),"D2Common.dll", 0x23950)
+VPTR(DWORD, RecentInteractId,"D2Client.dll", 0x101895)
+VPTR(DWORD, OrificeId, "D2Client.dll", 0x11C9B8)
+VPTR(DWORD, CursorItemMode, "D2Client.dll", 0x11C9B0)
+FPTR(UnitAny* __fastcall, GetCursorItem, (void), "D2Client.dll", 0x144A0)
+FPTR(void __stdcall, RemoveRoomData, (Act* ptAct, int LevelId, int Xpos, int Ypos, Room1* pRoom), "D2Common.dll", 0x24930)
+FPTR(void __stdcall, AddRoomData, (Act * ptAct, int LevelId, int Xpos, int Ypos, Room1 * pRoom), "D2Common.dll", 0x24990)
+
+//Need to rewrite these pointers, but they're working as they are.
 #define _D2PTRS_START	D2WIN_InitMPQ
 FUNCPTR(D2WIN, InitMPQ, DWORD __stdcall, (char *dll, const char *mpqfile, char *mpqname, int v4, int v5), 0x7E50)
 FUNCPTR(D2COMMON, GetLevel, Level * __fastcall, (ActMisc *pMisc, DWORD dwLevelNo), 0x6D440)
@@ -190,8 +197,6 @@ FUNCPTR(D2COMMON, GetUnitStat, long __stdcall, (UnitAny* pUnit, DWORD dwStat, DW
 FUNCPTR(D2COMMON, GetUnitState, int __stdcall, (UnitAny *pUnit, DWORD dwStateNo), 0x2F310)
 FUNCPTR(D2CLIENT, GetMonsterOwner, DWORD __fastcall, (DWORD nMonsterId), 0x8E3D0)
 FUNCPTR(D2COMMON, GetLevelText, LevelText * __stdcall, (DWORD levelno), 0x30CA0)
-FUNCPTR(D2COMMON, AddRoomData, void __stdcall, (Act * ptAct, int LevelId, int Xpos, int Ypos, Room1 * pRoom), 0x24990)
-FUNCPTR(D2COMMON, RemoveRoomData, void __stdcall, (Act* ptAct, int LevelId, int Xpos, int Ypos, Room1* pRoom), 0x24930)
 FUNCPTR(D2CLIENT, GetLevelName_I, wchar_t* __fastcall, (DWORD levelId), 0x18250)
 VARPTR(D2CLIENT, ServerSideUnitHashTables, UnitHashTable, 0x1047B8)
 VARPTR(D2CLIENT, ClientSideUnitHashTables, UnitHashTable, 0x103BB8)
@@ -199,14 +204,10 @@ FUNCPTR(D2COMMON, GetItemMagicalMods, char* __stdcall, (WORD wPrefixNum), 0x62AF
 FUNCPTR(D2COMMON, GetItemText, ItemText *__stdcall, (DWORD dwItemNo), 0x62C70)
 FUNCPTR(D2COMMON, GetRoomFromUnit, Room1* __stdcall, (UnitAny * ptUnit), 0x16530)
 FUNCPTR(D2COMMON, GetLevelNoFromRoom, BOOL __stdcall, (Room1* pRoom1), 0x23B80)
-//FUNCPTR(D2CLIENT, SubmitItem, void __fastcall, (DWORD dwItemId), 0x79670)
-//FUNCPTR(D2CLIENT, Transmute, void __fastcall, (void), 0x94370)
-//FUNCPTR(D2CLIENT, GetCursorItem, UnitAny* __fastcall, (void), 0x144A0)
-//VARPTR(D2CLIENT, OrificeId, DWORD, 0x11C9B8)
-//VARPTR(D2CLIENT, CursorItemMode, DWORD, 0x11C9B0)
-//VARPTR(D2CLIENT, RecentInteractId, DWORD, 0x101895)
-//FUNCPTR(D2COMMON, IsTownByLevelNo, BOOL __stdcall, (DWORD dwLevelNo), 0x23950)
-//FUNCPTR(D2CLIENT, SetUIVar, DWORD __fastcall, (DWORD varno, DWORD howset, DWORD unknown1), 0x1C190)
+FUNCPTR(D2CLIENT, Transmute, void __fastcall, (void), 0x94370)
+FUNCPTR(D2CLIENT, SetUIVar, DWORD __fastcall, (DWORD varno, DWORD howset, DWORD unknown1), 0x1C190)
+FUNCPTR(D2CLIENT, PerformGoldDialogAction, void __fastcall, (void), 0x197F0)
+FUNCPTR(D2CLIENT, SetSelectedUnit_I, void __fastcall, (UnitAny *pUnit), 0x17060)
 
 
 ASMPTR(BNCLIENT, DClass, 0x15EB8)

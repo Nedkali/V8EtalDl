@@ -11,7 +11,7 @@
 #include <time.h>
 #include <algorithm>
 #include <assert.h>
-
+#include "Accessors.h"
 void StringReplace(char* str, const char find, const char replace, size_t buflen)
 {
 	for (size_t i = 0; i < buflen; i++)
@@ -48,15 +48,23 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CSelectChar, "SelectChar");
 	JS_FLINK(CGetText, "GetText");
 	JS_FLINK(CSetText, "SetText");
-	JS_FLINK(CClientState, "ClientState"); 
+	JS_FLINK(CClientState, "ClientState");
 	JS_FLINK(CTESTWAYPOINT, "WayPoint");
 	return Context::New(isolate, NULL, global);
-
 }
+
+//struct Player
+//{
+//	char* name;
+//	DWORD dwAreaID;
+//	DWORD dw_X;
+//	DWORD dw_Y;
+//};
+//
+//Player* me = new Player();
 
 JS_FUNC(CClientState)
 {
-	
 	args.GetReturnValue().Set(v8::Int32::New(MENU::ClientState()));
 
 }
@@ -88,7 +96,7 @@ JS_FUNC(CSetText)
 		{
 			MENU::SetControlText(pControl, cstr);
 		}
-		
+
 
 	}
 }
@@ -110,7 +118,10 @@ JS_FUNC(CSelectChar)
 	{
 		charpos = args[0]->Uint32Value();
 	}
+	////char numberstring[(((sizeof charpos) * CHAR_BIT) + 2) / 3 + 2];
+	////sprintf(numberstring, "%d", charpos);
 
+	////MessageBox(NULL, numberstring, "Debug", NULL);
 	if (charpos == 1) { x = 445; }
 	if (charpos == 3) { x = 445; }
 	if (charpos == 5) { x = 445; }
@@ -147,14 +158,14 @@ JS_FUNC(CClickControl)
 		int PosY = (int)(arr->Get(4)->Int32Value());
 		int SizeX = (int)(arr->Get(5)->Int32Value());
 		int SizeY = (int)(arr->Get(6)->Int32Value());
-		
+
 		Control* pControl = MENU::findControl(Type, cstr, Disabled, PosX, PosY, SizeX, SizeY);
 
 		if (pControl)
 		{
 			MENU::clickControl(pControl);
 			args.GetReturnValue().Set(Boolean::New(true));
-		}		
+		}
 	}
 
 	args.GetReturnValue().Set(Boolean::New(false));
@@ -170,6 +181,7 @@ JS_FUNC(CGetLevel)
 	INT32  lvlno = lvl->dwLevelNo;
 	args.GetReturnValue().Set(lvlno);
 }
+
 JS_FUNC(CRandom)
 {
 	HandleScope handle_scope(args.GetIsolate());
@@ -222,7 +234,7 @@ JS_FUNC(CGetArea)
 	char areap[128];//Player Area
 	sprintf_s(areap, "%u", parea);
 	D2Funcs::Print(areap);
-	
+
 	args.GetReturnValue().Set(v8::Int32::New(areaid));
 }
 
@@ -231,21 +243,25 @@ JS_FUNC(CTESTWAYPOINT)
 	HandleScope handle_scope(args.GetIsolate());
 	INT32 wp = args[0]->Uint32Value();
 	UnitAny* pUnit = D2CLIENT_FindUnit(fpGetPlayerUnit()->dwUnitId, fpGetPlayerUnit()->dwType);
-	D2CLIENT_TakeWaypoint(pUnit->dwUnitId, wp);
+	//D2Funcs::Interact();
+	D2CLIENT_TakeWaypoint(119, wp);
 	if (!D2CLIENT_GetUIState(UI_GAME))
 		fpCloseInteract();
 
 }
 JS_FUNC(CGetPlayerUnit)
 {
-	HandleScope handle_scope(args.GetIsolate());
-	//Just testing for now
-	char* name = fpGetPlayerUnit()->pPlayerData->szName; //Player Name
-	char Name[128];//Player Act
-	sprintf_s(Name, "%u", name);
-	args.GetReturnValue().Set(String::New(name));
-}
+	Isolate* isolate = args.GetIsolate();
+	HandleScope handle_scope(isolate);
 
+	Local<Function> fc = Function::New(isolate, CGetPlayerUnit);
+	fc->SetAccessor(String::New("myname"), GetName, SetName);
+	fc->SetAccessor(String::New("areaid"), GetAreaId, SetAreaId);
+	fc->SetAccessor(String::New("x"), GetX, SetX);
+	fc->SetAccessor(String::New("y"), GetY, SetY);
+	Local<String> myname = Handle<String>::Cast(fc);
+	args.GetReturnValue().Set(fc);
+}
 JS_FUNC(CExitGame)
 {
 	if (ClientGameState() != ClientStateMenu)
@@ -269,39 +285,35 @@ JS_FUNC(CSetSkill)
 
 JS_FUNC(CMove)
 {
-	//HandleScope handle_scope(args.GetIsolate());
+	HandleScope handle_scope(args.GetIsolate());
 
-	//if (args.Length() == 2)
-	//{
-	//	int x = args[0]->Uint32Value();
-	//	int y = args[1]->Uint32Value();
-	//	D2Funcs::MoveTo(x, y);
-	//	args.GetReturnValue().Set(Boolean::New(true));
-	//}
-	//args.GetReturnValue().Set(Boolean::New(false));
-
-
-	UnitAny* me = D2Funcs::GetPlayerUnit();
-	int mex = me->wX;
-	int meY = me->wY;
-
-	D2Funcs::MoveTo(mex + 4, meY - 2);
-
-	args.GetReturnValue().Set(Boolean::New(true));
-
+	if (args.Length() == 2)
+	{
+		int x = args[0]->Uint32Value();
+		int y = args[1]->Uint32Value();
+		D2Funcs::MoveTo(x, y);
+		args.GetReturnValue().Set(Boolean::New(true));
+	}
+	else {
+		UnitAny* me = D2Funcs::GetPlayerUnit();
+		int mex = me->wX;
+		int meY = me->wY;
+		D2Funcs::MoveTo(mex + 4, meY - 2);
+		args.GetReturnValue().Set(Boolean::New(true));
+	}
 	return;
 }
 JS_FUNC(CScreenSize)
 {
-	
+
 	v8::Handle<v8::Array> result = v8::Array::New(2);
-		int x = *vpScreenSizeX;
-		int y = *vpScreenSizeY;
-		
-		result->Set(0, Integer::New(x));
-		result->Set(1, Integer::New(y));
-		args.GetReturnValue().Set(result);
-		return ;
+	int x = *vpScreenSizeX;
+	int y = *vpScreenSizeY;
+
+	result->Set(0, Integer::New(x));
+	result->Set(1, Integer::New(y));
+	args.GetReturnValue().Set(result);
+	return;
 
 }
 
@@ -324,7 +336,7 @@ JS_FUNC(CDelay)
 	{
 		int x = args[0]->Uint32Value();
 		int b = args[1]->Uint32Value();
-		int random = rand() % x+b;
+		int random = rand() % x + b;
 		Sleep(random);
 	}
 	return;
@@ -334,10 +346,13 @@ JS_FUNC(CLoad) {
 
 	HandleScope handle_scope(args.GetIsolate());
 	String::Utf8Value str(args[0]);
-	char* cstr = (char*)ToCString(str);	
+	char* cstr = (char*)ToCString(str);
 	StringReplace(cstr, '/', '\\', strlen(cstr));
 
 	Isolate* isolate = Isolate::GetCurrent();
+	isolate->Exit();
+	Isolate* newisolate = Isolate::New();
+
 	Handle<Context> context = CreateContext(args.GetIsolate());
 	TryCatch try_catch;
 	if (context.IsEmpty())
@@ -346,10 +361,10 @@ JS_FUNC(CLoad) {
 	}
 	else
 	{
-		context->Enter(); 
+		context->Enter();
 	}
 
-	RunScript(isolate, Vars.szScriptPath, cstr);
+	RunScript(newisolate, Vars.szScriptPath, cstr);
 
 	Handle<v8::Object> global = context->Global();
 	Handle<v8::Value> value = global->Get(String::New("NTMain"));
@@ -358,7 +373,7 @@ JS_FUNC(CLoad) {
 		func->Call(global, 0, NULL);
 
 	}
-	context->Exit();
+	isolate->Dispose();
 }
 
 JS_FUNC(CInclude) {
@@ -367,9 +382,7 @@ JS_FUNC(CInclude) {
 	String::Utf8Value str(args[0]);
 	char* cstr = (char*)ToCString(str);
 	StringReplace(cstr, '/', '\\', strlen(cstr));
-
 	Isolate* isolate = Isolate::GetCurrent();
-	
 	RunScript(isolate, Vars.szScriptPath, cstr);
 
 }
@@ -381,7 +394,7 @@ JS_FUNC(CSetTitle)
 	if (args.Length() == 1)
 	{
 		String::Utf8Value title(args[0]);
-		
+
 		a = SetWindowText(fpGetHwnd(), ToCString(title));
 	}
 	if (a == 0)
@@ -426,7 +439,7 @@ JS_FUNC(CClick) {
 		Input::SendMouseClick(x, y, clickmode);
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
-	
+
 	args.GetReturnValue().Set(Boolean::New(false));
 	return;
 }

@@ -38,6 +38,9 @@
     <ClCompile Include="Unit.cpp">
       <Filter>Diablo II</Filter>
     </ClCompile>
+    <ClCompile Include="Accessors.cpp">
+      <Filter>V8 Engine\JSFunctions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JsDefines.h">
@@ -94,6 +97,9 @@
     <ClInclude Include="MenuControls.h" />
     <ClInclude Include="Unit.h">
       <Filter>Diablo II</Filter>
+    </ClInclude>
+    <ClInclude Include="Accessors.h">
+      <Filter>V8 Engine\JSFunctions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

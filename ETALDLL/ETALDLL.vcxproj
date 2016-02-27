@@ -74,7 +74,6 @@
     <TargetName>D2ETAL</TargetName>
     <LibraryWPath />
     <IncludePath>V8\lib\Debug;$(IncludePath)</IncludePath>
-    <OutDir>D:\My Documents\GitHub\EtalManager\Etal Manager\bin\Debug\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -173,6 +172,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Accessors.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="D2Funcs.h" />
@@ -194,6 +194,7 @@
     <ClInclude Include="V8Script.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Accessors.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="D2Funcs.cpp" />
     <ClCompile Include="D2Intercepts.cpp" />

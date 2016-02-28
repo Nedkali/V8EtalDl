@@ -25,42 +25,69 @@ void StringReplace(char* str, const char find, const char replace, size_t buflen
 v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 {
 	Handle<ObjectTemplate>global = ObjectTemplate::New();
-	JS_FLINK(CLoad, "Load");
-	JS_FLINK(CInclude, "Include");
-	JS_FLINK(CSetTitle, "SetTitle");
-	JS_FLINK(CSendCopyData, "SendCopyData");
+	//JS_FLINK(CCheckCollision, "CheckCollision");	// required
 	JS_FLINK(CClick, "Click");
-	JS_FLINK(CGetTickCount, "GetTickCount");
-	JS_FLINK(CDelay, "Delay");
-	JS_FLINK(CCloseD2, "CloseD2");
-	JS_FLINK(CScreenSize, "ScreenSize");
-	JS_FLINK(CPrint, "Print");
-	JS_FLINK(CMove, "Move");
-	JS_FLINK(CSetSkill, "SetSkill");
-	JS_FLINK(CExitGame, "ExitGame");
-	JS_FLINK(CGetPlayerUnit, "GetPlayerUnit");
-	JS_FLINK(CGetArea, "GetArea");
-	JS_FLINK(CSay, "Say");
-	JS_FLINK(CRandom, "Random");
-	JS_FLINK(CGetLevel, "GetLevel");
 	JS_FLINK(CClickControl, "ClickControl");
-	JS_FLINK(CGetLocation, "GetLocation");
-	JS_FLINK(CSelectChar, "SelectChar");
-	JS_FLINK(CGetText, "GetText");
-	JS_FLINK(CSetText, "SetText");
+	//JS_FLINK(CClickMap, "ClickMap");				// required
 	JS_FLINK(CClientState, "ClientState");
-	JS_FLINK(CSubmitItem, "SubmitItem");
-	JS_FLINK(CTransmute, "Transmute");
-	JS_FLINK(CTESTWAYPOINT, "WayPoint");
-	JS_FLINK(CGetPath, "GetPath");
-	JS_FLINK(CGetPresetUnits, "GetPresetUnits");
-	JS_FLINK(CGetBaseStat, "GetBaseStat");
-	JS_FLINK(CGetLocaleString, "GetLocaleString");
-	JS_FLINK(CUseStatPoint, "UseStatPoint");
-	JS_FLINK(CUseSkillPoint, "UseSkillPoint");
-	JS_FLINK(CSetUIState, "SetUIState");
-	JS_FLINK(CGetUIState, "GetUIState");
+	JS_FLINK(CCloseD2, "CloseD2");					// required
+	JS_FLINK(CDelay, "Delay");						// required
+	JS_FLINK(CExitGame, "ExitGame");				// required
+	//JS_FLINK(CFileOpen, "FileOpen");				// required
+	JS_FLINK(CGetArea, "GetArea");					// required
+	JS_FLINK(CGetBaseStat, "GetBaseStat");			// required
+	//JS_FLINK(CGetControl, "GetControl");			// required
+	//JS_FLINK(CGetCursorType, "GetCursorType");	// required
+	JS_FLINK(CGetDistance, "GetDistance");			// required
+	JS_FLINK(CGetLocaleString, "GetLocaleString");	// required
+	JS_FLINK(CGetLocation, "GetLocation");
+	JS_FLINK(CGetPath, "GetPath");					// required
+	//JS_FLINK(CGetPlayerFlag, "GetPlayerFlag");	// required
+	JS_FLINK(CGetPlayerUnit, "GetPlayerUnit");		// required
+	JS_FLINK(CGetPresetUnits, "GetPresetUnits");	// required
+	//JS_FLINK(CGetRoom, "GetRoom");				// required
+	//JS_FLINK(CGetScript, "GetScript");			// required
+	JS_FLINK(CGetText, "GetText");
+	JS_FLINK(CGetTickCount, "GetTickCount");		// required
+	JS_FLINK(CGetUIState, "GetUIState");			// required
+	JS_FLINK(CGetUnit, "GetUnit");					// required
+	//JS_FLINK(CGetWaypoint, "GetWaypoint");		// required
+	JS_FLINK(CGold, "Gold");						// required
+	JS_FLINK(CInclude, "Include");					// required
+	JS_FLINK(CLoad, "Load");						// required
+	JS_FLINK(CMove, "Move");
+	JS_FLINK(CPrint, "Print");						// required
+	JS_FLINK(CRandom, "Random");					// required
+	//JS_FLINK(CRegisterEvent, "RegisterEvent");	// required
+	//JS_FLINK(CRunGC, "RunGC");					// required
+	JS_FLINK(CSay, "Say");							// required
+	JS_FLINK(CScreenSize, "ScreenSize");
+	JS_FLINK(CSelectChar, "SelectChar");
+	JS_FLINK(CSendCopyData, "SendCopyData");		// required
+	JS_FLINK(CSetSkill, "SetSkill");				// Needs to be set for me.Global
+	//JS_FLINK(CSetStatusText, "SetStatusText");	// required
+	JS_FLINK(CSetText, "SetText");
+	JS_FLINK(CSetTitle, "SetTitle");				// Added
+	JS_FLINK(CSetUIState, "SetUIState");			// required
+	JS_FLINK(CSubmitItem, "SubmitItem");			// required
+	JS_FLINK(CTransmute, "Transmute");				// required
+	//JS_FLINK(CUnregisterEvent, "UnregisterEvent");// required
+	JS_FLINK(CMe, "GetMe");							// Testing for me.global
+
+	//Functions Added not in D2NT
+	JS_FLINK(CUseSkillPoint, "UseSkillPoint");		// Added
+	JS_FLINK(CUseStatPoint, "UseStatPoint");		// Added
+	
+	// For Testing ONLY
+	JS_FLINK(CGetLevel, "GetLevel");				// Will be removed
+	JS_FLINK(CTESTWAYPOINT, "WayPoint");			// Will be removed
+
 	return Context::New(isolate, NULL, global);
+}
+
+JS_FUNC(CGetDistance)
+{
+
 }
 
 JS_FUNC(CGetLocaleString)
@@ -78,6 +105,7 @@ JS_FUNC(CSetUIState)
 {
 	DWORD state = args[0]->Uint32Value();
 	bool set = args[1]->BooleanValue();
+	//this looks odd yes, but I assure you, this is how it needs to be
 	if (set == false)
 		D2CLIENT_SetUIState(state, TRUE);
 	else if(set == true) {
@@ -104,7 +132,7 @@ JS_FUNC(CUseStatPoint)
 		stat = args[0]->Uint32Value();
 		count = args[1]->Uint32Value();
 		UseStatPoint(stat, count);
-		D2Funcs::Print("ÿc5Stat Points Added");
+		D2Funcs::Print("ÿc5Stat Points Added"); //this line will be removed
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
 }
@@ -122,61 +150,14 @@ JS_FUNC(CUseSkillPoint)
 		skill = args[0]->Uint32Value();
 		count = args[1]->Uint32Value();
 		UseSkillPoint(skill, count);
-		D2Funcs::Print("ÿc5Skill Points Added");
+		D2Funcs::Print("ÿc5Skill Points Added"); //this line will be removed
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
 }
 
 JS_FUNC(CGetBaseStat)
 {
-	/*if (args.Length() > 2)
-	{
-		char *szStatName = NULL, *szTableName = NULL;
-		int32_t nBaseStat = 0;
-		int32_t nClassId = 0;
-		int32_t nStat = -1;
-		if (JSVAL_IS_STRING(JS_ARGV(cx, vp)[0]))
-		{
-			szTableName = JS_EncodeString(cx, JS_ValueToString(cx, JS_ARGV(cx, vp)[0]));
-			if (!szTableName)
-			{
-				JS_EndRequest(cx);
-				THROW_ERROR(cx, "Invalid table value");
-
-			}
-		}
-		else if (JSVAL_IS_NUMBER(JS_ARGV(cx, vp)[0]))
-			JS_ValueToECMAInt32(cx, JS_ARGV(cx, vp)[0], &nBaseStat);
-		else
-		{
-			JS_EndRequest(cx);
-			THROW_ERROR(cx, "Invalid table value");
-		}
-
-		JS_ValueToECMAInt32(cx, JS_ARGV(cx, vp)[1], &nClassId);
-
-		if (JSVAL_IS_STRING(JS_ARGV(cx, vp)[2]))
-		{
-			szStatName = JS_EncodeString(cx, JS_ValueToString(cx, JS_ARGV(cx, vp)[2]));
-			if (!szStatName)
-			{
-				JS_EndRequest(cx);
-				THROW_ERROR(cx, "Invalid column value");
-			}
-		}
-		else if (JSVAL_IS_NUMBER(JS_ARGV(cx, vp)[2]))
-			JS_ValueToECMAInt32(cx, JS_ARGV(cx, vp)[2], &nStat);
-		else
-		{
-			JS_EndRequest(cx);
-			THROW_ERROR(cx, "Invalid column value");
-		}
-		jsval rval;
-		FillBaseStat(cx, &rval, nBaseStat, nClassId, nStat, szTableName, szStatName);
-		JS_SET_RVAL(cx, vp, rval);
-	}
-
-	return JS_TRUE;*/
+	
 }
 
 JS_FUNC(CGetPath)
@@ -264,6 +245,115 @@ JS_FUNC(CGetPresetUnits)
 		}
 	}
 	args.GetReturnValue().Set(node);
+}
+
+JS_FUNC(CGetUnit)
+{
+	Local<Context> context = Context::GetCurrent();
+	Isolate* isolate = Isolate::GetCurrent();
+	HandleScope scope(isolate);
+
+	if (args.Length() < 1)
+		args.GetReturnValue().Set(Boolean::New(true));
+
+	int nType = -1;
+	uint32_t nClassId = (uint32_t)-1;
+	uint32_t nMode = (uint32_t)-1;
+	uint32_t nUnitId = (uint32_t)-1;
+	char szName[128] = "";
+	if (args.Length() > 0 && args[0]->IsNumber())
+		nType = args[0]->Uint32Value();
+
+	if (args.Length() > 1 && args[1]->IsString()) {
+		String::Utf8Value str(args[1]);
+		char* cstr = (char*)ToCString(str);
+		strcpy_s(szName, sizeof(szName), cstr);
+	}
+
+	if (args.Length() > 1 && args[1]->IsNumber())
+		nClassId = args[1]->Uint32Value();
+
+	if (args.Length() > 2 && args[2]->IsNumber())
+		nMode = args[2]->Uint32Value();
+
+	if (args.Length() > 3 && args[3]->IsNumber())
+		nUnitId = args[3]->Uint32Value();
+
+	UnitAny* pUnit = GetUnit(szName, nClassId, nType, nMode, nUnitId);
+
+	if (nType == 100)
+		pUnit = fpGetCursorItem();
+	else if (nType == 101)
+	{
+		pUnit = fpGetSelectedUnit();
+		if (!pUnit)
+			pUnit = (*vpSelectedInvItem);
+	}
+	else
+		pUnit = GetUnit(szName, nClassId, nType, nMode, nUnitId);
+
+	if (!pUnit)
+		args.GetReturnValue().Set(Boolean::New(true));
+
+	myUnit* pmyUnit = new myUnit; // leaked?
+
+	if (!pmyUnit)
+		args.GetReturnValue().Set(Boolean::New(true));
+
+	if (pUnit && pmyUnit)
+	{
+		pmyUnit->_dwPrivateType = PRIVATE_UNIT;
+		pmyUnit->dwClassId = nClassId;
+		pmyUnit->dwMode = nMode;
+		pmyUnit->dwType = pUnit->dwType;
+		pmyUnit->dwUnitId = pUnit->dwUnitId;
+		strcpy_s(pmyUnit->szName, sizeof(pmyUnit->szName), szName);
+	}
+
+	Local<Object> node = Object::New();
+	node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
+	node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
+	node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
+	node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
+	node->Set(String::NewFromUtf8(isolate, "x"), Integer::New(fpGetUnitX(pUnit))); //just for testing
+	node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(fpGetUnitY(pUnit))); //just for testing
+	args.GetReturnValue().Set(node);
+}
+
+JS_FUNC(CMe)
+{
+	Local<Context> context = Context::GetCurrent();
+	Isolate* isolate = Isolate::GetCurrent();
+	HandleScope scope(isolate);
+	Local<Object> node = Object::New();
+	node->SetAccessor(String::New("act"), GetAct);
+	node->SetAccessor(String::New("name"), GetName);
+	node->SetAccessor(String::New("charname"), GetName);
+	node->SetAccessor(String::New("areaid"), GetAreaId);
+	node->SetAccessor(String::New("x"), GetX);
+	node->SetAccessor(String::New("y"), GetY);
+	node->SetAccessor(String::New("hp"), GetHP);
+	node->SetAccessor(String::New("mp"), GetMP);
+	node->SetAccessor(String::New("hpmax"), GetHPMax);
+	node->SetAccessor(String::New("mpmax"), GetMPMax);
+	node->SetAccessor(String::New("classid"), GetClassid);
+	node->SetAccessor(String::New("mode"), GetMode);
+	args.GetReturnValue().Set(node);
+}
+JS_FUNC(CGold)
+{
+	int nGold = NULL;
+	int nMode = 1;
+
+	if (args.Length() > 0 && args[0]->IsNumber())
+		nGold = args[0]->Uint32Value();
+
+	if (args.Length() > 1 && args[1]->IsNumber())
+		nMode = args[1]->Uint32Value();
+
+	SendGold(nGold, nMode);
+
+	args.GetReturnValue().Set(Boolean::New(true));
 }
 
 JS_FUNC(CSubmitItem)
@@ -632,14 +722,12 @@ JS_FUNC(CLoad) {
 }
 
 JS_FUNC(CInclude) {
-
 	HandleScope handle_scope(args.GetIsolate());
 	String::Utf8Value str(args[0]);
 	char* cstr = (char*)ToCString(str);
 	StringReplace(cstr, '/', '\\', strlen(cstr));
 	Isolate* isolate = Isolate::GetCurrent();
 	RunScript(isolate, Vars.szScriptPath, cstr);
-
 }
 
 JS_FUNC(CSetTitle)

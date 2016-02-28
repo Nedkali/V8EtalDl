@@ -49,18 +49,15 @@ static UnitAny* GetUnitFromTables(UnitHashTable* unitTables, DWORD dwTypeLow,
 UnitAny* GetUnit(char* szName, DWORD dwClassId, DWORD dwType, DWORD dwMode,
 	DWORD dwUnitId)
 {
-	if(ClientGameState() != ClientStateInGame)
-		return NULL;
-
 	if(dwType == 3)
-		return GetUnitFromTables(p_D2CLIENT_ServerSideUnitHashTables, dwType,
+		return GetUnitFromTables(vpServerSideUnitHashTables, dwType,
 				dwType, szName, dwClassId, dwType, dwMode, dwUnitId);
 
 	if(dwType >= 0 && dwType <= 5)
-		return GetUnitFromTables(p_D2CLIENT_ServerSideUnitHashTables, dwType,
+		return GetUnitFromTables(vpServerSideUnitHashTables, dwType,
 				dwType, szName, dwClassId, dwType, dwMode, dwUnitId);
 	else
-		return GetUnitFromTables(p_D2CLIENT_ServerSideUnitHashTables, 0, 5,
+		return GetUnitFromTables(vpServerSideUnitHashTables, 0, 5,
 				szName, dwClassId, dwType, dwMode, dwUnitId);
 }
 
@@ -127,14 +124,14 @@ UnitAny* GetNextUnit(UnitAny* pUnit, char* szName, DWORD dwClassId,
 	if(!pUnit)
 		return NULL;
 	if(dwType == 3)
-		return GetNextUnitFromTables(pUnit, p_D2CLIENT_ClientSideUnitHashTables,
+		return GetNextUnitFromTables(pUnit, vpClientSideUnitHashTables,
 				dwType, dwType, szName, dwClassId, dwType, dwMode);
 
 	if(dwType >= 0 && dwType <= 5)
-		return GetNextUnitFromTables(pUnit, p_D2CLIENT_ServerSideUnitHashTables,
+		return GetNextUnitFromTables(pUnit, vpServerSideUnitHashTables,
 				dwType, dwType, szName, dwClassId, dwType, dwMode);
 	else
-		return GetNextUnitFromTables(pUnit, p_D2CLIENT_ServerSideUnitHashTables,
+		return GetNextUnitFromTables(pUnit, vpServerSideUnitHashTables,
 				0, 5, szName, dwClassId, dwType, dwMode);
 
 }

@@ -9,7 +9,7 @@ using namespace v8;
 
 Profile  Prof;
 Variables Vars;
-
+void StartUpV8();
 void SendDataCopy(char* app, int  code, char* data)// make this bool later on
 {
 	HWND EtalhWnd = FindWindow(NULL, app);
@@ -38,6 +38,7 @@ DWORD WINAPI MainThread(VOID* param)
 
 	bool starter = true;
 	bool ingame = false;
+	bool startup = false;
 
 	#pragma region Key_Handling
 
@@ -68,13 +69,28 @@ DWORD WINAPI MainThread(VOID* param)
 	}
 	#pragma endregion
 
-	ClientGameState state = MENU::ClientState();
-	while (state == ClientStateInGame)
+	while (1)
 	{
-		Sleep(1000);
+		switch (MENU::ClientState())
+		{
+		case ClientStateInGame :
+			break;
+		case ClientStateMenu :
+		case ClientStateNull:
+		case ClientStateBusy :
+			if (!startup) {
+				StartUpV8();
+				startup = true;
+			}
+			break;
+		}
 	}
+	FreeLibraryAndExitThread((HMODULE)param, 0);
 
-
+	return true;
+}
+void StartUpV8()
+{
 	// **V8
 	V8::Initialize();
 	Isolate* isolate = Isolate::GetCurrent();
@@ -82,7 +98,7 @@ DWORD WINAPI MainThread(VOID* param)
 	Handle<Context> context = CreateContext(isolate);
 	TryCatch try_catch;
 
-	if(context.IsEmpty())
+	if (context.IsEmpty())
 	{
 		ReportException(isolate, &try_catch);
 	}
@@ -90,24 +106,18 @@ DWORD WINAPI MainThread(VOID* param)
 	{
 		context->Enter();
 	}
-	
+
 	RunScript(isolate, Vars.szScriptPath, Prof.ScriptFile);
 	Handle<v8::Object> global = context->Global();
 	Handle<v8::Value> value = global->Get(String::New("NTMain"));
 	if (value->IsFunction()) {
 		Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(value);
-		func->Call(global, 0, NULL);		
+		func->Call(global, 0, NULL);
 	}
-
-	
 	context->Exit();
 	V8::Dispose();
 
-	FreeLibraryAndExitThread((HMODULE)param, 0);
-
-	return true;
 }
-
 //LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 //{
 //    switch (Msg)

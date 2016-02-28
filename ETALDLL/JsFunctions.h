@@ -6,6 +6,7 @@
 #include "v8.h"
 #include "JsDefines.h"
 #include "D2Pointers.h"
+#include "Unit.h"
 using namespace v8;
 
 struct myPresetUnit //for CGetPresetUnits
@@ -20,7 +21,7 @@ struct myPresetUnit //for CGetPresetUnits
 };
 // **Context
 Handle<Context>CreateContext(Isolate* isolate);
-
+JS_FUNC(CMe);
 //Working as intended
 JS_FUNC(CLoad);
 JS_FUNC(CInclude);
@@ -48,6 +49,7 @@ JS_FUNC(CSetUIState);
 JS_FUNC(CGetLocaleString);
 JS_FUNC(CUseStatPoint);
 JS_FUNC(CUseSkillPoint);
+JS_FUNC(CGold);
 
 //currently testing/non functioning/un-finished
 JS_FUNC(CPrint);			//needs color code correted
@@ -55,6 +57,8 @@ JS_FUNC(CGetPresetUnits);	//subareaid needs corrected
 JS_FUNC(CGetArea);			//needs written
 JS_FUNC(CGetPath);			//needs written
 JS_FUNC(CGetBaseStat);		//needs written
+JS_FUNC(CGetUnit);			//needs written
+JS_FUNC(CGetDistance);		//needs written
 
 //needs set under me global
 JS_FUNC(CSetSkill);
@@ -81,9 +85,9 @@ JS_FUNC(CGetLevel);
 //[+] GetBaseStat()				//WIP
 //[+] GetControl()
 //[+] GetCursorType()
-//[+] GetDistance()
+//[+] GetDistance()				//WIP
 //[+] GetLocaleString()			//added
-//[+] GetPath()					//WIP
+//[+] GetPath()					//WIP : Will probably be added last sadly
 //[+] GetPlayerFlag()
 //[+] GetPlayerUnit()			//added
 //[+] GetPresetUnits()			//added
@@ -91,9 +95,9 @@ JS_FUNC(CGetLevel);
 //[+] GetScript()
 //[+] GetTickCount()
 //[+] GetUIState()				//added
-//[+] GetUnit()
+//[+] GetUnit()					/WIP
 //[+] GetWaypoint()
-//[+] Gold()
+//[+] Gold()					//added
 //[+] Include()					//added
 //[+] Load()					//added
 //[+] Print()					//added

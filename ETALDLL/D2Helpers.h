@@ -14,6 +14,11 @@
 #include "Main.h"
 #include "D2Intercepts.h"
 
+enum DistanceType
+{
+	Euclidean, Chebyshev, Manhattan
+};
+
 
 // Some buttons
 #define BUTTON_SP findControl(CONTROL_BUTTON, 5106, -1, 264,324,272,35)
@@ -57,7 +62,7 @@ void __fastcall UseStatPoint(WORD stat, int count = 1);
 void __fastcall UseSkillPoint(WORD skill, int count = 1);
 DWORD __fastcall D2CLIENT_SendGamePacket_ASM(DWORD dwLen, BYTE* bPacket); 
 void  __fastcall D2CLIENT_SetSelectedUnit_STUB(DWORD UnitAny);
-
+double GetDistance(long x1, long y1, long x2, long y2, DistanceType type = Euclidean);
 struct SData
 {
 	char  str[255];

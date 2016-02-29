@@ -176,7 +176,14 @@ FPTR(HWND __stdcall, GetHwnd, (void), "D2gfx.dll", 0xB0C0)
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Bnclient Variable Pointers
 ////////////////////////////////////////////////////////////////////////////////////////////////
+FPTR(AutomapLayer* __fastcall, InitAutomapLayer_I, (DWORD nLayerNo), "D2Client.dll", 0x733D0)
+FPTR(void __fastcall, AddAutomapCell, (AutomapCell *aCell, AutomapCell **node), "D2Client.dll", 0x71EA0)
+FPTR(AutomapCell * __fastcall, NewAutomapCell, (void), "D2Client.dll", 0x703C0)
+FPTR(void __stdcall, RevealAutomapRoom, (Room1 *pRoom1, DWORD dwClipFlag, AutomapLayer *aLayer), "D2Client.dll", 0x73160)
+FPTR(AutomapLayer2* __fastcall, GetLayer, (DWORD dwLevelNo), "D2Common.dll", 0x30B00)
 
+FPTR( DWORD __stdcall, CheckWaypoint, (DWORD WaypointTable, DWORD dwLevelId), "D2Common.dll", 0x5D270)
+VPTR(DWORD, WaypointTable, "D2Client.dll", 0x1088FD)
 FPTR(DWORD __fastcall, Rand, (DWORD* seed), "D2Game.dll", 0x1050)
 VPTR(UnitHashTable, ServerSideUnitHashTables, "D2Client.dll", 0x1047B8)
 VPTR(UnitHashTable, ClientSideUnitHashTables, "D2Client.dll", 0x103BB8)

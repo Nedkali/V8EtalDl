@@ -28,6 +28,8 @@ void  Logincontrol();
 void SendDataCopy(char* app, int  code, char* data);
 void __fastcall Say(const char* szMessage);
 
+//AutomapLayer* InitAutomapLayer(DWORD levelno);
+//DWORD __fastcall D2CLIENT_InitAutomapLayer_STUB(DWORD nLayerNo);
 
 DWORD	GetPlayerArea(void);
 Level*	GetLevel(DWORD dwLevelNo);

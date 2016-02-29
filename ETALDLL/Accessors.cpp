@@ -6,6 +6,38 @@
 #pragma region Unit
 //Need to wrap these as a single accesible property (Unit)
 
+void GetAutoRevealMap(Local<String> property, const PropertyCallbackInfo<Value>& info)
+{
+	/*bool val = Vars.revealautomap;
+	if (val == false)
+		val = true;
+	else if (val == true)
+		val = false;
+	return info.GetReturnValue().Set(Boolean::New(val));*/
+
+}
+void SetAutoRevealMap(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
+{
+	/*UnitAny* unit =fpGetPlayerUnit();
+
+	if (!unit) {
+		return info.GetReturnValue().Set(Boolean::New(true));
+	}
+
+	Level* level = unit->pPath->pRoom1->pRoom2->pLevel;
+
+	if (!level) {
+		return info.GetReturnValue().Set(Boolean::New(true));
+	}
+
+	BOOL bDrawPresets = Vars.revealautomap;
+	
+	for (Room2* room = level->pRoom2First; room; room = room->pRoom2Next) {
+		RevealRoom(room, bDrawPresets);
+	}
+	return info.GetReturnValue().Set(Integer::New(bDrawPresets));*/
+}
+
 void GetMaxGameTime(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	INT32 val = Vars.meMaxGameTime;

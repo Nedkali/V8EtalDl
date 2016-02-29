@@ -34,6 +34,7 @@ struct Variables
 	bool	bzladder;
 	unsigned int iCharPos;
 	unsigned int meMaxGameTime;
+	bool	revealautomap;
 	bool	bzUseRawKeys;
 	HMODULE hModule;
 };

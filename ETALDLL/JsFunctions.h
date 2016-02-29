@@ -7,6 +7,7 @@
 #include "JsDefines.h"
 #include "D2Pointers.h"
 #include "Unit.h"
+
 using namespace v8;
 
 struct myPresetUnit //for CGetPresetUnits
@@ -19,6 +20,7 @@ struct myPresetUnit //for CGetPresetUnits
 	DWORD dwId;
 	DWORD dwLevel;
 };
+
 // **Context
 Handle<Context>CreateContext(Isolate* isolate);
 JS_FUNC(CMe); void init_me();
@@ -53,7 +55,7 @@ JS_FUNC(CGold);
 JS_FUNC(CClickMap); 
 JS_FUNC(CGetControl);
 JS_FUNC(CSelectRealm);
-
+JS_FUNC(CGetWayPoint);
 
 //currently testing/non functioning/un-finished
 JS_FUNC(CPrint);			//needs color code correted
@@ -63,6 +65,7 @@ JS_FUNC(CGetPath);			//needs written
 JS_FUNC(CGetBaseStat);		//needs written
 JS_FUNC(CGetUnit);			//needs written
 JS_FUNC(CGetDistance);		//needs written
+JS_FUNC(CRunGC);			//needs written
 
 //needs set under me global
 JS_FUNC(CSetSkill);
@@ -100,7 +103,7 @@ JS_FUNC(CGetLevel);
 //[+] GetTickCount()
 //[+] GetUIState()				//added
 //[+] GetUnit()					/WIP
-//[+] GetWaypoint()
+//[+] GetWaypoint()				//added
 //[+] Gold()					//added
 //[+] Include()					//added
 //[+] Load()					//added

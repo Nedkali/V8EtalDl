@@ -4,6 +4,9 @@
 //Unit Global Accessors
 #pragma region Unit
 
+void GetAutoRevealMap(Local<String> property, const PropertyCallbackInfo<Value>& info);
+void SetAutoRevealMap(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
+
 void GetMaxGameTime(Local<String> property, const PropertyCallbackInfo<Value>& info);
 void SetMaxGameTime(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
 

@@ -403,3 +403,22 @@ void __declspec(naked) __fastcall D2CLIENT_SetSelectedUnit_STUB(DWORD UnitAny)
 		jmp D2CLIENT_SetSelectedUnit_I
 	}
 }
+
+//AutomapLayer* InitAutomapLayer(DWORD levelno)
+//{
+//	AutomapLayer2 *pLayer = fpGetLayer(levelno);
+//	return D2CLIENT_InitAutomapLayer(pLayer->nLayerNo);
+//}
+//
+////DWORD InitAutomapLayer_I = Pointer::GetDllOffset("D2Client.dll", 0x733D0);
+//DWORD __declspec(naked) __fastcall D2CLIENT_InitAutomapLayer_STUB(DWORD nLayerNo)
+//{
+//	__asm
+//	{
+//		push eax;
+//		mov eax, ecx;
+//		call fpInitAutomapLayer_I;
+//		pop eax;
+//		ret;
+//	}
+//}

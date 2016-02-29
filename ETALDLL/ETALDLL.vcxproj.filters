@@ -41,6 +41,9 @@
     <ClCompile Include="Accessors.cpp">
       <Filter>V8 Engine\JSFunctions</Filter>
     </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JsDefines.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="Accessors.h">
       <Filter>V8 Engine\JSFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

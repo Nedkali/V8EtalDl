@@ -22,6 +22,8 @@ public:
 	MENU(void);
 	~MENU(void);
 
+	
+
 public:
 	static void locateControl();
 	static int GetLocationID();
@@ -29,7 +31,6 @@ public:
 	static Control* findControl(int Type, const char* Text, int Disabled, int PosX, int PosY, int SizeX, int SizeY);
 	static bool clickControl(Control* pControl);
 	static void SetControlText(Control* pControl, const char* Text);
-	static void locateControl();
 	static ClientGameState ClientState(void);
 	static v8::Local<v8::Array> GetText(int x, int a);
 };

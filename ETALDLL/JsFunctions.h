@@ -52,7 +52,7 @@ JS_FUNC(CUseSkillPoint);
 JS_FUNC(CGold);
 JS_FUNC(CClickMap);
 JS_FUNC(CGetControl);
-
+JS_FUNC(CSelectRealm);
 
 //currently testing/non functioning/un-finished
 JS_FUNC(CPrint);			//needs color code correted

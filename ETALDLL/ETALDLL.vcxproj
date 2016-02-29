@@ -74,6 +74,7 @@
     <TargetName>D2ETAL</TargetName>
     <LibraryWPath />
     <IncludePath>V8\lib\Debug;$(IncludePath)</IncludePath>
+    <OutDir>D:\My Documents\GitHub\EtalManager\Etal Manager\bin\Debug</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>

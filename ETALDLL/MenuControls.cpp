@@ -3,6 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 #include "MenuControls.h"
 #include "Input.h"
+#include "D2Helpers.h"
 
 using namespace v8;
 
@@ -16,29 +17,6 @@ MENU::~MENU(void)
 
 }
 
-void MENU::locateControl()
-{
-	Control* pControl = findControl(CONTROL_BUTTON, 5106, -1, 264, 324, 272, 35);
-	ControlText* pControlText;
-
-	while (pControl != NULL)
-	{
-
-		if (pControl->dwType == CONTROL_BUTTON)
-		{
-
-			char* Text2 = wchart_to_char(pControl->wText2);
-			int x = pControl->dwPosX;
-			int y = pControl->dwPosY;
-			int bwidth = pControl->dwSizeX;
-			int bheight = pControl->dwSizeY;
-
-			MessageBox(NULL, Text2, "Debug fcontrol", NULL);
-
-		}
-		pControl = pControl->pNext;
-	}
-}
 
 int MENU::GetLocationID()
 {
@@ -410,8 +388,8 @@ void MENU::locateControl()
 			return;
 		}
 
-		if (pControl && pControl->wText2 != NULL)
-		{
+		//if (pControl && pControl->wText2 != NULL)
+		//{
 
 			char* Text1 = wchart_to_char(pControl->wText2);
 			char Text2[128];
@@ -436,10 +414,10 @@ void MENU::locateControl()
 				char temp5[128];	sprintf_s(temp5, "%u", bheight);
 				strcat_s(Text2, 128, ", "); strcat_s(Text2, 128, temp5);
 				strcat_s(Text2, 128, "];");
-				//SendDataCopy("Etal Manager", 11, Text2);
+				SendDataCopy("Etal Manager", 11, Text2);
 				//MessageBox(NULL, Text2, "Debug fcontrol", NULL);
 			}
-		}
+		//}
 		//pControl = pControl->pNext;
 	}
 

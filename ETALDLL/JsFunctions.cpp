@@ -63,6 +63,7 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CSay, "Say");							// required
 	JS_FLINK(CScreenSize, "ScreenSize");
 	JS_FLINK(CSelectChar, "SelectChar");
+	JS_FLINK(CSelectRealm, "SelectRealm");
 	JS_FLINK(CSendCopyData, "SendCopyData");		// required
 	JS_FLINK(CSetSkill, "SetSkill");				// Needs to be set for me.Global
 	//JS_FLINK(CSetStatusText, "SetStatusText");	// required
@@ -83,6 +84,51 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CTESTWAYPOINT, "WayPoint");			// Will be removed
 
 	return Context::New(isolate, NULL, global);
+}
+
+
+JS_FUNC(CSelectRealm)
+{
+	if (Prof.Realm == 0)//Single Player
+	{
+		Control*  pControl = MENU::findControl(CONTROL_BUTTON, "SINGLE PLAYER", -1, 264, 324, 272, 35);
+		if (pControl)
+		{
+			MENU::clickControl(pControl);
+			return;
+		}
+	}
+	Control* pControl = MENU::findControl(CONTROL_BUTTON, (char *)NULL, -1, 264, 391, 272, 25);
+	if (pControl && pControl->wText2) {
+		char* cstr = "";
+		char* szLine = wchart_to_char(pControl->wText2);
+
+		if (Prof.Realm == 1) { cstr = "GATEWAY: U.S. WEST"; }
+		if (Prof.Realm == 2) { cstr = "GATEWAY: U.S. EAST"; }
+		if (Prof.Realm == 3) { cstr = "GATEWAY: ASIA"; }
+		if (Prof.Realm == 4) { cstr = "GATEWAY: EUROPE"; }
+
+		if (strcmp(cstr, szLine) != 0) {
+			MENU::clickControl(pControl);
+
+			Sleep(2000);
+			Input::SendMouseClick(295, 320 + ((Prof.Realm * 24) + 12), 0);//select correct realm
+			//OK Button
+			Control* pControl2 = MENU::findControl(CONTROL_BUTTON, (char *)NULL, -1, 281, 538, 96, 32);
+			if (pControl2) {
+				MENU::clickControl(pControl2);
+				Sleep(2000);
+			}
+
+		}
+	}
+		Control* pControl2 = MENU::findControl(CONTROL_BUTTON, "BATTLE.NET", -1, 264, 366, 272, 35);
+		if (pControl2)
+			MENU::clickControl(pControl2);
+		Sleep(2000);
+		return;
+
+
 }
 
 JS_FUNC(CClickMap)
@@ -126,10 +172,42 @@ JS_FUNC(CClickMap)
 	args.GetReturnValue().Set(Boolean::New(true));
 }
 
-JS_FUNC(CGetControl)
+JS_FUNC(CGetControl)// unsure if this will work - testing
 {
-	MENU::locateControl();
+	//MENU::locateControl();
+	//HandleScope handle_scope(args.GetIsolate());
+	//if (args.Length() == 5)
+	//{
+	//	Handle<Array> array = Array::New(5);
+	//	INT32 type = args[0]->Uint32Value();
+	//	INT32 locx = args[1]->Uint32Value();
+	//	INT32 locy = args[2]->Uint32Value();
+	//	INT32 sizex = args[3]->Uint32Value();
+	//	INT32 aizey = args[4]->Uint32Value();
 
+	//	for (Control* pControl = *vpFirstControl; pControl; pControl = pControl->pNext)
+	//	{
+	//		if (pControl && static_cast<int>(pControl->dwType) == type)
+	//		{
+	//			int x = pControl->dwPosX;
+	//			int y = pControl->dwPosY;
+	//			int bwidth = pControl->dwSizeX;
+	//			int bheight = pControl->dwSizeY;
+	//			array->Set(0, Integer::New(type));
+	//			array->Set(1, Integer::New(x));
+	//			array->Set(2, Integer::New(y));
+	//			array->Set(3, Integer::New(bwidth));
+	//			array->Set(4, Integer::New(bheight));
+	//			args.GetReturnValue().Set(array);
+	//			return;
+
+	//		}
+	//	}
+
+	//}
+
+	//args.GetReturnValue().Set(NULL);
+	//return;
 
 }
 
@@ -481,31 +559,39 @@ JS_FUNC(CClientState)
 JS_FUNC(CSetText)
 {
 	HandleScope handle_scope(args.GetIsolate());
-	Handle<v8::Value> obj(args[0]);
-
-	if (obj->IsArray()) {
-
-		Local<v8::Array> arr = v8::Local<v8::Array>::Cast(args[0]);
-
-		int Type = (int)(arr->Get(0)->Int32Value());
-		String::Utf8Value str(arr->Get(1));
-		char* cstr = (char*)ToCString(str);
-		int Disabled = (int)(arr->Get(2)->Int32Value());
-		int PosX = (int)(arr->Get(3)->Int32Value());
-		int PosY = (int)(arr->Get(4)->Int32Value());
-		int SizeX = (int)(arr->Get(5)->Int32Value());
-		int SizeY = (int)(arr->Get(6)->Int32Value());
-
-		String::Utf8Value str2(args[1]);
-		char* cstr2 = (char*)ToCString(str2);
-
-		Control* pControl = MENU::findControl(Type, cstr, Disabled, PosX, PosY, SizeX, SizeY);
-
-		if (true)
-		{
-			MENU::SetControlText(pControl, cstr);
-		}
+	char* accName = Prof.Account;
+	char* pass = Prof.AccPass;
+	if (args.Length() == 2)
+	{
+		String::Utf8Value str(args[0]);
+		accName = (char*)ToCString(str);
+		String::Utf8Value str1(args[1]);
+		pass = (char*)ToCString(str1);
 	}
+	//MENU::locateControl();
+	Sleep(1000);
+	// enter Account name
+	Control* pControl = MENU::findControl(1, (char *)NULL, -1, 322, 342, 162, 19);
+	if (!pControl)
+		return;
+
+	MENU::SetControlText(pControl, accName);
+	Sleep(750);
+
+	// enter pass
+	pControl = MENU::findControl(1, (char *)NULL, -1, 322, 396, 162, 19);
+	if (!pControl)
+		return;
+
+	MENU::SetControlText(pControl, pass);
+	Sleep(1200);
+	// click login
+	pControl = MENU::findControl(CONTROL_BUTTON, "LOG IN", -1, 264, 484, 272, 35);
+	if (pControl)
+	{
+		MENU::clickControl(pControl);
+	}
+	Sleep(500);
 }
 
 JS_FUNC(CGetText)

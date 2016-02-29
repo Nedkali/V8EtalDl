@@ -36,7 +36,7 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	//JS_FLINK(CFileOpen, "FileOpen");				// required
 	JS_FLINK(CGetArea, "GetArea");					// required
 	JS_FLINK(CGetBaseStat, "GetBaseStat");			// required
-	//JS_FLINK(CGetControl, "GetControl");			// required
+	JS_FLINK(CGetControl, "GetControl");			// required
 	//JS_FLINK(CGetCursorType, "GetCursorType");	// required
 	JS_FLINK(CGetDistance, "GetDistance");			// required
 	JS_FLINK(CGetLocaleString, "GetLocaleString");	// required
@@ -125,6 +125,14 @@ JS_FUNC(CClickMap)
 
 	args.GetReturnValue().Set(Boolean::New(true));
 }
+
+JS_FUNC(CGetControl)
+{
+	MENU::locateControl();
+
+
+}
+
 
 JS_FUNC(CGetDistance)
 {

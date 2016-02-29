@@ -398,3 +398,49 @@ v8::Local<v8::Array> MENU::GetText(int x, int a)
 
 	return arguments;
 }
+
+void MENU::locateControl()
+{
+
+
+	for (Control* pControl = *vpFirstControl; pControl; pControl = pControl->pNext)
+	{
+		if (!pControl)
+		{
+			return;
+		}
+
+		if (pControl && pControl->wText2 != NULL)
+		{
+
+			char* Text1 = wchart_to_char(pControl->wText2);
+			char Text2[128];
+			strcpy_s(Text2, 128, Text1);
+
+			if (strlen(Text2) > 1)
+			{
+
+
+				//int disabled = pControl->dwDisabled;
+				int x = pControl->dwPosX;
+				int y = pControl->dwPosY;
+				int bwidth = pControl->dwSizeX;
+				int bheight = pControl->dwSizeY;
+
+				char temp2[128];	sprintf_s(temp2, "%u", x);
+				strcat_s(Text2, 128, ", -1, "); strcat_s(Text2, 128, temp2);
+				char temp3[128];	sprintf_s(temp3, "%u", y);
+				strcat_s(Text2, 128, ", "); strcat_s(Text2, 128, temp3);
+				char temp4[128];	sprintf_s(temp4, "%u", bwidth);
+				strcat_s(Text2, 128, ", "); strcat_s(Text2, 128, temp4);
+				char temp5[128];	sprintf_s(temp5, "%u", bheight);
+				strcat_s(Text2, 128, ", "); strcat_s(Text2, 128, temp5);
+				strcat_s(Text2, 128, "];");
+				//SendDataCopy("Etal Manager", 11, Text2);
+				//MessageBox(NULL, Text2, "Debug fcontrol", NULL);
+			}
+		}
+		//pControl = pControl->pNext;
+	}
+
+}

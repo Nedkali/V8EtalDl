@@ -51,6 +51,7 @@ JS_FUNC(CUseStatPoint);
 JS_FUNC(CUseSkillPoint);
 JS_FUNC(CGold);
 JS_FUNC(CClickMap);
+JS_FUNC(CGetControl);
 
 
 //currently testing/non functioning/un-finished

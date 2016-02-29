@@ -23,6 +23,7 @@ public:
 	~MENU(void);
 
 public:
+	static void locateControl();
 	static int GetLocationID();
 	static Control* findControl(int Type, int LocaleID, int Disabled, int PosX, int PosY, int SizeX, int SizeY);
 	static Control* findControl(int Type, const char* Text, int Disabled, int PosX, int PosY, int SizeX, int SizeY);

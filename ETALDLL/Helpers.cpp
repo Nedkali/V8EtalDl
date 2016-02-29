@@ -6,6 +6,41 @@
 #include "Input.h"
 #include "D2Helpers.h"
 
+bool ClickMap(DWORD dwClickType, int wX, int wY, BOOL bShift, UnitAny* pUnit)
+{
+
+	POINT Click = { wX, wY };
+	if (pUnit)
+	{
+		Click.x = fpGetUnitX(pUnit);
+		Click.y = fpGetUnitY(pUnit);
+	}
+
+	fpMapToAbsScreen(&Click.x, &Click.y);
+
+	Click.x -= *vpViewportX;
+	Click.y -= *vpViewportY;
+
+	POINT OldMouse = { 0, 0 };
+	OldMouse.x = *vpMouseX;
+	OldMouse.y = *vpMouseY;
+	*vpMouseX = 0;
+	*vpMouseY = 0;
+
+	if (pUnit && pUnit != fpGetPlayerUnit())
+	{
+		fpClickMap(dwClickType, Click.x, Click.y, bShift ? 0x0C : (*vpAlwaysRun ? 0x08 : 0));
+		D2CLIENT_SetSelectedUnit(NULL);
+	}
+	else
+	{
+		fpClickMap(dwClickType, Click.x, Click.y, bShift ? 0x0C : (*vpAlwaysRun ? 0x08 : 0));
+	}
+
+	*vpMouseX = OldMouse.x;
+	*vpMouseY = OldMouse.y;
+	return TRUE;
+}
 char* UnicodeToAnsi(const wchar_t* str)
 {
 	char* buf = NULL;

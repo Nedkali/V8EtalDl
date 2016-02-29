@@ -50,6 +50,8 @@ JS_FUNC(CGetLocaleString);
 JS_FUNC(CUseStatPoint);
 JS_FUNC(CUseSkillPoint);
 JS_FUNC(CGold);
+JS_FUNC(CClickMap);
+
 
 //currently testing/non functioning/un-finished
 JS_FUNC(CPrint);			//needs color code correted
@@ -68,11 +70,11 @@ JS_FUNC(CMove);
 JS_FUNC(CTESTWAYPOINT);
 JS_FUNC(CGetLevel);
 
-//		   ________________________
-//		   | TODO LIST OF GLOBALS |
-//	_______|______Template________|_______
-//	|_Function________|_______Completion |
-//	|ӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝ|
+//			________________________
+//			| TODO LIST OF GLOBALS |
+//	________|______Template________|_______
+//	|_Function________|________Completion |
+//	|ӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝ|
 
 //[-] GLOBALS D2NT
 //[+] CheckCollision()

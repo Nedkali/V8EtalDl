@@ -28,7 +28,7 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	//JS_FLINK(CCheckCollision, "CheckCollision");	// required
 	JS_FLINK(CClick, "Click");
 	JS_FLINK(CClickControl, "ClickControl");
-	//JS_FLINK(CClickMap, "ClickMap");				// required
+	JS_FLINK(CClickMap, "ClickMap");				// required
 	JS_FLINK(CClientState, "ClientState");
 	JS_FLINK(CCloseD2, "CloseD2");					// required
 	JS_FLINK(CDelay, "Delay");						// required
@@ -85,6 +85,47 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	return Context::New(isolate, NULL, global);
 }
 
+JS_FUNC(CClickMap)
+{
+	HandleScope handle_scope(args.GetIsolate());
+
+	uint16_t nClickType = NULL, nShift = NULL, nX = NULL, nY = NULL;
+	if (args.Length() < 3)
+		args.GetReturnValue().Set(Boolean::New(false));
+	
+	if (args[0]->IsNumber())
+		nClickType = args[0]->Uint32Value();
+	if (args[1]->IsNumber() || args[1]->IsBoolean())
+		nShift = args[1]->Uint32Value();
+	if (args[2]->IsNumber())
+		nX = args[2]->Uint32Value();
+	if (args[3]->IsNumber())
+		nY = args[3]->Uint32Value();
+
+	if (args.Length() == 3 && args[0]->IsNumber() && (args[1]->IsNumber() || args[1]->IsBoolean()) && args[2]->IsObject())
+	{
+		//myUnit* mypUnit = (myUnit*)args[2]->ToObject();
+		myUnit* mypUnit = NULL; //until above line is corrected
+
+		if (!mypUnit || (mypUnit->_dwPrivateType & PRIVATE_UNIT) != PRIVATE_UNIT)
+			args.GetReturnValue().Set(Boolean::New(true));
+
+		UnitAny* pUnit = D2CLIENT_FindUnit(mypUnit->dwUnitId, mypUnit->dwType);
+
+		if (!pUnit)
+			args.GetReturnValue().Set(Boolean::New(true));
+
+
+		args.GetReturnValue().Set(Boolean::New(ClickMap(nClickType, nX, nY, nShift, pUnit)));
+	}
+	else if (args.Length() > 3 && args[0]->IsNumber() && (args[1]->IsNumber() || args[1]->IsBoolean()) && args[2]->IsNumber() && args[3]->IsNumber())
+	{
+		args.GetReturnValue().Set(Boolean::New(ClickMap(nClickType, nX, nY, nShift, NULL)));
+	}
+
+	args.GetReturnValue().Set(Boolean::New(true));
+}
+
 JS_FUNC(CGetDistance)
 {
 
@@ -92,10 +133,11 @@ JS_FUNC(CGetDistance)
 
 JS_FUNC(CGetLocaleString)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	if (args.Length() < 1)
 		args.GetReturnValue().Set(Boolean::New(true));
 
-	uint16_t localeId = args[0]->Uint32Value();
+	uint32_t localeId = args[0]->Uint32Value();
 	wchar_t* wString = fpGetLocaleText(localeId);
 	char* szTmp = UnicodeToAnsi(wString);
 	args.GetReturnValue().Set(String::New(szTmp));
@@ -103,6 +145,7 @@ JS_FUNC(CGetLocaleString)
 }
 JS_FUNC(CSetUIState)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	DWORD state = args[0]->Uint32Value();
 	bool set = args[1]->BooleanValue();
 	//this looks odd yes, but I assure you, this is how it needs to be
@@ -116,11 +159,13 @@ JS_FUNC(CSetUIState)
 }
 JS_FUNC(CGetUIState)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	DWORD state = args[0]->Uint32Value();
 	args.GetReturnValue().Set(Boolean::New(D2CLIENT_GetUIState(state)));
 }
 JS_FUNC(CUseStatPoint)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	uint32_t stat = 0;
 	uint32_t count = 1;
 	if (args.Length() != 2)
@@ -139,6 +184,7 @@ JS_FUNC(CUseStatPoint)
 
 JS_FUNC(CUseSkillPoint)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	uint32_t skill = 0;
 	uint32_t count = 1;
 	if (args.Length() != 2)
@@ -250,7 +296,7 @@ JS_FUNC(CGetPresetUnits)
 JS_FUNC(CGetUnit)
 {
 	Local<Context> context = Context::GetCurrent();
-	Isolate* isolate = Isolate::GetCurrent();
+	Isolate* isolate = args.GetIsolate();
 	HandleScope scope(isolate);
 
 	if (args.Length() < 1)
@@ -311,6 +357,7 @@ JS_FUNC(CGetUnit)
 	}
 
 	Local<Object> node = Object::New();
+	node->Set(String::NewFromUtf8(isolate, "name"), String::New(pUnit->pPlayerData->szName));
 	node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
 	node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
 	node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
@@ -340,8 +387,11 @@ JS_FUNC(CMe)
 	node->SetAccessor(String::New("mode"), GetMode);
 	args.GetReturnValue().Set(node);
 }
+
 JS_FUNC(CGold)
 {
+	HandleScope handle_scope(args.GetIsolate());
+
 	int nGold = NULL;
 	int nMode = 1;
 
@@ -358,8 +408,7 @@ JS_FUNC(CGold)
 
 JS_FUNC(CSubmitItem)
 {
-	Isolate* isolate = Isolate::GetCurrent();
-	HandleScope scope(isolate);
+	HandleScope handle_scope(args.GetIsolate());
 
 	if (UnitAny* pUnit = fpGetCursorItem())
 	{
@@ -401,8 +450,7 @@ JS_FUNC(CSubmitItem)
 
 JS_FUNC(CTransmute)
 {
-	Isolate* isolate = Isolate::GetCurrent();
-	HandleScope scope(isolate);
+	HandleScope handle_scope(args.GetIsolate());
 
 	bool cubeOn = !!D2CLIENT_GetUIState(UI_CUBE);
 	if (!cubeOn)
@@ -418,12 +466,13 @@ JS_FUNC(CTransmute)
 
 JS_FUNC(CClientState)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	args.GetReturnValue().Set(v8::Int32::New(MENU::ClientState()));
 }
 
 JS_FUNC(CSetText)
 {
-
+	HandleScope handle_scope(args.GetIsolate());
 	Handle<v8::Value> obj(args[0]);
 
 	if (obj->IsArray()) {
@@ -453,8 +502,7 @@ JS_FUNC(CSetText)
 
 JS_FUNC(CGetText)
 {
-	Isolate* isolate = Isolate::GetCurrent();
-	HandleScope scope(isolate);
+	HandleScope handle_scope(args.GetIsolate());
 	Local<v8::Array> arr = v8::Local<v8::Array>::Cast(MENU::GetText(Prof.Charloc, Prof.Realm));
 	args.GetReturnValue().Set(arr);
 
@@ -462,6 +510,7 @@ JS_FUNC(CGetText)
 
 JS_FUNC(CSelectChar)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	int x = 175; int y = 125;
 	int charpos = Prof.Charloc;
 	if (args.Length() > 0)
@@ -483,6 +532,7 @@ JS_FUNC(CSelectChar)
 
 JS_FUNC(CGetLocation)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	int id = MENU::GetLocationID();
 	args.GetReturnValue().Set(id);
 	return;
@@ -490,6 +540,7 @@ JS_FUNC(CGetLocation)
 
 JS_FUNC(CClickControl)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	Handle<v8::Value> obj(args[0]);
 
 	if (obj->IsArray()) {
@@ -541,6 +592,7 @@ JS_FUNC(CRandom)
 
 JS_FUNC(CSay)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	if (args.Length() == 1)
 	{
 		HandleScope handle_scope(args.GetIsolate());
@@ -581,17 +633,14 @@ JS_FUNC(CTESTWAYPOINT)
 {
 	HandleScope handle_scope(args.GetIsolate());
 	INT32 wp = args[0]->Uint32Value();
-	UnitAny* pUnit = D2CLIENT_FindUnit(fpGetPlayerUnit()->dwUnitId, fpGetPlayerUnit()->dwType);
-	D2Funcs::Interact(2, 119);
-	D2CLIENT_TakeWaypoint(119, wp);
+	D2CLIENT_TakeWaypoint(0, wp);
 	if (!D2CLIENT_GetUIState(UI_GAME))
 		fpCloseInteract();
 
 }
 JS_FUNC(CGetPlayerUnit)
 {
-	Isolate* isolate = args.GetIsolate();
-	HandleScope handle_scope(isolate);
+	HandleScope handle_scope(args.GetIsolate());
 	v8::Local<v8::Object> fc = Object::New();
 	//still missing some
 	fc->SetAccessor(String::New("act"), GetAct);
@@ -632,24 +681,30 @@ JS_FUNC(CSetSkill)
 JS_FUNC(CMove)
 {
 	HandleScope handle_scope(args.GetIsolate());
+	UnitAny* me = fpGetPlayerUnit();
 
 	if (args.Length() == 2)
 	{
 		int x = args[0]->Uint32Value();
 		int y = args[1]->Uint32Value();
-		D2Funcs::MoveTo(x, y);
+		for (int i = 0; i < 5 && (fpGetUnitX(me) != x) && (fpGetUnitY(me) != y); i++) {
+			D2Funcs::MoveTo(x, y);
+			fpCloseInteract();
+			Sleep(100);
+		}
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
 	else {
-		UnitAny* me = fpGetPlayerUnit();
 		D2Funcs::MoveTo(fpGetUnitX(me) + 4, fpGetUnitY(me) - 2);
+		if (!D2CLIENT_GetUIState(UI_GAME))
+			fpCloseInteract();
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
 	return;
 }
 JS_FUNC(CScreenSize)
 {
-
+	HandleScope handle_scope(args.GetIsolate());
 	v8::Handle<v8::Array> result = v8::Array::New(2);
 	int x = *vpScreenSizeX;
 	int y = *vpScreenSizeY;
@@ -663,6 +718,7 @@ JS_FUNC(CScreenSize)
 
 JS_FUNC(CCloseD2)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	if (ClientGameState() != ClientStateMenu)
 		fpExitGame();
 	TerminateProcess(GetCurrentProcess(), 0);
@@ -789,6 +845,7 @@ JS_FUNC(CClick) {
 
 JS_FUNC(CGetTickCount)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	args.GetReturnValue().Set(v8::Int32::New(GetTickCount()));
 }
 

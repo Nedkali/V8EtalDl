@@ -11,7 +11,7 @@ VOID __declspec(naked) __fastcall ClassicSTUB()
 	}
 }
 
-VOID _declspec(naked) _fastcall NameSTUB()
+VOID _declspec(naked) _fastcall KeyOwnerSTUB()
 {
 	*p_BNCLIENT_KeyOwner = Vars.szKeyOwner;
 	_asm {

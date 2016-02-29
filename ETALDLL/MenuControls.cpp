@@ -11,13 +11,34 @@ MENU::MENU(void)
 
 }
 
-
 MENU::~MENU(void)
 {
 
 }
 
+void MENU::locateControl()
+{
+	Control* pControl = findControl(CONTROL_BUTTON, 5106, -1, 264, 324, 272, 35);
+	ControlText* pControlText;
 
+	while (pControl != NULL)
+	{
+
+		if (pControl->dwType == CONTROL_BUTTON)
+		{
+
+			char* Text2 = wchart_to_char(pControl->wText2);
+			int x = pControl->dwPosX;
+			int y = pControl->dwPosY;
+			int bwidth = pControl->dwSizeX;
+			int bheight = pControl->dwSizeY;
+
+			MessageBox(NULL, Text2, "Debug fcontrol", NULL);
+
+		}
+		pControl = pControl->pNext;
+	}
+}
 
 int MENU::GetLocationID()
 {
@@ -303,7 +324,6 @@ bool MENU::clickControl(Control* pControl)
 	}
 	return false;
 }
-
 
 void MENU::SetControlText(Control* pControl, const char* Text)
 {

@@ -59,21 +59,21 @@ Level* D2Funcs::GetArea()
 	//Default old-way of finding level.
 	return D2COMMON_GetLevel(pAct->pMisc, level);
 }
-bool D2Funcs::Interact(WORD dwUnitType, WORD dwUnitID) {
+bool D2Funcs::Interact(DWORD dwUnitType, DWORD dwUnitID) {
 	LPBYTE aPacket = new BYTE[9];
 	*(BYTE*)&aPacket[0] = (BYTE)0x13;
-	*(WORD*)&aPacket[1] = dwUnitType;
-	*(WORD*)&aPacket[3] = dwUnitID;
+	*(DWORD*)&aPacket[1] = dwUnitType;
+	*(DWORD*)&aPacket[3] = dwUnitID;
 	fpSendPacket(9, 0, aPacket);
 	delete[] aPacket;
 	return 1;
 }
-bool D2Funcs::WaypointTo(WORD wpid, BYTE(dest)) {
+bool D2Funcs::WaypointTo(DWORD wpid, BYTE(dest)) {
 	LPBYTE aPacket = new BYTE[9];
 	*(BYTE*)&aPacket[0] = (BYTE)0x49;
-	*(WORD*)&aPacket[1] = wpid;
-	*(WORD*)&aPacket[3] = dest;
-	fpSendPacket(9, 0, aPacket);
+	*(DWORD*)&aPacket[1] = wpid;
+	*(DWORD*)&aPacket[3] = dest;
+	fpSendPacket(13, 1, aPacket);
 	delete[] aPacket;
 	return 1;
 }
@@ -118,12 +118,9 @@ bool D2Funcs::GetSkill(WORD wSkillId)
 	return 0;
 }
 bool D2Funcs::MoveTo(WORD x, WORD y) {
-	LPBYTE aPacket = new BYTE[5];
-	*(BYTE*)&aPacket[0] = (BYTE)0x03;
-	*(WORD*)&aPacket[1] = x;
-	*(WORD*)&aPacket[3] = y;
-	fpSendPacket(5, 0, aPacket);
-	delete[] aPacket;
+	ClickMap(0, x, y, FALSE, NULL);
+	Sleep(50);
+	ClickMap(2, x, y, FALSE, NULL);
 	return 1;
 }
 

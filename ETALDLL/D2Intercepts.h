@@ -5,6 +5,6 @@
 
 VOID __fastcall ClassicSTUB();
 VOID __fastcall LodSTUB();
-VOID __fastcall NameSTUB();
+VOID __fastcall KeyOwnerSTUB();
 
 #endif

@@ -14,10 +14,10 @@ public:
 	static Level* GetLevel(Act* pAct, int level);
 	static void Print(const char * szText, ...);
 	static Level* GetArea();
-	static bool Interact(WORD dwUnitType, WORD dwUnitID);
+	static bool Interact(DWORD dwUnitType, DWORD dwUnitID);
 	static bool MoveTo(WORD x, WORD y);						// this will be removed
 	static bool TeleTo(WORD x, WORD y, bool Left);			// this will be removed
-	static bool WaypointTo(WORD wpid, BYTE(dest));
+	static bool WaypointTo(DWORD wpid, BYTE(dest));
 
 	static bool SetSkill(WORD wSkillId, bool Left);			// this needs to be set for me eg me.SetSkill()
 	static bool GetSkill(WORD wSkillId);					// this is for SetSkill

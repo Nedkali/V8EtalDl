@@ -35,7 +35,6 @@ void	D2CLIENT_Interact(UnitAny* pUnit, DWORD dwMoveType);
 BYTE	CalcPercent(DWORD dwVal, DWORD dwMaxVal, BYTE iMin = NULL);
 DWORD	GetTileLevelNo(Room2* lpRoom2, DWORD dwTileNo);
 UnitAny* GetMercUnit(UnitAny* pUnit);
-
 BOOL	ClickNPCMenu(DWORD NPCClassId, DWORD MenuId);
 int		GetItemLocation(UnitAny *pItem);
 

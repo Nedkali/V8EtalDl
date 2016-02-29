@@ -8,7 +8,6 @@
 #define JS_FUNC(FNAME) void FNAME(const v8::FunctionCallbackInfo<v8::Value>& args)	// **Function define
 
 
-
 #define JSBool v8::Handle<v8::Boolean>
 #define JSInt v8::Handle<v8::Integer>
 #define JSString v8::Handle<v8::String>

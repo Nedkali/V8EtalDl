@@ -177,6 +177,7 @@ FPTR(HWND __stdcall, GetHwnd, (void), "D2gfx.dll", 0xB0C0)
 // Bnclient Variable Pointers
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+FPTR(DWORD __fastcall, Rand, (DWORD* seed), "D2Game.dll", 0x1050)
 VPTR(UnitHashTable, ServerSideUnitHashTables, "D2Client.dll", 0x1047B8)
 VPTR(UnitHashTable, ClientSideUnitHashTables, "D2Client.dll", 0x103BB8)
 VPTR(UnitAny*, SelectedInvItem, "D2Client.dll", 0x11CB28)

@@ -5,6 +5,20 @@
 //Unit Global Accessors
 #pragma region Unit
 //Need to wrap these as a single accesible property (Unit)
+
+void GetMaxGameTime(Local<String> property, const PropertyCallbackInfo<Value>& info)
+{
+	INT32 val = Vars.meMaxGameTime;
+	return info.GetReturnValue().Set(Integer::New(val));
+
+}
+void SetMaxGameTime(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
+{
+	INT32 val = value->Uint32Value();
+	Vars.meMaxGameTime = val;
+	return info.GetReturnValue().Set(Integer::New(val));
+}
+
 void GetName(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	char* value = fpGetPlayerUnit()->pPlayerData->szName;

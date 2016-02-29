@@ -33,6 +33,7 @@ struct Variables
 	char	szKeyOwner[30];
 	bool	bzladder;
 	unsigned int iCharPos;
+	unsigned int meMaxGameTime;
 	bool	bzUseRawKeys;
 	HMODULE hModule;
 };

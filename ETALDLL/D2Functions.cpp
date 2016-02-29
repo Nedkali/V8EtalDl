@@ -30,7 +30,6 @@ void SendDataCopy(char* app, int  code, char* data)// make this bool later on
 	return;
 }
 
-
 DWORD WINAPI MainThread(VOID* param)
 {
 	Input* input = new Input;
@@ -84,6 +83,7 @@ DWORD WINAPI MainThread(VOID* param)
 			}
 			break;
 		}
+		Sleep(100);
 	}
 	FreeLibraryAndExitThread((HMODULE)param, 0);
 
@@ -106,7 +106,6 @@ void StartUpV8()
 	{
 		context->Enter();
 	}
-
 	RunScript(isolate, Vars.szScriptPath, Prof.ScriptFile);
 	Handle<v8::Object> global = context->Global();
 	Handle<v8::Value> value = global->Get(String::New("NTMain"));

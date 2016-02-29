@@ -3,6 +3,10 @@
 
 //Unit Global Accessors
 #pragma region Unit
+
+void GetMaxGameTime(Local<String> property, const PropertyCallbackInfo<Value>& info);
+void SetMaxGameTime(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
+
 void GetName(Local<String> property, const PropertyCallbackInfo<Value>& info);
 
 void GetAreaId(Local<String> property, const PropertyCallbackInfo<Value>& info);

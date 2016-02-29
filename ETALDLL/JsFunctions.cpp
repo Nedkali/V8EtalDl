@@ -36,7 +36,7 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	//JS_FLINK(CFileOpen, "FileOpen");				// required
 	JS_FLINK(CGetArea, "GetArea");					// required
 	JS_FLINK(CGetBaseStat, "GetBaseStat");			// required
-	JS_FLINK(CGetControl, "GetControl");			// required
+	//JS_FLINK(CGetControl, "GetControl");			// required
 	//JS_FLINK(CGetCursorType, "GetCursorType");	// required
 	JS_FLINK(CGetDistance, "GetDistance");			// required
 	JS_FLINK(CGetLocaleString, "GetLocaleString");	// required
@@ -63,7 +63,6 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CSay, "Say");							// required
 	JS_FLINK(CScreenSize, "ScreenSize");
 	JS_FLINK(CSelectChar, "SelectChar");
-	JS_FLINK(CSelectRealm, "SelectRealm");
 	JS_FLINK(CSendCopyData, "SendCopyData");		// required
 	JS_FLINK(CSetSkill, "SetSkill");				// Needs to be set for me.Global
 	//JS_FLINK(CSetStatusText, "SetStatusText");	// required
@@ -73,7 +72,7 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CSubmitItem, "SubmitItem");			// required
 	JS_FLINK(CTransmute, "Transmute");				// required
 	//JS_FLINK(CUnregisterEvent, "UnregisterEvent");// required
-	JS_FLINK(CMe, "GetMe");							// Testing for me.global
+	JS_FLINK(CMe, "InitMeOnce");					// Testing for me.global
 
 	//Functions Added not in D2NT
 	JS_FLINK(CUseSkillPoint, "UseSkillPoint");		// Added
@@ -84,51 +83,6 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CTESTWAYPOINT, "WayPoint");			// Will be removed
 
 	return Context::New(isolate, NULL, global);
-}
-
-
-JS_FUNC(CSelectRealm)
-{
-	if (Prof.Realm == 0)//Single Player
-	{
-		Control*  pControl = MENU::findControl(CONTROL_BUTTON, "SINGLE PLAYER", -1, 264, 324, 272, 35);
-		if (pControl)
-		{
-			MENU::clickControl(pControl);
-			return;
-		}
-	}
-	Control* pControl = MENU::findControl(CONTROL_BUTTON, (char *)NULL, -1, 264, 391, 272, 25);
-	if (pControl && pControl->wText2) {
-		char* cstr = "";
-		char* szLine = wchart_to_char(pControl->wText2);
-
-		if (Prof.Realm == 1) { cstr = "GATEWAY: U.S. WEST"; }
-		if (Prof.Realm == 2) { cstr = "GATEWAY: U.S. EAST"; }
-		if (Prof.Realm == 3) { cstr = "GATEWAY: ASIA"; }
-		if (Prof.Realm == 4) { cstr = "GATEWAY: EUROPE"; }
-
-		if (strcmp(cstr, szLine) != 0) {
-			MENU::clickControl(pControl);
-
-			Sleep(2000);
-			Input::SendMouseClick(295, 320 + ((Prof.Realm * 24) + 12), 0);//select correct realm
-			//OK Button
-			Control* pControl2 = MENU::findControl(CONTROL_BUTTON, (char *)NULL, -1, 281, 538, 96, 32);
-			if (pControl2) {
-				MENU::clickControl(pControl2);
-				Sleep(2000);
-			}
-
-		}
-	}
-		Control* pControl2 = MENU::findControl(CONTROL_BUTTON, "BATTLE.NET", -1, 264, 366, 272, 35);
-		if (pControl2)
-			MENU::clickControl(pControl2);
-		Sleep(2000);
-		return;
-
-
 }
 
 JS_FUNC(CClickMap)
@@ -161,7 +115,6 @@ JS_FUNC(CClickMap)
 		if (!pUnit)
 			args.GetReturnValue().Set(Boolean::New(true));
 
-
 		args.GetReturnValue().Set(Boolean::New(ClickMap(nClickType, nX, nY, nShift, pUnit)));
 	}
 	else if (args.Length() > 3 && args[0]->IsNumber() && (args[1]->IsNumber() || args[1]->IsBoolean()) && args[2]->IsNumber() && args[3]->IsNumber())
@@ -171,46 +124,6 @@ JS_FUNC(CClickMap)
 
 	args.GetReturnValue().Set(Boolean::New(true));
 }
-
-JS_FUNC(CGetControl)// unsure if this will work - testing
-{
-	//MENU::locateControl();
-	//HandleScope handle_scope(args.GetIsolate());
-	//if (args.Length() == 5)
-	//{
-	//	Handle<Array> array = Array::New(5);
-	//	INT32 type = args[0]->Uint32Value();
-	//	INT32 locx = args[1]->Uint32Value();
-	//	INT32 locy = args[2]->Uint32Value();
-	//	INT32 sizex = args[3]->Uint32Value();
-	//	INT32 aizey = args[4]->Uint32Value();
-
-	//	for (Control* pControl = *vpFirstControl; pControl; pControl = pControl->pNext)
-	//	{
-	//		if (pControl && static_cast<int>(pControl->dwType) == type)
-	//		{
-	//			int x = pControl->dwPosX;
-	//			int y = pControl->dwPosY;
-	//			int bwidth = pControl->dwSizeX;
-	//			int bheight = pControl->dwSizeY;
-	//			array->Set(0, Integer::New(type));
-	//			array->Set(1, Integer::New(x));
-	//			array->Set(2, Integer::New(y));
-	//			array->Set(3, Integer::New(bwidth));
-	//			array->Set(4, Integer::New(bheight));
-	//			args.GetReturnValue().Set(array);
-	//			return;
-
-	//		}
-	//	}
-
-	//}
-
-	//args.GetReturnValue().Set(NULL);
-	//return;
-
-}
-
 
 JS_FUNC(CGetDistance)
 {
@@ -260,6 +173,7 @@ JS_FUNC(CUseStatPoint)
 	}
 	else
 	{
+		//TODO: Add check for current available stat points
 		stat = args[0]->Uint32Value();
 		count = args[1]->Uint32Value();
 		UseStatPoint(stat, count);
@@ -279,6 +193,7 @@ JS_FUNC(CUseSkillPoint)
 	}
 	else
 	{
+		//TODO: Add check for current available skill points
 		skill = args[0]->Uint32Value();
 		count = args[1]->Uint32Value();
 		UseSkillPoint(skill, count);
@@ -300,21 +215,21 @@ JS_FUNC(CGetPath)
 JS_FUNC(CGetPresetUnits)
 {
 	Isolate* isolate = args.GetIsolate();
-	HandleScope handle_scope(isolate);	
+	HandleScope handle_scope(isolate);
 
-	Local<Object> node = Object::New();
+
 
 	uint32_t levelId = NULL;
 	uint32_t nClassId = NULL;
 	uint32_t nType = NULL;
 
-	if(args.Length() == 0)
+	if (args.Length() == 0)
 		args.GetReturnValue().Set(Boolean::New(false));
 
 	if (args.Length() >= 1)
 		levelId = args[0]->Uint32Value();
 
-	if(levelId == 0)
+	if (levelId == 0)
 		args.GetReturnValue().Set(Boolean::New(false));
 
 	Level* pLevel = GetLevel(levelId);
@@ -327,12 +242,15 @@ JS_FUNC(CGetPresetUnits)
 
 	if (args.Length() >= 3)
 		nClassId = args[2]->Uint32Value();
-	
-	bool bAddedRoom = FALSE;
-	DWORD dwArrayCount = NULL;
 
+	bool bAddedRoom = FALSE;
+	int dwArrayCount = 0;
+
+	Local<Object> nodes = Object::New();
 	for (Room2 *pRoom = pLevel->pRoom2First; pRoom; pRoom = pRoom->pRoom2Next)
 	{
+		HandleScope handle_scope(isolate);
+
 		bAddedRoom = FALSE;
 
 		if (!pRoom->pPreset)
@@ -347,7 +265,7 @@ JS_FUNC(CGetPresetUnits)
 			if ((nType == NULL || pUnit->dwType == nType) && (nClassId == NULL || pUnit->dwTxtFileNo == nClassId))
 			{
 				myPresetUnit* presetUnit = new myPresetUnit;
-				
+				Local<Array> node = Array::New();
 				presetUnit->dwPosX = pUnit->dwPosX;
 				presetUnit->dwPosY = pUnit->dwPosY;
 				presetUnit->dwRoomX = pRoom->dwPosX;
@@ -365,7 +283,7 @@ JS_FUNC(CGetPresetUnits)
 				node->Set(String::NewFromUtf8(isolate, "roomy"), Integer::New(presetUnit->dwRoomY));
 				//subareaid crashes game atm
 				//node->Set(String::NewFromUtf8(isolate, "subareaid"), Integer::New(fpGetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->pNextLevel->dwLevelNo));
-
+				nodes->Set(dwArrayCount, node);
 				dwArrayCount++;
 			}
 		}
@@ -376,9 +294,18 @@ JS_FUNC(CGetPresetUnits)
 			bAddedRoom = FALSE;
 		}
 	}
-	args.GetReturnValue().Set(node);
-}
+	Local<Array> arr = Array::New(dwArrayCount);
+	char Text3[128];//Player Area num
+	sprintf_s(Text3, "%u", arr);
+	SendDataCopy("Etal Manager", 11, Text3);
 
+
+	char Text2[128];//Player Area num
+	sprintf_s(Text2, "%u", dwArrayCount);
+	SendDataCopy("Etal Manager", 11, Text2);
+
+	args.GetReturnValue().Set(nodes);
+}
 JS_FUNC(CGetUnit)
 {
 	Local<Context> context = Context::GetCurrent();
@@ -448,11 +375,32 @@ JS_FUNC(CGetUnit)
 	node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
 	node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
 	node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
-	node->Set(String::NewFromUtf8(isolate, "x"), Integer::New(fpGetUnitX(pUnit))); //just for testing
-	node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(fpGetUnitY(pUnit))); //just for testing
+	node->Set(String::NewFromUtf8(isolate, "x"), Integer::New(fpGetUnitX(pUnit)));
+	node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(fpGetUnitY(pUnit)));
+	node->Set(String::NewFromUtf8(isolate, "act"), Integer::New(pUnit->pAct->dwAct));
+	node->Set(String::NewFromUtf8(isolate, "areaid"), Integer::New(pUnit->pAct->pRoom1->pRoom2->pLevel->dwLevelNo));
+	node->Set(String::NewFromUtf8(isolate, "hp"), Integer::New((D2COMMON_GetUnitStat(pUnit, 6, 0) >> 8)));
+	node->Set(String::NewFromUtf8(isolate, "mp"), Integer::New((D2COMMON_GetUnitStat(pUnit, 8, 0) >> 8)));
+	node->Set(String::NewFromUtf8(isolate, "hpmax"), Integer::New((D2COMMON_GetUnitStat(pUnit, 7, 0) >> 8)));
+	node->Set(String::NewFromUtf8(isolate, "mpmax"), Integer::New((D2COMMON_GetUnitStat(pUnit, 9, 0) >> 8)));
+	//much more needs added for items and such
 	args.GetReturnValue().Set(node);
 }
 
+void init_me()
+{
+	Isolate* isolate = Isolate::GetCurrent();
+	HandleScope handle_scope(isolate);	
+	Handle<Context> context = Context::GetCurrent();	
+	Persistent<Context> persistent_context(isolate, context);	
+	Context::Scope context_scope(context);
+	context->Enter();
+	Handle<String> source = String::New("var me = InitMeOnce();");
+	Handle<Script> script = Script::Compile(source);
+	script->Run();
+	context->Exit();
+	return;
+}
 JS_FUNC(CMe)
 {
 	Local<Context> context = Context::GetCurrent();
@@ -471,6 +419,7 @@ JS_FUNC(CMe)
 	node->SetAccessor(String::New("mpmax"), GetMPMax);
 	node->SetAccessor(String::New("classid"), GetClassid);
 	node->SetAccessor(String::New("mode"), GetMode);
+	node->SetAccessor(String::New("maxgametime"), GetMaxGameTime, SetMaxGameTime);
 	args.GetReturnValue().Set(node);
 }
 
@@ -559,39 +508,31 @@ JS_FUNC(CClientState)
 JS_FUNC(CSetText)
 {
 	HandleScope handle_scope(args.GetIsolate());
-	char* accName = Prof.Account;
-	char* pass = Prof.AccPass;
-	if (args.Length() == 2)
-	{
-		String::Utf8Value str(args[0]);
-		accName = (char*)ToCString(str);
-		String::Utf8Value str1(args[1]);
-		pass = (char*)ToCString(str1);
+	Handle<v8::Value> obj(args[0]);
+
+	if (obj->IsArray()) {
+
+		Local<v8::Array> arr = v8::Local<v8::Array>::Cast(args[0]);
+
+		int Type = (int)(arr->Get(0)->Int32Value());
+		String::Utf8Value str(arr->Get(1));
+		char* cstr = (char*)ToCString(str);
+		int Disabled = (int)(arr->Get(2)->Int32Value());
+		int PosX = (int)(arr->Get(3)->Int32Value());
+		int PosY = (int)(arr->Get(4)->Int32Value());
+		int SizeX = (int)(arr->Get(5)->Int32Value());
+		int SizeY = (int)(arr->Get(6)->Int32Value());
+
+		String::Utf8Value str2(args[1]);
+		char* cstr2 = (char*)ToCString(str2);
+
+		Control* pControl = MENU::findControl(Type, cstr, Disabled, PosX, PosY, SizeX, SizeY);
+
+		if (true)
+		{
+			MENU::SetControlText(pControl, cstr);
+		}
 	}
-	//MENU::locateControl();
-	Sleep(1000);
-	// enter Account name
-	Control* pControl = MENU::findControl(1, (char *)NULL, -1, 322, 342, 162, 19);
-	if (!pControl)
-		return;
-
-	MENU::SetControlText(pControl, accName);
-	Sleep(750);
-
-	// enter pass
-	pControl = MENU::findControl(1, (char *)NULL, -1, 322, 396, 162, 19);
-	if (!pControl)
-		return;
-
-	MENU::SetControlText(pControl, pass);
-	Sleep(1200);
-	// click login
-	pControl = MENU::findControl(CONTROL_BUTTON, "LOG IN", -1, 264, 484, 272, 35);
-	if (pControl)
-	{
-		MENU::clickControl(pControl);
-	}
-	Sleep(500);
 }
 
 JS_FUNC(CGetText)
@@ -675,12 +616,35 @@ JS_FUNC(CGetLevel)
 JS_FUNC(CRandom)
 {
 	HandleScope handle_scope(args.GetIsolate());
+
+	if (args.Length() < 2 || !args[0]->IsNumber() || !args[1]->IsNumber())
+	{
+		args.GetReturnValue().Set(Boolean::New(false));
+	}
+
 	INT32 range_min = args[0]->Uint32Value();
 	INT32 range_max = args[1]->Uint32Value();
+	// only seed the rng once
+	static bool hasseed = false;
+	if (!hasseed)
+	{
+		srand(GetTickCount());
+		hasseed = true;
+	}
 
-	INT32 random = rand() % range_min + range_max;
+	long long seed = 0;
+	if (MENU::ClientState() == ClientStateInGame)
+		seed = fpRand(fpGetPlayerUnit()->dwSeed);
+	else
+		seed = rand();
 
-	args.GetReturnValue().Set(random);
+	if (range_max > range_min + 1)
+	{
+		INT32 random = (seed % (range_max - range_min + 1)) + range_min;
+		args.GetReturnValue().Set(random);
+	}
+	else
+		args.GetReturnValue().Set(range_max);
 
 }
 
@@ -781,11 +745,8 @@ JS_FUNC(CMove)
 	{
 		int x = args[0]->Uint32Value();
 		int y = args[1]->Uint32Value();
-		for (int i = 0; i < 5 && (fpGetUnitX(me) != x) && (fpGetUnitY(me) != y); i++) {
-			D2Funcs::MoveTo(x, y);
-			fpCloseInteract();
-			Sleep(100);
-		}
+		D2Funcs::MoveTo(x, y);
+		fpCloseInteract();
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
 	else {
@@ -794,8 +755,8 @@ JS_FUNC(CMove)
 			fpCloseInteract();
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
-	return;
 }
+
 JS_FUNC(CScreenSize)
 {
 	HandleScope handle_scope(args.GetIsolate());
@@ -828,10 +789,29 @@ JS_FUNC(CDelay)
 	}
 	else if (args.Length() == 2)
 	{
-		int x = args[0]->Uint32Value();
-		int b = args[1]->Uint32Value();
-		int random = rand() % x + b;
-		Sleep(random);
+		int range_min = args[0]->Uint32Value();
+		int range_max = args[1]->Uint32Value();
+		// only seed the rng once
+		static bool seeded = false;
+		if (!seeded)
+		{
+			srand(GetTickCount());
+			seeded = true;
+		}
+
+		long long seed = 0;
+		if (MENU::ClientState() == ClientStateInGame)
+			seed = fpRand(fpGetPlayerUnit()->dwSeed);
+		else
+			seed = rand();
+
+		if (range_max > range_min + 1)
+		{
+			INT32 random = (seed % (range_max - range_min + 1)) + range_min; 
+			Sleep(random);
+		}
+		else
+			Sleep(range_max);
 	}
 	return;
 }
@@ -871,6 +851,7 @@ JS_FUNC(CLoad) {
 	newisolate->Dispose();
 }
 
+bool loaded = false;
 JS_FUNC(CInclude) {
 	HandleScope handle_scope(args.GetIsolate());
 	String::Utf8Value str(args[0]);
@@ -878,6 +859,10 @@ JS_FUNC(CInclude) {
 	StringReplace(cstr, '/', '\\', strlen(cstr));
 	Isolate* isolate = Isolate::GetCurrent();
 	RunScript(isolate, Vars.szScriptPath, cstr);
+	ClientGameState state = MENU::ClientState();
+	if (!loaded && state == ClientStateInGame) {
+		init_me();
+	}
 }
 
 JS_FUNC(CSetTitle)

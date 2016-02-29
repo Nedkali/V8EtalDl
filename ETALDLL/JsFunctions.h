@@ -50,7 +50,9 @@ JS_FUNC(CGetLocaleString);
 JS_FUNC(CUseStatPoint);
 JS_FUNC(CUseSkillPoint);
 JS_FUNC(CGold);
-JS_FUNC(CClickMap);
+JS_FUNC(CClickMap); 
+JS_FUNC(CGetControl);
+JS_FUNC(CSelectRealm);
 
 
 //currently testing/non functioning/un-finished
@@ -73,7 +75,7 @@ JS_FUNC(CGetLevel);
 //			________________________
 //			| TODO LIST OF GLOBALS |
 //	________|______Template________|_______
-//	|_Function________|________Completion |
+//	|_Function________|________Completion_|
 //	|ӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝӝ|
 
 //[-] GLOBALS D2NT

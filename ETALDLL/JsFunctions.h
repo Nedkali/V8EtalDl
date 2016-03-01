@@ -121,13 +121,13 @@ JS_FUNC(CGetLevel);
 
 //[-] Me (Global Object)
 //[+] Me.Account
-//[+] Me.Act
-//[+] Me.Areaid
+//[+] Me.Act					//added
+//[+] Me.Areaid					//added
 //[+] Me.Charloc
-//[+] Me.Charname
+//[+] Me.Charname				//added
 //[+] Me.Chickenhp
 //[+] Me.Chickenmp
-//[+] Me.Classid
+//[+] Me.Classid				//added
 //[+] Me.Diff
 //[+] Me.Gamename
 //[+] Me.Gamepassword
@@ -135,17 +135,17 @@ JS_FUNC(CGetLevel);
 //[+] Me.Gametype
 //[+] Me.Gatewayid
 //[+] Me.Gid
-//[+] Me.Hpmax
-//[+] Me.Hp
+//[+] Me.Hpmax					//added
+//[+] Me.Hp						//added
 //[+] Me.Ingame
 //[+] Me.itemoncursor
-//[+] Me.Ladder
-//[+] Me.Maxgametime
-//[+] Me.Mode
-//[+] Me.Mpmax
-//[+] Me.Mp
-//[+] Me.Name
-//[+] Me.Ping
+//[+] Me.Ladder					//WIP
+//[+] Me.Maxgametime			//added
+//[+] Me.Mode					//added
+//[+] Me.Mpmax					//added
+//[+] Me.Mp						//added
+//[+] Me.Name					//added
+//[+] Me.Ping					//added	
 //[+] Me.Playertype
 //[+] Me.Playtype
 //[+] Me.Quitonhostile
@@ -156,10 +156,10 @@ JS_FUNC(CGetLevel);
 //[+] Me.Showenemyonautomap
 //[+] Me.Showmissileonautomap
 //[+] Me.Screensize
-//[+] Me.Type
+//[+] Me.Type					//added
 //[+] Me.Weaponstab
-//[+] Me.X
-//[+] Me.Y
+//[+] Me.X						//added
+//[+] Me.Y						//added
 //[+] Me.Cancel()
 //[+] Me.ClickItem()
 //[+] Me.ClickMercItem()
@@ -183,7 +183,7 @@ JS_FUNC(CGetLevel);
 //[+] Unit.hp					//added
 //[+] Unit.hpmax				//added
 //[+] Unit.itemclass			//added
-//[+] Unit.itemdesc		
+//[+] Unit.itemdesc				//added
 //[+] Unit.itemflag
 //[+] Unit.itemlevel			//added
 //[+] Unit.itemloc				//added

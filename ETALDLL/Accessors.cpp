@@ -213,8 +213,8 @@ void GetItemprefix(Local<String> property, const PropertyCallbackInfo<Value>& in
 {
 	char* res = NULL;
 	if (fpGetPlayerUnit()->dwType == UNIT_ITEM && fpGetPlayerUnit()->pItemData)
-		if (D2COMMON_GetItemMagicalMods(fpGetPlayerUnit()->pItemData->wMagicPrefix[0]))
-			res = D2COMMON_GetItemMagicalMods(fpGetPlayerUnit()->pItemData->wMagicPrefix[0]);
+		if (fpGetItemMagicalMods(fpGetPlayerUnit()->pItemData->wMagicPrefix[0]))
+			res = fpGetItemMagicalMods(fpGetPlayerUnit()->pItemData->wMagicPrefix[0]);
 	return info.GetReturnValue().Set(String::New(res));
 }
 
@@ -222,26 +222,26 @@ void GetItemsuffix(Local<String> property, const PropertyCallbackInfo<Value>& in
 {
 	char* res = NULL;
 	if (fpGetPlayerUnit()->dwType == UNIT_ITEM && fpGetPlayerUnit()->pItemData)
-		if (D2COMMON_GetItemMagicalMods(fpGetPlayerUnit()->pItemData->wMagicSuffix[0]))
-			res = D2COMMON_GetItemMagicalMods(fpGetPlayerUnit()->pItemData->wMagicSuffix[0]);
+		if (fpGetItemMagicalMods(fpGetPlayerUnit()->pItemData->wMagicSuffix[0]))
+			res = fpGetItemMagicalMods(fpGetPlayerUnit()->pItemData->wMagicSuffix[0]);
 	return info.GetReturnValue().Set(String::New(res));
 }
 
 void GetItemXsize(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	if (fpGetPlayerUnit()->dwType == UNIT_ITEM && fpGetPlayerUnit()->pItemData) {
-		if (!D2COMMON_GetItemText(fpGetPlayerUnit()->dwTxtFileNo))
+		if (!fpGetItemText(fpGetPlayerUnit()->dwTxtFileNo))
 			return info.GetReturnValue().Set(Integer::New(0));
-		return info.GetReturnValue().Set(Integer::New(D2COMMON_GetItemText(fpGetPlayerUnit()->dwTxtFileNo)->xSize));
+		return info.GetReturnValue().Set(Integer::New(fpGetItemText(fpGetPlayerUnit()->dwTxtFileNo)->xSize));
 	}
 }
 
 void GetItemYsize(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	if (fpGetPlayerUnit()->dwType == UNIT_ITEM && fpGetPlayerUnit()->pItemData) {
-		if (!D2COMMON_GetItemText(fpGetPlayerUnit()->dwTxtFileNo))
+		if (!fpGetItemText(fpGetPlayerUnit()->dwTxtFileNo))
 			return info.GetReturnValue().Set(Integer::New(0));
-		return info.GetReturnValue().Set(Integer::New(D2COMMON_GetItemText(fpGetPlayerUnit()->dwTxtFileNo)->ySize));
+		return info.GetReturnValue().Set(Integer::New(fpGetItemText(fpGetPlayerUnit()->dwTxtFileNo)->ySize));
 	}
 }
 

@@ -663,34 +663,38 @@ struct UnitAny {
 
 struct BnetData {
 	DWORD dwId;					//0x00
-	DWORD dwId2;				//0x04	
-	BYTE _12[13];				//0xC0
-								//DWORD dwId3;				//0x14
-								//WORD Unk3;					//0x18	
-	BYTE _13[6];				//0xC0
-	char szGameName[22];		//0x1A
-	char szGameIP[16];			//0x30
-	DWORD _2[15];				//0x40
-	DWORD dwId4;				//0x80
-	BYTE _3[5];					//0x84
-	char szAccountName[48];		//0x88
-	char szPlayerName[24];		//0xB8
-	char szRealmName[8];		//0xD0
-	BYTE _4[273];				//0xD8
-	BYTE nCharClass;			//0x1E9
-	BYTE nCharFlags;			//0x1EA
-	BYTE nMaxLvlDifference;		//0x1EB
-	BYTE _5[31];				//0x1EC
-	BYTE nDifficulty;			//0x20B
-	void *_6;					//0x20C
-	DWORD _7[3];				//0x210
-	WORD _8;					//0x224
-	BYTE _9[7];					//0x226
-	char szRealmName2[24];		//0x227
-	char szGamePass[24];		//0x23F
-	char szGameDesc[256];		//0x257
-	WORD _10;					//0x348
-	BYTE _11;					//0x34B
+	DWORD dwId2;				//0x04
+	BYTE _1[0xc];				//0x08
+	DWORD dwId3;				//0x14
+	WORD Unk3;					//0x18
+	BYTE _2;					//0x1A
+	char szGameName[0x16];		//0x1B
+	WORD _3;					//0x31
+	char szGameIP[0x10];		//0x33
+	BYTE _5[0x42];				//0x43
+	DWORD dwId4;				//0x85
+	char szAccountName[0x30];	//0x89
+	char szPlayerName[0x18];	//0xB9
+	char szRealmName[0x08];		//0xD1
+	BYTE _8[0x111];				//0xD9
+	BYTE nCharClass;			//0x1EA
+	BYTE nCharFlags;			//0x1EB
+	BYTE nMaxDiff;				//0x1EC
+	BYTE _9[0x1F];				//0x1ED
+	BYTE CreatedGameDifficulty;	//0x20C
+	void *_10;					//0x20D
+	BYTE _11[0x15];				//0x211
+	WORD _12;					//0x226
+	BYTE _13;					//0x228
+	char szRealmName2[0x18];	//0x229
+	char szGamePass[0x18];		//0x241
+	char szGameDesc[0x104];		//0x259
+	char channelname[0x20];		//+0x35b
+	BYTE _14[0x40];				//+0x37b
+	BYTE charlevel;				//+0x3bb
+	BYTE ladderflag;			//+0x3bc
+	DWORD passhash;				//+0x3bd
+	BYTE passlength;			//+0x3c1
 };
 
 

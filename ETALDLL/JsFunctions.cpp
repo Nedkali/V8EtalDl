@@ -407,6 +407,120 @@ JS_FUNC(CGetPresetUnits)
 	args.GetReturnValue().Set(nodes);
 }
 
+char* Itemflag(UnitAny* pUnit)
+{
+	char* tmp;
+	if (!(pUnit->dwType == UNIT_ITEM) && pUnit->pItemData)
+		return tmp = "unknown";
+
+	ItemText* pTxt;
+	pTxt = fpGetItemText(pUnit->dwTxtFileNo);
+	if (!pTxt)
+		return tmp = "unknown";
+
+	char szCode[4];
+	memcpy(szCode, pTxt->szCode, 3);
+	szCode[3] = 0x00;
+	tmp = szCode;
+	return tmp;
+}
+
+int Itemclass(UnitAny* pUnit)
+{
+	return 0;
+}
+
+char* Itemprefix(UnitAny* pUnit)
+{
+	char* res = NULL;
+	if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData)
+		if (fpGetItemMagicalMods(pUnit->pItemData->wMagicPrefix[0]))
+			res = fpGetItemMagicalMods(pUnit->pItemData->wMagicPrefix[0]);
+	return res;
+}
+
+char* Itemsuffix(UnitAny* pUnit)
+{
+	char* res = NULL;
+	if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData)
+		if (fpGetItemMagicalMods(pUnit->pItemData->wMagicSuffix[0]))
+			res = fpGetItemMagicalMods(pUnit->pItemData->wMagicSuffix[0]);
+	return res;
+}
+
+int ItemXsize(UnitAny* pUnit)
+{
+	if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData) {
+		if (!fpGetItemText(pUnit->dwTxtFileNo))
+			return 0;
+		return (fpGetItemText(pUnit->dwTxtFileNo)->xSize);
+	}
+	return 0;
+}
+
+int ItemYsize(UnitAny* pUnit)
+{
+	if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData) {
+		if (!fpGetItemText(pUnit->dwTxtFileNo))
+			return 0;
+		return (fpGetItemText(pUnit->dwTxtFileNo)->ySize);
+	}
+	return 0;
+}
+
+int Itemtype(UnitAny* pUnit)
+{
+	Room1* pRoom = NULL;
+	if (pUnit->dwType == UNIT_OBJECT && pUnit->pObjectData)
+	{
+		pRoom = D2COMMON_GetRoomFromUnit(pUnit);
+		if (pRoom && D2COMMON_GetLevelNoFromRoom(pRoom))
+			return (pUnit->pObjectData->Type & 255);
+		else
+			return pUnit->pObjectData->Type;
+	}
+	return 0;
+}
+
+void ReadProcessBYTES(HANDLE hProcess, DWORD lpAddress, void* buf, int len)
+{
+	DWORD oldprot, dummy = 0;
+	VirtualProtectEx(hProcess, (void*)lpAddress, len, PAGE_READWRITE, &oldprot);
+	ReadProcessMemory(hProcess, (void*)lpAddress, buf, len, 0);
+	VirtualProtectEx(hProcess, (void*)lpAddress, len, oldprot, &dummy);
+}
+
+DWORD check_1 = Pointer::GetDllOffset("D2Client.dll", 0x11CB1C);
+DWORD check_2 = Pointer::GetDllOffset("D2Client.dll", 0x11CB28);
+DWORD read_1 = Pointer::GetDllOffset("D2Win.DLL", 0xC9E68);
+char* Itemdesc(UnitAny* pUnit)
+{
+	char* res = NULL;
+	if (pUnit->dwType != UNIT_ITEM)
+		return res;
+
+
+	wchar_t wBuffer[2048] = L"";
+	wchar_t bBuffer[1] = { 1 };
+	if (pUnit->pItemData && pUnit->pItemData->pOwnerInventory && pUnit->pItemData->pOwnerInventory->pOwner)
+	{
+		::WriteProcessMemory(GetCurrentProcess(), (void*)check_1, bBuffer, 1, NULL);
+		::WriteProcessMemory(GetCurrentProcess(), (void*)check_2, &pUnit, 4, NULL);
+
+		fpLoadItemDesc(pUnit->pItemData->pOwnerInventory->pOwner, 0);
+		ReadProcessBYTES(GetCurrentProcess(), read_1, wBuffer, 2047);
+	}
+
+	char *tmp = UnicodeToAnsi(wBuffer);
+	if (tmp)
+	{
+		return tmp;
+		delete[] tmp;
+		tmp = NULL;
+	}
+	return res;
+}
+
 JS_FUNC(CGetUnit)
 {
 	Local<Context> context = Context::GetCurrent();
@@ -421,11 +535,14 @@ JS_FUNC(CGetUnit)
 	uint32_t nMode = (uint32_t)-1;
 	uint32_t nUnitId = (uint32_t)-1;
 	char szName[128] = "";
-	char tmp[128] = "";
+	char tmp[256] = "";
 	DWORD pid = NULL;
 	DWORD dwmeAct = NULL;
-	DWORD qual = NULL;
-	BYTE loc = NULL;
+	int32_t type = NULL;
+	uint32_t qual = NULL;
+	uint32_t loc = NULL;
+
+	Local<Object> node = Object::New();
 
 	if (args.Length() > 0 && args[0]->IsNumber())
 		nType = args[0]->Uint32Value();
@@ -468,7 +585,7 @@ JS_FUNC(CGetUnit)
 
 	if (pUnit && pmyUnit)
 	{
-		GetUnitName(pUnit, tmp, 128);
+		GetUnitName(pUnit, tmp, 256);
 		pmyUnit->_dwPrivateType = PRIVATE_UNIT;
 		pmyUnit->dwClassId = nClassId;
 		pmyUnit->dwMode = nMode;
@@ -481,107 +598,100 @@ JS_FUNC(CGetUnit)
 		case 0:
 			pid = pUnit->dwTxtFileNo;
 			dwmeAct = pUnit->dwAct;
+			node->Set(String::NewFromUtf8(isolate, "act"), Integer::New(dwmeAct));
+			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
+			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pid));
+			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
+			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
+			node->Set(String::NewFromUtf8(isolate, "x"), Integer::New(fpGetUnitX(pUnit)));
+			node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(fpGetUnitY(pUnit)));
+			node->Set(String::NewFromUtf8(isolate, "areaid"), Integer::New(pUnit->pAct->pRoom1->pRoom2->pLevel->dwLevelNo));
+			node->Set(String::NewFromUtf8(isolate, "hp"), Integer::New((D2COMMON_GetUnitStat(pUnit, 6, 0) >> 8)));
+			node->Set(String::NewFromUtf8(isolate, "mp"), Integer::New((D2COMMON_GetUnitStat(pUnit, 8, 0) >> 8)));
+			node->Set(String::NewFromUtf8(isolate, "hpmax"), Integer::New((D2COMMON_GetUnitStat(pUnit, 7, 0) >> 8)));
+			node->Set(String::NewFromUtf8(isolate, "mpmax"), Integer::New((D2COMMON_GetUnitStat(pUnit, 9, 0) >> 8)));
 			break;
 		case 1:
+			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
+			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
+			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
+			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
+			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
+			node->Set(String::NewFromUtf8(isolate, "x"), Integer::New(fpGetUnitX(pUnit)));
+			node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(fpGetUnitY(pUnit)));
 			break;
 		case 2:
+			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
+			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
+			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
+			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
+			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
 			break;
 		case 3:
+			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
+			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
+			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
+			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
+			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
 			break;
 		case 4:
-			//need to convert these properly to integer's
 			if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData)
 				loc = (pUnit->pItemData->GameLocation);
 			if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData)
 				qual = (pUnit->pItemData->dwQuality);
+			/*if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData) {
+				if (!D2COMMON_GetItemText(pUnit->dwTxtFileNo))
+					break;
+				type = (D2COMMON_GetItemText(pUnit->dwTxtFileNo)->nType);
+			}*/
+
+			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
+			node->Set(String::NewFromUtf8(isolate, "quality"), Integer::New(qual));
+			node->Set(String::NewFromUtf8(isolate, "itemloc"), Integer::New(loc));
+			//node->Set(String::NewFromUtf8(isolate, "itemclass"), Integer::New(Itemclass(pUnit)));
+			node->Set(String::NewFromUtf8(isolate, "itemdesc"), String::New(Itemdesc(pUnit)));
+			//node->Set(String::NewFromUtf8(isolate, "itemflag"), String::New(Itemflag(pUnit)));
+			//node->Set(String::NewFromUtf8(isolate, "itemprefix"), String::New(Itemprefix(pUnit)));
+			//node->Set(String::NewFromUtf8(isolate, "itemsuffix"), String::New(Itemsuffix(pUnit)));
+			//node->Set(String::NewFromUtf8(isolate, "itemtype"), Integer::New(Itemtype(pUnit)));
+			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
+			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
+			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
+			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
+			//node->Set(String::NewFromUtf8(isolate, "xsize"), Integer::New(ItemXsize(pUnit)));
+			//node->Set(String::NewFromUtf8(isolate, "ysize"), Integer::New(ItemYsize(pUnit)));
 			break;
 		case 5:
+			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
+			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
+			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
+			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
+			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
 			break;
 		case 267:
+			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
+			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
+			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
+			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
+			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
 			break;
 		case 549:
+			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
+			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
+			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
+			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
+			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
+			break;
+		default :
+			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
+			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
+			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
+			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
+			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
 			break;
 		}
 	}
 
-	Local<Object> node = Object::New();
-	switch (nType)
-	{
-		//needs tons of work done to all cases
-	case 0://Player
-		node->Set(String::NewFromUtf8(isolate, "act"), Integer::New(dwmeAct));
-		node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-		node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pid));
-		node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
-		node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
-		node->Set(String::NewFromUtf8(isolate, "x"), Integer::New(fpGetUnitX(pUnit)));
-		node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(fpGetUnitY(pUnit)));
-		node->Set(String::NewFromUtf8(isolate, "areaid"), Integer::New(pUnit->pAct->pRoom1->pRoom2->pLevel->dwLevelNo));
-		node->Set(String::NewFromUtf8(isolate, "hp"), Integer::New((D2COMMON_GetUnitStat(pUnit, 6, 0) >> 8)));
-		node->Set(String::NewFromUtf8(isolate, "mp"), Integer::New((D2COMMON_GetUnitStat(pUnit, 8, 0) >> 8)));
-		node->Set(String::NewFromUtf8(isolate, "hpmax"), Integer::New((D2COMMON_GetUnitStat(pUnit, 7, 0) >> 8)));
-		node->Set(String::NewFromUtf8(isolate, "mpmax"), Integer::New((D2COMMON_GetUnitStat(pUnit, 9, 0) >> 8)));
-		break;
-	case 1://NPC,MERC,MONSTER
-		// your new String
-		node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-		node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
-		node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
-		node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
-		node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
-		node->Set(String::NewFromUtf8(isolate, "x"), Integer::New(fpGetUnitX(pUnit)));
-		node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(fpGetUnitY(pUnit)));
-		break;
-	case 2://OBJECT
-		//node->Set(String::NewFromUtf8(isolate, "name"), String::New(pUnit->pPlayerData->szName));
-		node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-		node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
-		node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
-		node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
-		node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
-		break;
-	case 3://MISSILE
-		//node->Set(String::NewFromUtf8(isolate, "name"), String::New(pUnit->pPlayerData->szName));
-		node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-		node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
-		node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
-		node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
-		node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
-		break;
-	case 4://ITEM
-		node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-		node->Set(String::NewFromUtf8(isolate, "quality"), Integer::New(qual));
-		node->Set(String::NewFromUtf8(isolate, "itemloc"), Integer::New(loc));
-		node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
-		node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
-		node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
-		node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
-		break;
-	case 5://TILE
-		//node->Set(String::NewFromUtf8(isolate, "name"), String::New(pUnit->pPlayerData->szName));
-		node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-		node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
-		node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
-		node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
-		node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
-		break;
-	case 267://STASH
-		//node->Set(String::NewFromUtf8(isolate, "name"), String::New(pUnit->pPlayerData->szName));
-		node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-		node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
-		node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
-		node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
-		node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
-		break;
-	case 549://CUBE
-		//node->Set(String::NewFromUtf8(isolate, "name"), String::New(pUnit->pPlayerData->szName));
-		node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-		node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
-		node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
-		node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
-		node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
-		break;
-	}
 	args.GetReturnValue().Set(node);
 }
 
@@ -604,29 +714,47 @@ JS_FUNC(CMe)
 	Local<Context> context = Context::GetCurrent();
 	Isolate* isolate = Isolate::GetCurrent();
 	HandleScope scope(isolate);
-	//Local<Object> node = Object::New();
-	//args.This()->SetAccessor(String::New("GetNext"), GetName);
-	args.This()->SetAccessor(String::New("act"), GetAct);
-	args.This()->SetAccessor(String::New("name"), GetName);
-	args.This()->SetAccessor(String::New("charname"), GetName);
-	args.This()->SetAccessor(String::New("areaid"), GetAreaId);
-	args.This()->SetAccessor(String::New("x"), GetX);
-	args.This()->SetAccessor(String::New("y"), GetY);
-	args.This()->SetAccessor(String::New("hp"), GetHP);
-	args.This()->SetAccessor(String::New("mp"), GetMP);
-	args.This()->SetAccessor(String::New("hpmax"), GetHPMax);
-	args.This()->SetAccessor(String::New("mpmax"), GetMPMax);
-	args.This()->SetAccessor(String::New("classid"), GetClassid);
-	args.This()->SetAccessor(String::New("mode"), GetMode);
-	args.This()->SetAccessor(String::New("maxgametime"), GetMaxGameTime, SetMaxGameTime);
+	GameStructInfo* pInfo = *vpGameInfo;
+	BnetData* pData = *vpBnData;
+	char* realm = pData->szRealmName;
 
-	//args.This()->SetAccessor(String::New("revealautomap"), GetAutoRevealMap, SetAutoRevealMap);
+	Local<Object> node = Object::New();
+	//node->SetAccessor(String::New("GetNext"), GetName);
+	node->SetAccessor(String::New("act"), GetAct);
+	node->SetAccessor(String::New("name"), GetName);
+	node->SetAccessor(String::New("charname"), GetName);
+	node->SetAccessor(String::New("areaid"), GetAreaId);
+	node->SetAccessor(String::New("x"), GetX);
+	node->SetAccessor(String::New("y"), GetY);
+	node->SetAccessor(String::New("hp"), GetHP);
+	node->SetAccessor(String::New("mp"), GetMP);
+	node->SetAccessor(String::New("hpmax"), GetHPMax);
+	node->SetAccessor(String::New("mpmax"), GetMPMax);
+	node->SetAccessor(String::New("classid"), GetClassid);
+	node->SetAccessor(String::New("mode"), GetMode);
+	node->SetAccessor(String::New("maxgametime"), GetMaxGameTime, SetMaxGameTime);
+	node->Set(String::New("diff"), Integer::New(fpGetDifficulty()));
+	node->Set(String::New("gamename"), String::New(pInfo->szGameName));
+	node->Set(String::New("gamepassword"), String::New(pInfo->szGamePassword));
+	node->Set(String::New("gameserverip"), String::New(pInfo->szGameServerIp));
+	node->Set(String::New("account"), String::New(pData->szAccountName));
+	node->Set(String::New("realm"), String::New(realm));
+	node->Set(String::New("ping"), Integer::New(*vpPing));
+	node->Set(String::New("fps"), Integer::New(*vpFPS));
+	node->Set(String::New("ladder"), Boolean::New(pData->ladderflag));
+	node->Set(String::New("itemoncursor"), Boolean::New(!!(fpGetCursorItem())));
+
+	//node->Set(String::New("quitonhostile"), Boolean::New(Vars.bQuitOnHostile));
+	//node->Set(String::New("chickenhp"), Integer::New(Vars.ChickenHP));
+	//node->Set(String::New("chickenmp"), Integer::New(Vars.ChickenMP));
+
+
+	//node->SetAccessor(String::New("revealautomap"), GetAutoRevealMap, SetAutoRevealMap);
 	//node->SetAccessor(String::New("runwalk"), GetMaxGameTime, SetMaxGameTime);
 	//node->SetAccessor(String::New("itemoncursor"), GetMaxGameTime);
-	//args.This()->CallAsFunction(node, 0, 0);
+	//node->CallAsFunction(node, 0, 0);
 
-
-	args.GetReturnValue().Set(args.This());
+	args.GetReturnValue().Set(node);
 }
 
 JS_FUNC(CGold)
@@ -697,7 +825,7 @@ JS_FUNC(CTransmute)
 	if (!cubeOn)
 		D2CLIENT_SetUIState(UI_CUBE, TRUE);
 
-	D2CLIENT_Transmute();
+	fpTransmute();
 
 	if (!cubeOn)
 		D2CLIENT_SetUIState(UI_CUBE, FALSE);

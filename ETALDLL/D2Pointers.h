@@ -100,7 +100,7 @@ VPTR(DWORD, CursorHoverX, "D2Client.dll", 0xEE4AC)
 VPTR(DWORD, CursorHoverY, "D2Client.dll", 0xEE4B0)
 VPTR(int, MouseOffsetX, "D2Client.dll", 0x106844)
 VPTR(int, MouseOffsetY, "D2Client.dll", 0x106840)
-VPTR(DWORD, AutoMapOn, "D2Client.dll", 0x11C8B8)
+
 VPTR(int, AutoMapMode, "D2Client.dll", 0xF34F8)
 VPTR(AutomapLayer*, AutomapLayer, "D2Client.dll", 0x11CF28)
 VPTR(POINT, Offset, "D2Client.dll", 0x11CF5C)
@@ -176,6 +176,15 @@ FPTR(HWND __stdcall, GetHwnd, (void), "D2gfx.dll", 0xB0C0)
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Bnclient Variable Pointers
 ////////////////////////////////////////////////////////////////////////////////////////////////
+VPTR(DWORD, Ping, "D2Client.dll", 0x108764)
+VPTR(DWORD, FPS, "D2Client.dll", 0x11CE10)
+
+VPTR(DWORD, AutomapOn, "D2Client.dll", 0x11C8B8)
+VPTR(BnetData *, BnData, "D2Launch.dll", 0x25B30)
+FPTR(BYTE __stdcall, GetDifficulty, (void), "D2Client.dll", 0x42980)
+
+FPTR(BOOL __stdcall, LoadItemDesc, (UnitAny* pItem, int type), "D2Client.dll", 0x97820)
+
 FPTR(AutomapLayer* __fastcall, InitAutomapLayer_I, (DWORD nLayerNo), "D2Client.dll", 0x733D0)
 FPTR(void __fastcall, AddAutomapCell, (AutomapCell *aCell, AutomapCell **node), "D2Client.dll", 0x71EA0)
 FPTR(AutomapCell * __fastcall, NewAutomapCell, (void), "D2Client.dll", 0x703C0)
@@ -210,11 +219,8 @@ FUNCPTR(D2COMMON, GetUnitState, int __stdcall, (UnitAny *pUnit, DWORD dwStateNo)
 FUNCPTR(D2CLIENT, GetMonsterOwner, DWORD __fastcall, (DWORD nMonsterId), 0x8E3D0)
 FUNCPTR(D2COMMON, GetLevelText, LevelText * __stdcall, (DWORD levelno), 0x30CA0)
 FUNCPTR(D2CLIENT, GetLevelName_I, wchar_t* __fastcall, (DWORD levelId), 0x18250)
-FUNCPTR(D2COMMON, GetItemMagicalMods, char* __stdcall, (WORD wPrefixNum), 0x62AF0)
-FUNCPTR(D2COMMON, GetItemText, ItemText *__stdcall, (DWORD dwItemNo), 0x62C70)
 FUNCPTR(D2COMMON, GetRoomFromUnit, Room1* __stdcall, (UnitAny * ptUnit), 0x16530)
 FUNCPTR(D2COMMON, GetLevelNoFromRoom, BOOL __stdcall, (Room1* pRoom1), 0x23B80)
-FUNCPTR(D2CLIENT, Transmute, void __fastcall, (void), 0x94370)
 FUNCPTR(D2CLIENT, SetUIVar, DWORD __fastcall, (DWORD varno, DWORD howset, DWORD unknown1), 0x1C190)
 FUNCPTR(D2CLIENT, PerformGoldDialogAction, void __fastcall, (void), 0x197F0)
 FUNCPTR(D2CLIENT, SetSelectedUnit_I, void __fastcall, (UnitAny *pUnit), 0x17060)

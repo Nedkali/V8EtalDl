@@ -83,6 +83,15 @@ BOOL Pointer::ADDRawKeys(const char* owner, const char* classic, const char* lod
 	}
 	return false;
 }
+void Pointer::InstallPatches()
+{
+	for (int x = 0; x < ArraySize(Patches); x++)
+	{
+		Patches[x].bOldCode = new BYTE[Patches[x].dwLen];
+		::ReadProcessMemory(GetCurrentProcess(), (void*)Patches[x].dwAddr, Patches[x].bOldCode, Patches[x].dwLen, NULL);
+		Patches[x].pFunc(Patches[x].dwAddr, Patches[x].dwFunc, Patches[x].dwLen);
+	}
+}
 void Pointer::InstallRawInfo()
 {
 	for (int x = 0; x < ArraySize(RawKeyInfo); x++)

@@ -6,5 +6,6 @@
 VOID __fastcall ClassicSTUB();
 VOID __fastcall LodSTUB();
 VOID __fastcall KeyOwnerSTUB();
-
+void GameDraw_Intercept();
+ 
 #endif

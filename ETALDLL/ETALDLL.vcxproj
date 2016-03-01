@@ -74,7 +74,6 @@
     <TargetName>D2ETAL</TargetName>
     <LibraryWPath />
     <IncludePath>V8\lib\Debug;$(IncludePath)</IncludePath>
-    <OutDir>D:\My Documents\GitHub\EtalManager\Etal Manager\bin\Debug</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -181,7 +180,7 @@
     <ClInclude Include="D2Skills.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="JsDefines.h" />
-    <ClInclude Include="JsFunctions.h" />
+    <ClInclude Include="JSGlobals.h" />
     <ClInclude Include="MenuControls.h" />
     <ClInclude Include="Offset.h" />
     <ClInclude Include="D2Helpers.h" />
@@ -190,6 +189,8 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Patch.h" />
+    <ClInclude Include="ScreenHook.h" />
+    <ClInclude Include="stringhash.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Unit.h" />
     <ClInclude Include="V8Script.h" />
@@ -204,7 +205,7 @@
     <ClCompile Include="D2Pointers.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Input.cpp" />
-    <ClCompile Include="JsFunctions.cpp" />
+    <ClCompile Include="JSGlobals.cpp" />
     <ClCompile Include="Main.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -220,6 +221,8 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="MenuControls.cpp" />
+    <ClCompile Include="ScreenHook.cpp" />
+    <ClCompile Include="stringhash.cpp" />
     <ClCompile Include="Unit.cpp" />
     <ClCompile Include="V8Script.cpp" />
   </ItemGroup>

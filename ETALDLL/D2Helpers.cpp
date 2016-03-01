@@ -1,8 +1,37 @@
 //////////////////////////////////////////////////////////////////////
 // D2Helpers.cpp
 //////////////////////////////////////////////////////////////////////
+#include <io.h>
+#include <errno.h>
+#include <ctime>
+#include <cmath>
+#include <sstream>
+#include <string>
+
+#include "stringhash.h"
 #include "D2Helpers.h"
 #include "D2Pointers.h"
+
+void GameDraw(void)
+{
+	if (MENU::ClientState() == ClientStateBusy || MENU::ClientState() == ClientStateNull)
+	{
+		Genhook::DrawAll(IG);
+		DrawLogo();
+	}
+	if (MENU::ClientState() == ClientStateMenu)
+	{
+		Genhook::DrawAll(IG);
+		DrawLogo();
+	}
+	if (MENU::ClientState() == ClientStateInGame)
+	{
+		Genhook::DrawAll(IG);
+		DrawLogo();
+	}
+	else
+		Sleep(10);
+}
 
 double GetDistance(long x1, long y1, long x2, long y2, DistanceType type)
 {
@@ -199,8 +228,244 @@ void GetItemCode(UnitAny* pUnit, char* szBuf)
 	}
 }
 
+DWORD ReadFile(HANDLE hFile, void *buf, DWORD len)
+//NOTE :- validates len bytes of buf
+{
+	DWORD numdone = 0;
+	return ::ReadFile(hFile, buf, len, &numdone, NULL) != 0 ? numdone : -1;
+}
+
+void *memcpy2(void *dest, const void *src, size_t count)
+{
+	return (char *)memcpy(dest, src, count) + count;
+}
+HANDLE OpenFileRead(char *filename)
+{
+	return CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+}
+
 bool InArea(int x, int y, int x2, int y2, int sizex, int sizey) {
 	return !!(x >= x2 && x < x2 + sizex && y >= y2 && y < y2 + sizey);
+}
+
+int D2GetScreenSizeX()
+{
+	return GetScreenSize().x;
+}
+
+int D2GetScreenSizeY()
+{
+	return GetScreenSize().y;
+}
+
+void myDrawAutomapCell(CellFile *cellfile, int xpos, int ypos, BYTE col)
+{
+	if (!cellfile)return;
+	CellContext ct;
+	memset(&ct, 0, sizeof(ct));
+	ct.pCellFile = cellfile;
+
+	xpos -= (cellfile->cells[0]->width / 2);
+	ypos += (cellfile->cells[0]->height / 2);
+
+	int xpos2 = xpos - cellfile->cells[0]->xoffs, ypos2 = ypos - cellfile->cells[0]->yoffs;
+	if ((xpos2 >= D2GetScreenSizeX()) || ((xpos2 + (int)cellfile->cells[0]->width) <= 0) || (ypos2 >= D2GetScreenSizeY()) || ((ypos2 + (int)cellfile->cells[0]->height) <= 0)) return;
+
+	static BYTE coltab[2][256];//, tabno = 0, lastcol = 0;
+	if (!coltab[0][1]) for (int k = 0; k < 255; k++) coltab[0][k] = coltab[1][k] = (BYTE)k;
+	cellfile->mylastcol = coltab[cellfile->mytabno ^= (col != cellfile->mylastcol)][255] = col;
+
+	D2GFX_DrawAutomapCell2(&ct, xpos, ypos, (DWORD)-1, 5, coltab[cellfile->mytabno]);
+}
+
+void WorldToScreen(POINT* pPos)
+{
+	fpMapToAbsScreen(&pPos->x, &pPos->y);
+	pPos->x -= fpGetMouseXOffset();
+	pPos->y -= fpGetMouseYOffset();
+}
+
+void ScreenToWorld(POINT *pPos)
+{
+	fpAbsScreenToMap(&pPos->x, &pPos->y);
+	pPos->x += fpGetMouseXOffset();
+	pPos->y += fpGetMouseYOffset();
+}
+
+POINT ScreenToAutomap(int x, int y)
+{
+	POINT result = { 0,0 };
+	x *= 32;
+	y *= 32;
+	result.x = ((x - y) / 2 / (*vpDivisor)) - (*vpOffset).x + 8;
+	result.y = ((x + y) / 4 / (*vpDivisor)) - (*vpOffset).y - 8;
+
+	if (D2CLIENT_GetAutomapSize())
+	{
+		--result.x;
+		result.y += 5;
+	}
+	return result;
+}
+
+void AutomapToScreen(POINT* pPos)
+{
+	pPos->x = 8 - vpOffset->x + (pPos->x * (*vpAutomapMode));
+	pPos->y = 8 + vpOffset->y + (pPos->y * (*vpAutomapMode));
+}
+
+BYTE *AllocReadFile(char *filename)
+{
+	HANDLE hFile = OpenFileRead(filename);
+	int filesize = GetFileSize(hFile, 0);
+	if (filesize <= 0) return 0;
+	BYTE *buf = new BYTE[filesize];
+	ReadFile(hFile, buf, filesize);
+	CloseHandle(hFile);
+	return buf;
+}
+CellFile *LoadBmpCellFile(BYTE *buf1, int width, int height)
+{
+	BYTE *buf2 = new BYTE[(width*height * 2) + height], *dest = buf2;
+
+	for (int i = 0; i < height; i++) {
+		BYTE *src = buf1 + (i*((width + 3)&-4)), *limit = src + width;
+		while (src < limit) {
+			BYTE *start = src, *limit2 = min(limit, src + 0x7f), trans = !*src;
+			do src++; while ((trans == (BYTE)!*src) && (src < limit2));
+			if (!trans || (src < limit)) *dest++ = (BYTE)((trans ? 0x80 : 0) + (src - start));
+			if (!trans) while (start < src) *dest++ = *start++;
+		}
+		*dest++ = 0x80;
+	}
+
+	static DWORD dc6head[] = { 6, 1, 0, 0xeeeeeeee, 1, 1, 0x1c,  0, (DWORD)-1, (DWORD)-1, 0, 0, 0, (DWORD)-1, (DWORD)-1 };
+	dc6head[8] = width;
+	dc6head[9] = height;
+	dc6head[14] = dest - buf2;
+	dc6head[13] = sizeof(dc6head) + (dc6head[14]) + 3;
+	BYTE *ret = new BYTE[dc6head[13]];
+	memset(memcpy2(memcpy2(ret, dc6head, sizeof(dc6head)), buf2, dc6head[14]), 0xee, 3);
+	delete[] buf2;
+
+	return (CellFile *)ret;
+}
+CellFile *LoadBmpCellFile(char *filename)
+{
+	BYTE *ret = 0;
+
+	BYTE *buf1 = AllocReadFile(filename);
+	BITMAPFILEHEADER *bmphead1 = (BITMAPFILEHEADER *)buf1;
+	BITMAPINFOHEADER *bmphead2 = (BITMAPINFOHEADER *)(buf1 + sizeof(BITMAPFILEHEADER));
+	if (buf1 && (bmphead1->bfType == 'MB') && (bmphead2->biBitCount == 8) && (bmphead2->biCompression == BI_RGB)) {
+		ret = (BYTE *)LoadBmpCellFile(buf1 + bmphead1->bfOffBits, bmphead2->biWidth, bmphead2->biHeight);
+	}
+	delete[] buf1;
+
+	return (CellFile *)ret;
+}
+CellFile *myInitCellFile(CellFile *cf)
+{
+	if (cf)
+		D2CMP_InitCellFile(cf, &cf, "?", 0, (DWORD)-1, "?");
+	return cf;
+}
+CellFile* LoadCellFile(char* lpszPath, DWORD bMPQ)
+{
+	// AutoDetect the Cell File
+	if (bMPQ == 3)
+	{
+		// Check in our directory first
+		char path[_MAX_FNAME + _MAX_PATH];
+		sprintf_s(path, sizeof(path), "%s\\%s", Vars.szScriptPath, lpszPath);
+
+
+		HANDLE hFile = OpenFileRead(path);
+
+		if (hFile != INVALID_HANDLE_VALUE)
+		{
+			CloseHandle(hFile);
+			return LoadCellFile(path, FALSE);
+		}
+		else
+		{
+			return LoadCellFile(lpszPath, TRUE);
+		}
+
+		//return NULL;
+	}
+
+	unsigned __int32 hash = sfh(lpszPath, (int)strlen(lpszPath));
+	if (Vars.mCachedCellFiles.count(hash) > 0)
+		return Vars.mCachedCellFiles[hash];
+	if (bMPQ == TRUE)
+	{
+		CellFile* result = (CellFile*)fpLoadCellFile(lpszPath, 0);
+		Vars.mCachedCellFiles[hash] = result;
+		return result;
+	}
+	else if (bMPQ == FALSE)
+	{
+		// see if the file exists first
+		if (!(_access(lpszPath, 0) != 0 && errno == ENOENT))
+		{
+			CellFile* result = myInitCellFile((CellFile*)LoadBmpCellFile(lpszPath));
+			Vars.mCachedCellFiles[hash] = result;
+			return result;
+		}
+	}
+
+	return NULL;
+}
+void myDrawText(const char* szwText, int x, int y, int color, int font)
+{
+	size_t found;
+	wchar_t* text = AnsiToUnicode(szwText);
+	std::string temp(szwText);
+	found = temp.find_first_of(-1);
+
+	while (found != std::string::npos)
+	{
+		text[found] = 0xff;
+		found = temp.find_first_of(-1, found + 1);
+	}
+
+
+	DWORD dwOld = D2WIN_SetTextSize(font);
+	fpDrawText(text, x, y, color, 0);
+	D2WIN_SetTextSize(dwOld);
+
+	delete[] text;
+}
+
+POINT GetScreenSize()
+{
+	// HACK: p_D2CLIENT_ScreenSize is wrong for out of game, which is hardcoded to 800x600
+	POINT ingame = { *vpScreenSizeX, *vpScreenSizeY },
+		oog = { 800, 600 },
+		p = { 0 };
+	if (MENU::ClientState() == ClientStateMenu) p = oog;
+	else p = ingame;
+	return p;
+}
+// TODO: make this use SIZE for clarity
+POINT CalculateTextLen(const char* szwText, int Font)
+{
+	POINT ret = { 0,0 };
+
+	if (!szwText)
+		return ret;
+
+	wchar_t* Buffer = AnsiToUnicode(szwText);
+
+	DWORD dwWidth, dwFileNo;
+	DWORD dwOldSize = D2WIN_SetTextSize(Font);
+	ret.y = D2WIN_GetTextSize(Buffer, &dwWidth, &dwFileNo);
+	ret.x = dwWidth;
+	D2WIN_SetTextSize(dwOldSize);
+
+	delete[] Buffer;
+	return ret;
 }
 
 void LoadMPQ(const char* mpq)
@@ -404,6 +669,14 @@ void __declspec(naked) __fastcall D2CLIENT_SetSelectedUnit_STUB(DWORD UnitAny)
 	}
 }
 
+void __declspec(naked) __fastcall D2GFX_DrawRectFrame_STUB(RECT* rect)
+{
+	__asm
+	{
+		mov eax, ecx;
+		jmp D2CLIENT_DrawRectFrame;
+	}
+}
 //AutomapLayer* InitAutomapLayer(DWORD levelno)
 //{
 //	AutomapLayer2 *pLayer = fpGetLayer(levelno);

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////
 // JS Functions
 //////////////////////////////////////////////////////////////////////
-#include "JSFunctions.h"
+#include "JSGlobals.h"
 #include "MenuControls.h"
 #include "V8Script.h"
 #include "D2Helpers.h"
@@ -13,6 +13,7 @@
 #include <assert.h>
 #include "Accessors.h"
 
+bool loaded = false;
 void StringReplace(char* str, const char find, const char replace, size_t buflen)
 {
 	for (size_t i = 0; i < buflen; i++)
@@ -51,7 +52,7 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CGetTickCount, "GetTickCount");		// required
 	JS_FLINK(CGetUIState, "GetUIState");			// required
 	JS_FLINK(CGetUnit, "GetUnit");					// required
-	JS_FLINK(CGetWayPoint, "GetWaypoint");		// required
+	JS_FLINK(CGetWayPoint, "GetWaypoint");			// required
 	JS_FLINK(CGold, "Gold");						// required
 	JS_FLINK(CInclude, "Include");					// required
 	JS_FLINK(CLoad, "Load");						// required
@@ -59,7 +60,7 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CPrint, "Print");						// required
 	JS_FLINK(CRandom, "Random");					// required
 	//JS_FLINK(CRegisterEvent, "RegisterEvent");	// required
-	JS_FLINK(CRunGC, "RunGC");					// required
+	JS_FLINK(CRunGC, "RunGC");						// required
 	JS_FLINK(CSay, "Say");							// required
 	JS_FLINK(CScreenSize, "ScreenSize");
 	JS_FLINK(CSelectChar, "SelectChar");
@@ -73,7 +74,7 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CSubmitItem, "SubmitItem");			// required
 	JS_FLINK(CTransmute, "Transmute");				// required
 	//JS_FLINK(CUnregisterEvent, "UnregisterEvent");// required
-	JS_FLINK(CMe, "InitMeOnce");					// Testing for me.global
+	JS_FLINK(CMe, "InitMeOnce");					// required for me global
 
 	//Functions Added not in D2NT
 	JS_FLINK(CUseSkillPoint, "UseSkillPoint");		// Added
@@ -170,6 +171,7 @@ JS_FUNC(CClickMap)
 
 	if (args.Length() == 3 && args[0]->IsNumber() && (args[1]->IsNumber() || args[1]->IsBoolean()) && args[2]->IsObject())
 	{
+		//need to figure out how to set the object from the argument to myUnit* struct
 		//myUnit* mypUnit = (myUnit*)args[2]->ToObject();
 		myUnit* mypUnit = NULL; //until above line is corrected
 
@@ -352,6 +354,7 @@ JS_FUNC(CGetPresetUnits)
 	int dwArrayCount = 0;
 
 	Local<Object> nodes = Object::New();
+	Local<Array> node = Array::New();
 	for (Room2 *pRoom = pLevel->pRoom2First; pRoom; pRoom = pRoom->pRoom2Next)
 	{
 		HandleScope handle_scope(isolate);
@@ -370,7 +373,6 @@ JS_FUNC(CGetPresetUnits)
 			if ((nType == NULL || pUnit->dwType == nType) && (nClassId == NULL || pUnit->dwTxtFileNo == nClassId))
 			{
 				myPresetUnit* presetUnit = new myPresetUnit;
-				Local<Array> node = Array::New();
 				presetUnit->dwPosX = pUnit->dwPosX;
 				presetUnit->dwPosY = pUnit->dwPosY;
 				presetUnit->dwRoomX = pRoom->dwPosX;
@@ -407,120 +409,6 @@ JS_FUNC(CGetPresetUnits)
 	args.GetReturnValue().Set(nodes);
 }
 
-char* Itemflag(UnitAny* pUnit)
-{
-	char* tmp;
-	if (!(pUnit->dwType == UNIT_ITEM) && pUnit->pItemData)
-		return tmp = "unknown";
-
-	ItemText* pTxt;
-	pTxt = fpGetItemText(pUnit->dwTxtFileNo);
-	if (!pTxt)
-		return tmp = "unknown";
-
-	char szCode[4];
-	memcpy(szCode, pTxt->szCode, 3);
-	szCode[3] = 0x00;
-	tmp = szCode;
-	return tmp;
-}
-
-int Itemclass(UnitAny* pUnit)
-{
-	return 0;
-}
-
-char* Itemprefix(UnitAny* pUnit)
-{
-	char* res = NULL;
-	if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData)
-		if (fpGetItemMagicalMods(pUnit->pItemData->wMagicPrefix[0]))
-			res = fpGetItemMagicalMods(pUnit->pItemData->wMagicPrefix[0]);
-	return res;
-}
-
-char* Itemsuffix(UnitAny* pUnit)
-{
-	char* res = NULL;
-	if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData)
-		if (fpGetItemMagicalMods(pUnit->pItemData->wMagicSuffix[0]))
-			res = fpGetItemMagicalMods(pUnit->pItemData->wMagicSuffix[0]);
-	return res;
-}
-
-int ItemXsize(UnitAny* pUnit)
-{
-	if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData) {
-		if (!fpGetItemText(pUnit->dwTxtFileNo))
-			return 0;
-		return (fpGetItemText(pUnit->dwTxtFileNo)->xSize);
-	}
-	return 0;
-}
-
-int ItemYsize(UnitAny* pUnit)
-{
-	if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData) {
-		if (!fpGetItemText(pUnit->dwTxtFileNo))
-			return 0;
-		return (fpGetItemText(pUnit->dwTxtFileNo)->ySize);
-	}
-	return 0;
-}
-
-int Itemtype(UnitAny* pUnit)
-{
-	Room1* pRoom = NULL;
-	if (pUnit->dwType == UNIT_OBJECT && pUnit->pObjectData)
-	{
-		pRoom = D2COMMON_GetRoomFromUnit(pUnit);
-		if (pRoom && D2COMMON_GetLevelNoFromRoom(pRoom))
-			return (pUnit->pObjectData->Type & 255);
-		else
-			return pUnit->pObjectData->Type;
-	}
-	return 0;
-}
-
-void ReadProcessBYTES(HANDLE hProcess, DWORD lpAddress, void* buf, int len)
-{
-	DWORD oldprot, dummy = 0;
-	VirtualProtectEx(hProcess, (void*)lpAddress, len, PAGE_READWRITE, &oldprot);
-	ReadProcessMemory(hProcess, (void*)lpAddress, buf, len, 0);
-	VirtualProtectEx(hProcess, (void*)lpAddress, len, oldprot, &dummy);
-}
-
-DWORD check_1 = Pointer::GetDllOffset("D2Client.dll", 0x11CB1C);
-DWORD check_2 = Pointer::GetDllOffset("D2Client.dll", 0x11CB28);
-DWORD read_1 = Pointer::GetDllOffset("D2Win.DLL", 0xC9E68);
-char* Itemdesc(UnitAny* pUnit)
-{
-	char* res = NULL;
-	if (pUnit->dwType != UNIT_ITEM)
-		return res;
-
-
-	wchar_t wBuffer[2048] = L"";
-	wchar_t bBuffer[1] = { 1 };
-	if (pUnit->pItemData && pUnit->pItemData->pOwnerInventory && pUnit->pItemData->pOwnerInventory->pOwner)
-	{
-		::WriteProcessMemory(GetCurrentProcess(), (void*)check_1, bBuffer, 1, NULL);
-		::WriteProcessMemory(GetCurrentProcess(), (void*)check_2, &pUnit, 4, NULL);
-
-		fpLoadItemDesc(pUnit->pItemData->pOwnerInventory->pOwner, 0);
-		ReadProcessBYTES(GetCurrentProcess(), read_1, wBuffer, 2047);
-	}
-
-	char *tmp = UnicodeToAnsi(wBuffer);
-	if (tmp)
-	{
-		return tmp;
-		delete[] tmp;
-		tmp = NULL;
-	}
-	return res;
-}
-
 JS_FUNC(CGetUnit)
 {
 	Local<Context> context = Context::GetCurrent();
@@ -539,8 +427,8 @@ JS_FUNC(CGetUnit)
 	DWORD pid = NULL;
 	DWORD dwmeAct = NULL;
 	int32_t type = NULL;
-	uint32_t qual = NULL;
-	uint32_t loc = NULL;
+	uint32_t nQual = NULL;
+	uint32_t nLoc = NULL;
 
 	Local<Object> node = Object::New();
 
@@ -636,9 +524,9 @@ JS_FUNC(CGetUnit)
 			break;
 		case 4:
 			if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData)
-				loc = (pUnit->pItemData->GameLocation);
+				nLoc = (pUnit->pItemData->GameLocation);
 			if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData)
-				qual = (pUnit->pItemData->dwQuality);
+				nQual = (pUnit->pItemData->dwQuality);
 			/*if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData) {
 				if (!D2COMMON_GetItemText(pUnit->dwTxtFileNo))
 					break;
@@ -646,8 +534,8 @@ JS_FUNC(CGetUnit)
 			}*/
 
 			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-			node->Set(String::NewFromUtf8(isolate, "quality"), Integer::New(qual));
-			node->Set(String::NewFromUtf8(isolate, "itemloc"), Integer::New(loc));
+			node->Set(String::NewFromUtf8(isolate, "quality"), Integer::New(nQual));
+			node->Set(String::NewFromUtf8(isolate, "itemloc"), Integer::New(nLoc));
 			//node->Set(String::NewFromUtf8(isolate, "itemclass"), Integer::New(Itemclass(pUnit)));
 			node->Set(String::NewFromUtf8(isolate, "itemdesc"), String::New(Itemdesc(pUnit)));
 			//node->Set(String::NewFromUtf8(isolate, "itemflag"), String::New(Itemflag(pUnit)));
@@ -741,7 +629,7 @@ JS_FUNC(CMe)
 	node->Set(String::New("realm"), String::New(realm));
 	node->Set(String::New("ping"), Integer::New(*vpPing));
 	node->Set(String::New("fps"), Integer::New(*vpFPS));
-	node->Set(String::New("ladder"), Boolean::New(pData->ladderflag));
+	node->Set(String::New("ladder"), Boolean::New(!!(pData->ladderflag)));
 	node->Set(String::New("itemoncursor"), Boolean::New(!!(fpGetCursorItem())));
 
 	//node->Set(String::New("quitonhostile"), Boolean::New(Vars.bQuitOnHostile));
@@ -1124,6 +1012,10 @@ JS_FUNC(CCloseD2)
 JS_FUNC(CDelay)
 {
 	HandleScope handle_scope(args.GetIsolate());
+	ClientGameState state = MENU::ClientState();
+	if (!loaded && state == ClientStateInGame) {
+		init_me();
+	}
 	if (args.Length() == 1)
 	{
 		int x = args[0]->Uint32Value();
@@ -1193,7 +1085,6 @@ JS_FUNC(CLoad) {
 	newisolate->Dispose();
 }
 
-bool loaded = false;
 JS_FUNC(CInclude) {
 	HandleScope handle_scope(args.GetIsolate());
 	String::Utf8Value str(args[0]);

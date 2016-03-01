@@ -245,4 +245,117 @@ void GetItemYsize(Local<String> property, const PropertyCallbackInfo<Value>& inf
 	}
 }
 
+char* Itemflag(UnitAny* pUnit)
+{
+	char* tmp;
+	if (!(pUnit->dwType == UNIT_ITEM) && pUnit->pItemData)
+		return tmp = "unknown";
+
+	ItemText* pTxt;
+	pTxt = fpGetItemText(pUnit->dwTxtFileNo);
+	if (!pTxt)
+		return tmp = "unknown";
+
+	char szCode[4];
+	memcpy(szCode, pTxt->szCode, 3);
+	szCode[3] = 0x00;
+	tmp = szCode;
+	return tmp;
+}
+
+int Itemclass(UnitAny* pUnit)
+{
+	return 0;
+}
+
+char* Itemprefix(UnitAny* pUnit)
+{
+	char* res = NULL;
+	if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData)
+		if (fpGetItemMagicalMods(pUnit->pItemData->wMagicPrefix[0]))
+			res = fpGetItemMagicalMods(pUnit->pItemData->wMagicPrefix[0]);
+	return res;
+}
+
+char* Itemsuffix(UnitAny* pUnit)
+{
+	char* res = NULL;
+	if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData)
+		if (fpGetItemMagicalMods(pUnit->pItemData->wMagicSuffix[0]))
+			res = fpGetItemMagicalMods(pUnit->pItemData->wMagicSuffix[0]);
+	return res;
+}
+
+int ItemXsize(UnitAny* pUnit)
+{
+	if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData) {
+		if (!fpGetItemText(pUnit->dwTxtFileNo))
+			return 0;
+		return (fpGetItemText(pUnit->dwTxtFileNo)->xSize);
+	}
+	return 0;
+}
+
+int ItemYsize(UnitAny* pUnit)
+{
+	if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData) {
+		if (!fpGetItemText(pUnit->dwTxtFileNo))
+			return 0;
+		return (fpGetItemText(pUnit->dwTxtFileNo)->ySize);
+	}
+	return 0;
+}
+
+int Itemtype(UnitAny* pUnit)
+{
+	Room1* pRoom = NULL;
+	if (pUnit->dwType == UNIT_OBJECT && pUnit->pObjectData)
+	{
+		pRoom = D2COMMON_GetRoomFromUnit(pUnit);
+		if (pRoom && D2COMMON_GetLevelNoFromRoom(pRoom))
+			return (pUnit->pObjectData->Type & 255);
+		else
+			return pUnit->pObjectData->Type;
+	}
+	return 0;
+}
+
+void ReadProcessBYTES(HANDLE hProcess, DWORD lpAddress, void* buf, int len)
+{
+	DWORD oldprot, dummy = 0;
+	VirtualProtectEx(hProcess, (void*)lpAddress, len, PAGE_READWRITE, &oldprot);
+	ReadProcessMemory(hProcess, (void*)lpAddress, buf, len, 0);
+	VirtualProtectEx(hProcess, (void*)lpAddress, len, oldprot, &dummy);
+}
+
+DWORD check_1 = Pointer::GetDllOffset("D2Client.dll", 0x11CB1C);
+DWORD check_2 = Pointer::GetDllOffset("D2Client.dll", 0x11CB28);
+DWORD read_1 = Pointer::GetDllOffset("D2Win.DLL", 0xC9E68);
+char* Itemdesc(UnitAny* pUnit)
+{
+	char* res = NULL;
+	if (pUnit->dwType != UNIT_ITEM)
+		return res;
+
+
+	wchar_t wBuffer[2048] = L"";
+	wchar_t bBuffer[1] = { 1 };
+	if (pUnit->pItemData && pUnit->pItemData->pOwnerInventory && pUnit->pItemData->pOwnerInventory->pOwner)
+	{
+		::WriteProcessMemory(GetCurrentProcess(), (void*)check_1, bBuffer, 1, NULL);
+		::WriteProcessMemory(GetCurrentProcess(), (void*)check_2, &pUnit, 4, NULL);
+
+		fpLoadItemDesc(pUnit->pItemData->pOwnerInventory->pOwner, 0);
+		ReadProcessBYTES(GetCurrentProcess(), read_1, wBuffer, 2047);
+	}
+
+	char *tmp = UnicodeToAnsi(wBuffer);
+	if (tmp)
+	{
+		return tmp;
+		delete[] tmp;
+		tmp = NULL;
+	}
+	return res;
+}
 #pragma endregion

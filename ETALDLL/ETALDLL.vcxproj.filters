@@ -7,9 +7,6 @@
     <ClCompile Include="Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JsFunctions.cpp">
-      <Filter>V8 Engine\JSFunctions</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Main</Filter>
     </ClCompile>
@@ -41,12 +38,18 @@
     <ClCompile Include="Accessors.cpp">
       <Filter>V8 Engine\JSFunctions</Filter>
     </ClCompile>
+    <ClCompile Include="ScreenHook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stringhash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JSGlobals.cpp">
+      <Filter>V8 Engine\JSFunctions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JsDefines.h">
-      <Filter>V8 Engine\JSFunctions</Filter>
-    </ClInclude>
-    <ClInclude Include="JsFunctions.h">
       <Filter>V8 Engine\JSFunctions</Filter>
     </ClInclude>
     <ClInclude Include="Main.h">
@@ -99,6 +102,15 @@
       <Filter>Diablo II</Filter>
     </ClInclude>
     <ClInclude Include="Accessors.h">
+      <Filter>V8 Engine\JSFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenHook.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stringhash.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JSGlobals.h">
       <Filter>V8 Engine\JSFunctions</Filter>
     </ClInclude>
   </ItemGroup>

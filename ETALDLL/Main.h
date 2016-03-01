@@ -4,8 +4,11 @@
 #pragma once
 #include <windows.h>
 #include <vector>
+#include <map>
 #include "MenuControls.h"
+#include "ScreenHook.h"
 
+using namespace std;
 
 struct Profile {
 	char Account[24];
@@ -26,12 +29,15 @@ struct Profile {
 
 struct Variables
 {
+	std::map<unsigned __int32, CellFile*> mCachedCellFiles;
+	std::vector<std::pair<DWORD, DWORD> > vUnitList;
 	char	szScriptPath[MAX_PATH];
 	char	szMpqfile[30];
 	char	szClassic[30];
 	char	szLod[30];
 	char	szKeyOwner[30];
 	bool	bzladder;
+	char	szScriptFile[32];
 	unsigned int iCharPos;
 	unsigned int meMaxGameTime;
 	bool	revealautomap;

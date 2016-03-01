@@ -27,6 +27,7 @@ public:
 	static BOOL LoadCDKeyMPQ(const char* mpq);
 	static BOOL ADDRawKeys(const char* owner, const char* classic, const char* lod);
 	static void InstallRawInfo();
+	static void InstallPatches();
 	static void RemoveRawInfo();
 	static BOOL WriteBytes(void *pAddr, void *pData, DWORD dwLen);
 	static void FillBytes(void *pAddr, BYTE bFill, DWORD dwLen);
@@ -176,9 +177,13 @@ FPTR(HWND __stdcall, GetHwnd, (void), "D2gfx.dll", 0xB0C0)
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Bnclient Variable Pointers
 ////////////////////////////////////////////////////////////////////////////////////////////////
+FPTR(CellFile* __fastcall, LoadCellFile, (const char* szFile, int Type), "D2Win.DLL", -10023)
+
+VPTR(int, Divisor, "D2Client.dll", 0xF34F8)
 VPTR(DWORD, Ping, "D2Client.dll", 0x108764)
 VPTR(DWORD, FPS, "D2Client.dll", 0x11CE10)
 
+VPTR(int, AutomapMode, "D2Client.dll", 0xF34F8)
 VPTR(DWORD, AutomapOn, "D2Client.dll", 0x11C8B8)
 VPTR(BnetData *, BnData, "D2Launch.dll", 0x25B30)
 FPTR(BYTE __stdcall, GetDifficulty, (void), "D2Client.dll", 0x42980)
@@ -224,6 +229,17 @@ FUNCPTR(D2COMMON, GetLevelNoFromRoom, BOOL __stdcall, (Room1* pRoom1), 0x23B80)
 FUNCPTR(D2CLIENT, SetUIVar, DWORD __fastcall, (DWORD varno, DWORD howset, DWORD unknown1), 0x1C190)
 FUNCPTR(D2CLIENT, PerformGoldDialogAction, void __fastcall, (void), 0x197F0)
 FUNCPTR(D2CLIENT, SetSelectedUnit_I, void __fastcall, (UnitAny *pUnit), 0x17060)
+FUNCPTR(D2WIN, GetTextSize, DWORD __fastcall, (wchar_t *wStr, DWORD* dwWidth, DWORD* dwFileNo), 0x13290)
+FUNCPTR(D2WIN, SetTextSize, DWORD __fastcall, (DWORD dwSize), 0x13B70)
+FUNCPTR(D2GFX, DrawAutomapCell2, void __stdcall, (CellContext* context, DWORD xpos, DWORD ypos, DWORD bright2, DWORD bright, BYTE *coltab), 0x7E60)
+FUNCPTR(D2CLIENT, GetAutomapSize, DWORD __stdcall, (void), 0x6FDD0)
+FUNCPTR(D2GFX, DrawLine, void __stdcall, (int X1, int Y1, int X2, int Y2, DWORD dwColor, DWORD dwUnk), 0x81A0)
+FUNCPTR(D2GFX, DrawRectangle, void __stdcall, (int X1, int Y1, int X2, int Y2, DWORD dwColor, DWORD dwTrans), 0x8210)
+FUNCPTR(D2CLIENT, DrawRectFrame, void __fastcall, (DWORD Rect), 0x17D10)
+//FUNCPTR(D2WIN, LoadCellFile, CellFile* __fastcall, (const char* szFile, int Type), -10023)
+FUNCPTR(D2CMP, InitCellFile, void __stdcall, (void *cellfile, CellFile **outptr, char *srcfile, DWORD lineno, DWORD filever, char *filename), 0x13B50)
+
+
 
 
 ASMPTR(BNCLIENT, DClass, 0x15EB8)
@@ -259,6 +275,7 @@ FUNCPTR(D2COMMON, InitLevel, void __stdcall, (Level *pLevel), 0x6DDF0)
 #define D2CLIENT_GetItemDesc(pUnit, pBuffer)			D2CLIENT_GetItemDesc_ASM((DWORD)pUnit, pBuffer)
 #define D2CLIENT_MercItemAction(bPacketType, dwSlotId)	D2CLIENT_MercItemAction_ASM(bPacketType, dwSlotId)
 #define D2CLIENT_SendGamePacket(dwLen, bPacket)			D2CLIENT_SendGamePacket_ASM(dwLen, bPacket)
+#define D2GFX_DrawFrame(Rect)							D2GFX_DrawRectFrame_STUB(Rect)
 
 #pragma warning ( pop )
 #pragma optimize ( "", on )

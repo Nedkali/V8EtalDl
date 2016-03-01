@@ -30,3 +30,16 @@ VOID __declspec(naked) __fastcall LodSTUB()
 			jmp BNCLIENT_DLod;
 	}
 }
+
+void __declspec(naked) GameDraw_Intercept()
+{
+	__asm
+	{
+		call GameDraw;
+
+		POP ESI
+			POP EBX
+			POP ECX
+			RETN 4
+	}
+}

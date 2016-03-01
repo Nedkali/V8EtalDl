@@ -3,7 +3,7 @@
 #include "Offset.h"
 #include "v8.h"
 #include "V8Script.h"
-#include "JSFunctions.h"
+#include "JSGlobals.h"
 
 using namespace v8;
 

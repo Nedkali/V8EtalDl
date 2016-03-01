@@ -28,6 +28,27 @@ void  Logincontrol();
 void SendDataCopy(char* app, int  code, char* data);
 void __fastcall Say(const char* szMessage);
 
+POINT	CalculateTextLen(const char* szwText, int Font);
+CellFile* LoadCellFile(char* lpszPath, DWORD bMPQ = 3);
+void myDrawAutomapCell(CellFile *cellfile, int xpos, int ypos, BYTE col);
+void	myDrawText(const char* szwText, int x, int y, int color, int font);
+POINT GetScreenSize();
+int D2GetScreenSizeX();
+int D2GetScreenSizeY();
+void GameDraw(void);
+
+void	WorldToScreen(POINT* pPos);
+void	ScreenToWorld(POINT *ptPos);
+POINT	ScreenToAutomap(int x, int y);
+void	AutomapToScreen(POINT* pPos);
+HANDLE OpenFileRead(char *filename);
+CellFile *LoadBmpCellFile(BYTE *buf1, int width, int height);
+CellFile *LoadBmpCellFile(char *filename);
+DWORD ReadFile(HANDLE hFile, void *buf, DWORD len);
+void *memcpy2(void *dest, const void *src, size_t count);
+BYTE *AllocReadFile(char *filename);
+CellFile *myInitCellFile(CellFile *cf);
+
 //AutomapLayer* InitAutomapLayer(DWORD levelno);
 //DWORD __fastcall D2CLIENT_InitAutomapLayer_STUB(DWORD nLayerNo);
 
@@ -63,6 +84,7 @@ void __fastcall UseStatPoint(WORD stat, int count = 1);
 void __fastcall UseSkillPoint(WORD skill, int count = 1);
 DWORD __fastcall D2CLIENT_SendGamePacket_ASM(DWORD dwLen, BYTE* bPacket); 
 void  __fastcall D2CLIENT_SetSelectedUnit_STUB(DWORD UnitAny);
+void __fastcall D2GFX_DrawRectFrame_STUB(RECT* rect);
 double GetDistance(long x1, long y1, long x2, long y2, DistanceType type = Euclidean);
 struct SData
 {

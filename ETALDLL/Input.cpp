@@ -17,15 +17,75 @@ Input::~Input(void)
 
 bool Input::Initialize()
 {
-	DWORD ThreadProcessID = GetWindowThreadProcessId(fpGetHwnd(), 0);
+	bool debug = false;
+	int i = 0;
+	while (!Vars.bActive)
+	{
+		if (i >= 300)
+		{
+			MessageBox(0, "Failed to set hooks, exiting!", "D2Etal", 0);
+			return false;
+		}
+
+		if (fpGetHwnd() && (MENU::ClientState() == ClientStateMenu || MENU::ClientState() == ClientStateInGame))
+		{
+			if (!Vars.oldWNDPROC)
+				Vars.oldWNDPROC = (WNDPROC)SetWindowLong(fpGetHwnd(), GWL_WNDPROC, (LONG)Input::WndProc);
+			if (!Vars.oldWNDPROC)
+				continue;
+
+			DWORD _mainThread = GetWindowThreadProcessId(fpGetHwnd(), 0);
+			if (_mainThread)
+			{
+				if (!Vars.hKeybHook)
+					Vars.hKeybHook = SetWindowsHookEx(WH_KEYBOARD, Input::KeyPress, NULL, _mainThread);
+				if (!Vars.hMouseHook)
+					Vars.hMouseHook = SetWindowsHookEx(WH_MOUSE, Input::MouseMove, NULL, _mainThread);
+			}
+		}
+		else
+			continue;
+		if (Vars.hKeybHook && Vars.hMouseHook)
+		{
+			Vars.bActive = TRUE;
+		}
+		if (debug && Vars.oldWNDPROC && Vars.hKeybHook && Vars.hMouseHook) {
+			MessageBox(0, "All Hooks Set!", "D2Etal", 0);
+		}
+		Sleep(50);
+		i++;
+	}
+	return true;
+	/*DWORD ThreadProcessID = GetWindowThreadProcessId(fpGetHwnd(), 0);
 	SetWindowsHookEx(WH_KEYBOARD, Input::KeyPress, NULL, ThreadProcessID);
 	SetWindowsHookEx(WH_MOUSE, Input::MouseMove, NULL, ThreadProcessID);
-	return true;
+	return true;*/
 }
 
 void Input::Shutdown()
 {
+	Vars.bActive = FALSE;
+}
 
+LONG WINAPI Input::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	COPYDATASTRUCT* pCopy;
+	switch (uMsg)
+	{
+	case WM_COPYDATA:
+		pCopy = (COPYDATASTRUCT*)lParam;
+
+		if (pCopy)
+		{
+			if (pCopy->dwData == 0x00)
+			{
+				//TODO : Add code
+			}
+		}
+		return TRUE;
+	}
+
+	return (LONG)CallWindowProcA(Vars.oldWNDPROC, hWnd, uMsg, wParam, lParam);
 }
 
 void Input::SendMouseClick(int x, int y, int button)

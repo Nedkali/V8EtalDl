@@ -10,6 +10,7 @@
 #include <string>
 #include "Common.h"
 #include "D2Pointers.h"
+#include "Main.h"
 
 class Input
 {
@@ -25,4 +26,5 @@ public:
 
 	static LRESULT CALLBACK KeyPress(int code, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK MouseMove(int code, WPARAM wParam, LPARAM lParam);
+	static LONG WINAPI WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };

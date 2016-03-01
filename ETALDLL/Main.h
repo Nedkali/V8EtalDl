@@ -43,6 +43,11 @@ struct Variables
 	bool	revealautomap;
 	bool	bzUseRawKeys;
 	HMODULE hModule;
+
+	BOOL	bActive;
+	WNDPROC oldWNDPROC;
+	HHOOK hMouseHook;
+	HHOOK hKeybHook;
 };
 
 extern Profile  Prof;

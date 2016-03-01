@@ -89,6 +89,7 @@ DWORD WINAPI MainThread(VOID* param)
 
 	return true;
 }
+
 void StartUpV8()
 {
 	// **V8
@@ -117,21 +118,3 @@ void StartUpV8()
 	V8::Dispose();
 
 }
-//LRESULT CALLBACK WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
-//{
-//    switch (Msg)
-//    {
-//    case WM_COPYDATA:
-//        switch (int(wParam))
-//        {
-//        case 555:
-//            Vars.restart = true;
-//                break;
-//
-//        }
-//
-//    }
-//
-//    return DefWindowProc(hWnd, Msg, wParam, lParam);
-//
-//}

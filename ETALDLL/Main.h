@@ -7,6 +7,7 @@
 #include <map>
 #include "MenuControls.h"
 #include "ScreenHook.h"
+#define D2ETAL_VERSION "v0.01"
 
 using namespace std;
 

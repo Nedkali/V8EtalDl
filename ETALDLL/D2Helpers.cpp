@@ -12,19 +12,21 @@
 #include "D2Helpers.h"
 #include "D2Pointers.h"
 
+void GameDrawOOG(void)
+{
+	D2WIN_DrawSprites();
+	if (Vars.bActive && MENU::ClientState() == ClientStateMenu)
+	{
+		Genhook::DrawAll(OOG);
+		DrawLogo();
+	}
+	else
+		Sleep(10);
+}
+
 void GameDraw(void)
 {
-	if (MENU::ClientState() == ClientStateBusy || MENU::ClientState() == ClientStateNull)
-	{
-		Genhook::DrawAll(IG);
-		DrawLogo();
-	}
-	if (MENU::ClientState() == ClientStateMenu)
-	{
-		Genhook::DrawAll(IG);
-		DrawLogo();
-	}
-	if (MENU::ClientState() == ClientStateInGame)
+	if (Vars.bActive && MENU::ClientState() == ClientStateInGame)
 	{
 		Genhook::DrawAll(IG);
 		DrawLogo();
@@ -275,7 +277,7 @@ void myDrawAutomapCell(CellFile *cellfile, int xpos, int ypos, BYTE col)
 	if (!coltab[0][1]) for (int k = 0; k < 255; k++) coltab[0][k] = coltab[1][k] = (BYTE)k;
 	cellfile->mylastcol = coltab[cellfile->mytabno ^= (col != cellfile->mylastcol)][255] = col;
 
-	D2GFX_DrawAutomapCell2(&ct, xpos, ypos, (DWORD)-1, 5, coltab[cellfile->mytabno]);
+	fpDrawAutomapCell2(&ct, xpos, ypos, (DWORD)-1, 5, coltab[cellfile->mytabno]);
 }
 
 void WorldToScreen(POINT* pPos)
@@ -613,7 +615,7 @@ void SendGold(int nGold, int nMode)
 {
 	GoldDialogAction = nGold;
 	GoldDialogAmount = nMode;
-	D2CLIENT_PerformGoldDialogAction();
+	fpPerformGoldDialogAction();
 }
 
 void __fastcall UseStatPoint(WORD stat, int count)

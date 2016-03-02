@@ -177,6 +177,8 @@ FPTR(HWND __stdcall, GetHwnd, (void), "D2gfx.dll", 0xB0C0)
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Bnclient Variable Pointers
 ////////////////////////////////////////////////////////////////////////////////////////////////
+FPTR(void __stdcall, DrawAutomapCell2, (CellContext* context, DWORD xpos, DWORD ypos, DWORD bright2, DWORD bright, BYTE *coltab),"D2Gfx.dll", 0x7E60)
+FPTR(void __fastcall, PerformGoldDialogAction, (void), "D2Client.dll", 0x197F0)
 FPTR(CellFile* __fastcall, LoadCellFile, (const char* szFile, int Type), "D2Win.DLL", -10023)
 
 VPTR(int, Divisor, "D2Client.dll", 0xF34F8)
@@ -227,18 +229,16 @@ FUNCPTR(D2CLIENT, GetLevelName_I, wchar_t* __fastcall, (DWORD levelId), 0x18250)
 FUNCPTR(D2COMMON, GetRoomFromUnit, Room1* __stdcall, (UnitAny * ptUnit), 0x16530)
 FUNCPTR(D2COMMON, GetLevelNoFromRoom, BOOL __stdcall, (Room1* pRoom1), 0x23B80)
 FUNCPTR(D2CLIENT, SetUIVar, DWORD __fastcall, (DWORD varno, DWORD howset, DWORD unknown1), 0x1C190)
-FUNCPTR(D2CLIENT, PerformGoldDialogAction, void __fastcall, (void), 0x197F0)
 FUNCPTR(D2CLIENT, SetSelectedUnit_I, void __fastcall, (UnitAny *pUnit), 0x17060)
 FUNCPTR(D2WIN, GetTextSize, DWORD __fastcall, (wchar_t *wStr, DWORD* dwWidth, DWORD* dwFileNo), 0x13290)
 FUNCPTR(D2WIN, SetTextSize, DWORD __fastcall, (DWORD dwSize), 0x13B70)
-FUNCPTR(D2GFX, DrawAutomapCell2, void __stdcall, (CellContext* context, DWORD xpos, DWORD ypos, DWORD bright2, DWORD bright, BYTE *coltab), 0x7E60)
 FUNCPTR(D2CLIENT, GetAutomapSize, DWORD __stdcall, (void), 0x6FDD0)
 FUNCPTR(D2GFX, DrawLine, void __stdcall, (int X1, int Y1, int X2, int Y2, DWORD dwColor, DWORD dwUnk), 0x81A0)
 FUNCPTR(D2GFX, DrawRectangle, void __stdcall, (int X1, int Y1, int X2, int Y2, DWORD dwColor, DWORD dwTrans), 0x8210)
 FUNCPTR(D2CLIENT, DrawRectFrame, void __fastcall, (DWORD Rect), 0x17D10)
 //FUNCPTR(D2WIN, LoadCellFile, CellFile* __fastcall, (const char* szFile, int Type), -10023)
 FUNCPTR(D2CMP, InitCellFile, void __stdcall, (void *cellfile, CellFile **outptr, char *srcfile, DWORD lineno, DWORD filever, char *filename), 0x13B50)
-
+FUNCPTR(D2WIN, DrawSprites, void __fastcall, (void), 0xEAA0)
 
 
 

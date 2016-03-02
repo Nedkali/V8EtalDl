@@ -591,7 +591,7 @@ void init_me()
 	Persistent<Context> persistent_context(isolate, context);	
 	Context::Scope context_scope(context);
 	context->Enter();
-	Handle<String> source = String::New("var me = InitMeOnce();");
+	Handle<String> source = String::New("var me = InitMeOnce();");	//("var me = { SetSkill: function(skillid, left) { SetSkill(skillid, left); } }; ");
 	Handle<Script> script = Script::Compile(source);
 	script->Run();
 	context->Exit();
@@ -631,6 +631,8 @@ JS_FUNC(CMe)
 	node->Set(String::New("fps"), Integer::New(*vpFPS));
 	node->Set(String::New("ladder"), Boolean::New(!!(pData->ladderflag)));
 	node->Set(String::New("itemoncursor"), Boolean::New(!!(fpGetCursorItem())));
+
+	//node->Set(String::New("SetSkill()"), Function::New(isolate, CSetSkill, args.Data()));
 
 	//node->Set(String::New("quitonhostile"), Boolean::New(Vars.bQuitOnHostile));
 	//node->Set(String::New("chickenhp"), Integer::New(Vars.ChickenHP));

@@ -14,8 +14,6 @@ int Itemtype(UnitAny* pUnit);
 char* Itemdesc(UnitAny* pUnit);
 void ReadProcessBYTES(HANDLE hProcess, DWORD lpAddress, void* buf, int len);
 
-
-
 void GetAutoRevealMap(Local<String> property, const PropertyCallbackInfo<Value>& info);
 void SetAutoRevealMap(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
 

@@ -36,6 +36,7 @@ POINT GetScreenSize();
 int D2GetScreenSizeX();
 int D2GetScreenSizeY();
 void GameDraw(void);
+void GameDrawOOG(void);
 
 void	WorldToScreen(POINT* pPos);
 void	ScreenToWorld(POINT *ptPos);

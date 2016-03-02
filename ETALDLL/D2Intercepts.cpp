@@ -43,3 +43,8 @@ void __declspec(naked) GameDraw_Intercept()
 			RETN 4
 	}
 }
+
+void GameDrawOOG_Intercept(void)
+{
+	GameDrawOOG();
+}

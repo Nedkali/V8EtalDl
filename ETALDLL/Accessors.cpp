@@ -358,4 +358,5 @@ char* Itemdesc(UnitAny* pUnit)
 	}
 	return res;
 }
+
 #pragma endregion

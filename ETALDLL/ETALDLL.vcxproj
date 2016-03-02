@@ -74,6 +74,7 @@
     <TargetName>D2ETAL</TargetName>
     <LibraryWPath />
     <IncludePath>V8\lib\Debug;$(IncludePath)</IncludePath>
+    <OutDir>D:\My Documents\GitHub\EtalManager\Etal Manager\bin\Debug\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -173,6 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Accessors.h" />
+    <ClInclude Include="ActMap.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="D2Funcs.h" />
@@ -181,6 +183,17 @@
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="JsDefines.h" />
     <ClInclude Include="JSGlobals.h" />
+    <ClInclude Include="JsGlobals2.h" />
+    <ClInclude Include="Map\BlankMap.h" />
+    <ClInclude Include="Map\Diablo_II\LevelMap.h" />
+    <ClInclude Include="Map\Map.h" />
+    <ClInclude Include="Map\Path\AStarPath.h" />
+    <ClInclude Include="Map\Path\Path.h" />
+    <ClInclude Include="Map\Path\Reduction\JSPathReducer.h" />
+    <ClInclude Include="Map\Path\Reduction\NoPathReducer.h" />
+    <ClInclude Include="Map\Path\Reduction\PathReducer.h" />
+    <ClInclude Include="Map\Path\Reduction\TeleportPathReducer.h" />
+    <ClInclude Include="Map\Path\Reduction\WalkPathReducer.h" />
     <ClInclude Include="MenuControls.h" />
     <ClInclude Include="Offset.h" />
     <ClInclude Include="D2Helpers.h" />
@@ -189,7 +202,6 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Patch.h" />
-    <ClInclude Include="GameDraw.h" />
     <ClInclude Include="stringhash.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Unit.h" />
@@ -206,6 +218,7 @@
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="JSGlobals.cpp" />
+    <ClCompile Include="JsGlobals2.cpp" />
     <ClCompile Include="Main.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -220,8 +233,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Map\Diablo_II\ActMap.cpp" />
+    <ClCompile Include="Map\Diablo_II\LevelMap.cpp" />
     <ClCompile Include="MenuControls.cpp" />
-    <ClCompile Include="GameDraw.cpp" />
     <ClCompile Include="stringhash.cpp" />
     <ClCompile Include="Unit.cpp" />
     <ClCompile Include="V8Script.cpp" />

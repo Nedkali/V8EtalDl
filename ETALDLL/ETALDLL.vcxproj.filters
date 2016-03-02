@@ -31,21 +31,29 @@
     <ClCompile Include="V8Script.cpp">
       <Filter>V8 Engine</Filter>
     </ClCompile>
-    <ClCompile Include="MenuControls.cpp" />
     <ClCompile Include="Unit.cpp">
       <Filter>Diablo II</Filter>
     </ClCompile>
     <ClCompile Include="Accessors.cpp">
       <Filter>V8 Engine\JSFunctions</Filter>
     </ClCompile>
-    <ClCompile Include="JSGlobals.cpp">
-      <Filter>V8 Engine\JSFunctions</Filter>
-    </ClCompile>
     <ClCompile Include="stringhash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameDraw.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="JSGlobals.cpp">
+      <Filter>V8 Engine\JSFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="JsGlobals2.cpp">
+      <Filter>V8 Engine\JSFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuControls.cpp">
+      <Filter>V8 Engine\JSFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\Diablo_II\ActMap.cpp">
+      <Filter>Map\Diablo II</Filter>
+    </ClCompile>
+    <ClCompile Include="Map\Diablo_II\LevelMap.cpp">
+      <Filter>Map\Diablo II</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,21 +105,56 @@
     <ClInclude Include="V8Script.h">
       <Filter>V8 Engine</Filter>
     </ClInclude>
-    <ClInclude Include="MenuControls.h" />
     <ClInclude Include="Unit.h">
       <Filter>Diablo II</Filter>
     </ClInclude>
     <ClInclude Include="Accessors.h">
       <Filter>V8 Engine\JSFunctions</Filter>
     </ClInclude>
-    <ClInclude Include="JSGlobals.h">
-      <Filter>V8 Engine\JSFunctions</Filter>
-    </ClInclude>
     <ClInclude Include="stringhash.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameDraw.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="JSGlobals.h">
+      <Filter>V8 Engine\JSFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Map.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="ActMap.h">
+      <Filter>Map\Diablo II</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuControls.h">
+      <Filter>V8 Engine\JSFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="JsGlobals2.h">
+      <Filter>V8 Engine\JSFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Diablo_II\LevelMap.h">
+      <Filter>Map\Diablo II</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Path\Path.h">
+      <Filter>Map\Path</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Path\AStarPath.h">
+      <Filter>Map\Path</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\BlankMap.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Path\Reduction\JSPathReducer.h">
+      <Filter>Map\Path\Reduction</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Path\Reduction\NoPathReducer.h">
+      <Filter>Map\Path\Reduction</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Path\Reduction\PathReducer.h">
+      <Filter>Map\Path\Reduction</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Path\Reduction\TeleportPathReducer.h">
+      <Filter>Map\Path\Reduction</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Path\Reduction\WalkPathReducer.h">
+      <Filter>Map\Path\Reduction</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +178,18 @@
     </Filter>
     <Filter Include="Diablo II\Handlers">
       <UniqueIdentifier>{49ebbbd5-6113-49e2-a2aa-0ce832372773}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map">
+      <UniqueIdentifier>{b6f372e1-5ad2-407b-b342-3caa79b0ec5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map\Diablo II">
+      <UniqueIdentifier>{b0596766-808f-4c75-ad72-8c127e9af84b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map\Path">
+      <UniqueIdentifier>{191db4ab-28f7-4732-a3d9-220829cec187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Map\Path\Reduction">
+      <UniqueIdentifier>{c0878b16-f279-4ee1-9cb7-5bb3e28cf41b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

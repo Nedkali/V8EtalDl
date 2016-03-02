@@ -316,10 +316,10 @@ JS_FUNC(CGetBaseStat)
 	
 }
 
-JS_FUNC(CGetPath)
-{
-
-}
+//JS_FUNC(CGetPath)
+//{
+//
+//}
 
 JS_FUNC(CGetPresetUnits)
 {

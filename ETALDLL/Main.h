@@ -6,7 +6,8 @@
 #include <vector>
 #include <map>
 #include "MenuControls.h"
-#include "ScreenHook.h"
+#include "GameDraw.h"
+
 #define D2ETAL_VERSION "v0.01"
 
 using namespace std;
@@ -31,7 +32,6 @@ struct Profile {
 struct Variables
 {
 	std::map<unsigned __int32, CellFile*> mCachedCellFiles;
-	std::vector<std::pair<DWORD, DWORD> > vUnitList;
 	char	szScriptPath[MAX_PATH];
 	char	szMpqfile[30];
 	char	szClassic[30];
@@ -40,11 +40,15 @@ struct Variables
 	bool	bzladder;
 	char	szScriptFile[32];
 	unsigned int iCharPos;
-	unsigned int meMaxGameTime;
+	DWORD	meMaxGameTime;
+	int		nRunWalk;
+	int		nWeaponsTab;
+	int		MeChickenHP;
+	int		MeChickenMP;
 	bool	revealautomap;
 	bool	bzUseRawKeys;
 	HMODULE hModule;
-
+	
 	BOOL	bActive;
 	WNDPROC oldWNDPROC;
 	HHOOK hMouseHook;

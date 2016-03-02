@@ -697,7 +697,6 @@ struct BnetData {
 	BYTE passlength;			//+0x3c1
 };
 
-
 struct WardenClientRegion_t {
 	DWORD cbAllocSize; //+00
 	DWORD offsetFunc1; //+04

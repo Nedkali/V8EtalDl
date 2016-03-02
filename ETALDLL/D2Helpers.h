@@ -24,8 +24,8 @@ enum DistanceType
 #define BUTTON_SP findControl(CONTROL_BUTTON, 5106, -1, 264,324,272,35)
 DWORD WINAPI MainThread(VOID*);
 void LoadMPQ(const char* mpq);
-void  Logincontrol();
-void SendDataCopy(char* app, int  code, char* data);
+
+bool SendDataCopy(char* app, int  code, char* data);
 void __fastcall Say(const char* szMessage);
 
 POINT	CalculateTextLen(const char* szwText, int Font);
@@ -36,7 +36,7 @@ POINT GetScreenSize();
 int D2GetScreenSizeX();
 int D2GetScreenSizeY();
 void GameDraw(void);
-void GameDrawOOG(void);
+void GameDrawMenu(void);
 
 void	WorldToScreen(POINT* pPos);
 void	ScreenToWorld(POINT *ptPos);

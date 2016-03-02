@@ -604,46 +604,65 @@ JS_FUNC(CMe)
 	HandleScope scope(isolate);
 	GameStructInfo* pInfo = *vpGameInfo;
 	BnetData* pData = *vpBnData;
-	char* realm = pData->szRealmName;
 
 	Local<Object> node = Object::New();
-	//node->SetAccessor(String::New("GetNext"), GetName);
-	node->SetAccessor(String::New("act"), GetAct);
-	node->SetAccessor(String::New("name"), GetName);
-	node->SetAccessor(String::New("charname"), GetName);
-	node->SetAccessor(String::New("areaid"), GetAreaId);
-	node->SetAccessor(String::New("x"), GetX);
-	node->SetAccessor(String::New("y"), GetY);
-	node->SetAccessor(String::New("hp"), GetHP);
-	node->SetAccessor(String::New("mp"), GetMP);
-	node->SetAccessor(String::New("hpmax"), GetHPMax);
-	node->SetAccessor(String::New("mpmax"), GetMPMax);
-	node->SetAccessor(String::New("classid"), GetClassid);
-	node->SetAccessor(String::New("mode"), GetMode);
-	node->SetAccessor(String::New("maxgametime"), GetMaxGameTime, SetMaxGameTime);
+	node->Set(String::New("account"), String::New(pData->szAccountName));
+	node->SetAccessor(String::New("act"), GetAct, NULL);
+	node->SetAccessor(String::New("areaid"), GetAreaId, NULL);
+	//[+] Me.Charloc
+	node->SetAccessor(String::New("charname"), GetName, NULL);
+	node->SetAccessor(String::New("chickenhp"), GetChickenHP, SetChickenHP);
+	node->SetAccessor(String::New("chickenmp"), GetChickenMP, SetChickenMP);
+	node->SetAccessor(String::New("classid"), GetClassid, NULL);
 	node->Set(String::New("diff"), Integer::New(fpGetDifficulty()));
 	node->Set(String::New("gamename"), String::New(pInfo->szGameName));
 	node->Set(String::New("gamepassword"), String::New(pInfo->szGamePassword));
 	node->Set(String::New("gameserverip"), String::New(pInfo->szGameServerIp));
-	node->Set(String::New("account"), String::New(pData->szAccountName));
-	node->Set(String::New("realm"), String::New(realm));
-	node->Set(String::New("ping"), Integer::New(*vpPing));
-	node->Set(String::New("fps"), Integer::New(*vpFPS));
-	node->Set(String::New("ladder"), Boolean::New(!!(pData->ladderflag)));
+	node->Set(String::New("gametype"), Integer::New(*vpExpCharFlag));
+	//[+] Me.Gatewayid
+	//[+] Me.Gid
+	node->SetAccessor(String::New("hpmax"), GetHPMax, NULL);
+	node->SetAccessor(String::New("hp"), GetHP, NULL);
+	node->Set(String::New("ingame"), Boolean::New((MENU::ClientState() == ClientStateMenu ? false : true)));
 	node->Set(String::New("itemoncursor"), Boolean::New(!!(fpGetCursorItem())));
-
-	//node->Set(String::New("SetSkill()"), Function::New(isolate, CSetSkill, args.Data()));
-
-	//node->Set(String::New("quitonhostile"), Boolean::New(Vars.bQuitOnHostile));
-	//node->Set(String::New("chickenhp"), Integer::New(Vars.ChickenHP));
-	//node->Set(String::New("chickenmp"), Integer::New(Vars.ChickenMP));
-
-
-	//node->SetAccessor(String::New("revealautomap"), GetAutoRevealMap, SetAutoRevealMap);
-	//node->SetAccessor(String::New("runwalk"), GetMaxGameTime, SetMaxGameTime);
-	//node->SetAccessor(String::New("itemoncursor"), GetMaxGameTime);
-	//node->CallAsFunction(node, 0, 0);
-
+	node->Set(String::New("ladder"), Boolean::New((double)(pData->ladderflag) == 0 ? false : true));
+	node->SetAccessor(String::New("maxgametime"), GetMaxGameTime, SetMaxGameTime);
+	node->SetAccessor(String::New("mode"), GetMode, NULL);
+	node->SetAccessor(String::New("mpmax"), GetMPMax, NULL);
+	node->SetAccessor(String::New("mp"), GetMP, NULL);
+	node->SetAccessor(String::New("name"), GetName, NULL);
+	node->Set(String::New("ping"), Integer::New(*vpPing));
+	node->Set(String::New("playertype"), Boolean::New(!!(pData->nCharFlags & PLAYER_TYPE_HARDCORE)));
+	//[+] Me.Playtype
+	//[+] Me.Quitonhostile
+	node->Set(String::New("realm"), String::New(pData->szRealmName));
+	node->Set(String::New("realmshort"), String::New(pData->szRealmName2));
+	//[+] Me.Revealautomap
+	node->SetAccessor(String::New("runwalk"), GetRunWalk, SetRunWalk); //needs more work, set's value but doesn't actually swap atm
+	//[+] Me.Showenemyonautomap
+	//[+] Me.Showmissileonautomap
+	node->Set(String::New("screensize"), Integer::New(fpGetScreenSize()));
+	node->Set(String::New("type"), Integer::New(fpGetPlayerUnit()->dwType));
+	node->SetAccessor(String::New("weaponstab"), GetWeaponsTab, SetWeaponsTab); //needs more work, set's value but doesn't actually swap atm
+	node->SetAccessor(String::New("x"), GetX, NULL);
+	node->SetAccessor(String::New("y"), GetY, NULL);
+	node->Set(String::New("fps"), Integer::New(*vpFPS));
+	//Methods
+	//[+] Me.Cancel()
+	//[+] Me.ClickItem()
+	//[+] Me.ClickMercItem()
+	//[+] Me.ClickParty()
+	//[+] Me.GetCursorItem()
+	//[+] Me.GetMercCost()
+	//[+] Me.GetQuest()
+	//[+] Me.GetSkillStatus()
+	//[+] Me.Repair()
+	//[+] Me.SelectNPCMenu()
+	//[+] Me.SetSkill()		//node->Set(String::New("SetSkill()"), Function::New(isolate, CSetSkill, args.Data()));
+	//[+] Me.SwapWeapons()
+	//[+] Me.TakeWaypoint()
+	//[+] Me.UseBelt()
+	
 	args.GetReturnValue().Set(node);
 }
 
@@ -947,10 +966,17 @@ JS_FUNC(CGetPlayerUnit)
 	Local<String> props = Handle<String>::Cast(fc);
 	args.GetReturnValue().Set(fc);
 }
+
 JS_FUNC(CExitGame)
 {
 	if (ClientGameState() != ClientStateMenu)
 		fpExitGame();
+	Sleep(2000);
+	bool result = SendDataCopy("Etal Manager", 6153, "Boo");
+	if (!result)
+	{
+		TerminateProcess(GetCurrentProcess(), 0);
+	}
 }
 
 JS_FUNC(CSetSkill)

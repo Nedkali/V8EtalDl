@@ -6,6 +6,23 @@
 #pragma region Unit
 //Need to wrap these as a single accesible property (Unit)
 
+
+void GetRunWalk(Local<String> property, const PropertyCallbackInfo<Value>& info)
+{
+	INT32 val = Vars.nRunWalk;
+	/*int32_t rw = *vpAlwaysRun;
+	info.GetReturnValue().Set(Integer::New(rw));*/
+	return info.GetReturnValue().Set(Integer::New(val));
+}
+void SetRunWalk(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
+{
+	INT32 val = value->Uint32Value();
+	Vars.nRunWalk = val;
+	int32_t rw = *vpAlwaysRun;
+	info.GetReturnValue().Set(Integer::New(rw));
+	return info.GetReturnValue().Set(Integer::New(val));
+}
+
 void GetAutoRevealMap(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	/*bool val = Vars.revealautomap;
@@ -36,6 +53,67 @@ void SetAutoRevealMap(Local<String> property, Local<Value> value, const Property
 		RevealRoom(room, bDrawPresets);
 	}
 	return info.GetReturnValue().Set(Integer::New(bDrawPresets));*/
+}
+
+void GetWeaponsTab(Local<String> property, const PropertyCallbackInfo<Value>& info)
+{
+	INT32 val = Vars.nWeaponsTab;
+	return info.GetReturnValue().Set(Integer::New(val));
+}
+void SetWeaponsTab(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
+{
+	INT32 val = value->Uint32Value();
+	Vars.nWeaponsTab = val;
+
+	int32_t nParameter = NULL;
+
+	if (val > 0)
+	{
+		nParameter = val;
+	}
+
+	if (nParameter == NULL)
+	{
+		// don't perform a weapon switch if current gametype is classic
+		BnetData* pData = (*vpBnData);
+		if (pData)
+		{
+			if (!(pData->nCharFlags & PLAYER_TYPE_EXPAC))
+				return info.GetReturnValue().Set(Integer::New(0));
+		}
+		else
+			return info.GetReturnValue().Set(Integer::New(0));
+
+		BYTE aPacket[1];
+		aPacket[0] = 0x60;
+		fpSendPacket(1, 1, aPacket);
+	}
+	else
+		return info.GetReturnValue().Set(Integer::New((*vpbWeapSwitch)));
+}
+
+void GetChickenHP(Local<String> property, const PropertyCallbackInfo<Value>& info)
+{
+	INT32 val = Vars.MeChickenHP;
+	return info.GetReturnValue().Set(Integer::New(val));
+}
+void SetChickenHP(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
+{
+	INT32 val = value->Uint32Value();
+	Vars.MeChickenHP = val;
+	return info.GetReturnValue().Set(Integer::New(val));
+}
+
+void GetChickenMP(Local<String> property, const PropertyCallbackInfo<Value>& info)
+{
+	INT32 val = Vars.MeChickenMP;
+	return info.GetReturnValue().Set(Integer::New(val));
+}
+void SetChickenMP(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
+{
+	INT32 val = value->Uint32Value();
+	Vars.MeChickenMP = val;
+	return info.GetReturnValue().Set(Integer::New(val));
 }
 
 void GetMaxGameTime(Local<String> property, const PropertyCallbackInfo<Value>& info)

@@ -52,7 +52,6 @@ JS_FUNC(CGetLocaleString);
 JS_FUNC(CUseStatPoint);
 JS_FUNC(CUseSkillPoint);
 JS_FUNC(CGold);
-JS_FUNC(CClickMap); 
 JS_FUNC(CGetControl);
 JS_FUNC(CSelectRealm);
 JS_FUNC(CGetWayPoint);
@@ -63,9 +62,10 @@ JS_FUNC(CGetPresetUnits);	//subareaid needs corrected
 JS_FUNC(CGetArea);			//needs written
 JS_FUNC(CGetPath);			//needs written
 JS_FUNC(CGetBaseStat);		//needs written
-JS_FUNC(CGetUnit);			//needs written
+JS_FUNC(CGetUnit);			//WIP : needs more work
 JS_FUNC(CGetDistance);		//needs written
 JS_FUNC(CRunGC);			//needs written
+JS_FUNC(CClickMap);			//object reference needs work
 
 //needs set under me global
 JS_FUNC(CSetSkill);
@@ -83,14 +83,14 @@ JS_FUNC(CGetLevel);
 
 //[-] GLOBALS D2NT
 //[+] CheckCollision()
-//[+] ClickMap()
+//[+] ClickMap()				//WIP
 //[+] CloseD2()					//added
 //[+] Delay()					//added
 //[+] ExitGame()				//added
 //[+] FileOpen()
 //[+] GetArea()					//WIP
 //[+] GetBaseStat()				//WIP
-//[+] GetControl()
+//[+] GetControl()				//WIP
 //[+] GetCursorType()
 //[+] GetDistance()				//WIP
 //[+] GetLocaleString()			//added
@@ -100,7 +100,7 @@ JS_FUNC(CGetLevel);
 //[+] GetPresetUnits()			//added
 //[+] GetRoom()
 //[+] GetScript()
-//[+] GetTickCount()
+//[+] GetTickCount()			//added
 //[+] GetUIState()				//added
 //[+] GetUnit()					/WIP
 //[+] GetWaypoint()				//added
@@ -110,7 +110,7 @@ JS_FUNC(CGetLevel);
 //[+] Print()					//added
 //[+] RegisterEvent()
 //[+] Random()					//added
-//[+] RunGC()
+//[+] RunGC()					//WIP
 //[+] Say()						//added
 //[+] SendCopyData()			//added
 //[+] SetStatusText()
@@ -120,25 +120,25 @@ JS_FUNC(CGetLevel);
 //[+] UnregisterEvent()
 
 //[-] Me (Global Object)
-//[+] Me.Account
+//[+] Me.Account				//added
 //[+] Me.Act					//added
 //[+] Me.Areaid					//added
 //[+] Me.Charloc
 //[+] Me.Charname				//added
-//[+] Me.Chickenhp
-//[+] Me.Chickenmp
+//[+] Me.Chickenhp				//added
+//[+] Me.Chickenmp				//added
 //[+] Me.Classid				//added
-//[+] Me.Diff
-//[+] Me.Gamename
-//[+] Me.Gamepassword
-//[+] Me.Gameserverip
-//[+] Me.Gametype
+//[+] Me.Diff					//added
+//[+] Me.Gamename				//added
+//[+] Me.Gamepassword			//added
+//[+] Me.Gameserverip			//added
+//[+] Me.Gametype				//added
 //[+] Me.Gatewayid
 //[+] Me.Gid
 //[+] Me.Hpmax					//added
 //[+] Me.Hp						//added
-//[+] Me.Ingame
-//[+] Me.itemoncursor
+//[+] Me.Ingame					//added
+//[+] Me.itemoncursor			//added
 //[+] Me.Ladder					//WIP
 //[+] Me.Maxgametime			//added
 //[+] Me.Mode					//added
@@ -146,18 +146,18 @@ JS_FUNC(CGetLevel);
 //[+] Me.Mp						//added
 //[+] Me.Name					//added
 //[+] Me.Ping					//added	
-//[+] Me.Playertype
+//[+] Me.Playertype				//added
 //[+] Me.Playtype
 //[+] Me.Quitonhostile
-//[+] Me.Realm
-//[+] Me.Realmshort
+//[+] Me.Realm					//added : WIP
+//[+] Me.Realmshort				//added
 //[+] Me.Revealautomap
-//[+] Me.Runwalk
+//[+] Me.Runwalk				//added
 //[+] Me.Showenemyonautomap
 //[+] Me.Showmissileonautomap
-//[+] Me.Screensize
+//[+] Me.Screensize				//added
 //[+] Me.Type					//added
-//[+] Me.Weaponstab
+//[+] Me.Weaponstab				//added
 //[+] Me.X						//added
 //[+] Me.Y						//added
 //[+] Me.Cancel()
@@ -182,14 +182,14 @@ JS_FUNC(CGetLevel);
 //[+] Unit.gid
 //[+] Unit.hp					//added
 //[+] Unit.hpmax				//added
-//[+] Unit.itemclass			//added
+//[+] Unit.itemclass			//added WIP
 //[+] Unit.itemdesc				//added
 //[+] Unit.itemflag
-//[+] Unit.itemlevel			//added
+//[+] Unit.itemlevel			//added WIP
 //[+] Unit.itemloc				//added
-//[+] Unit.itemprefix			//added
-//[+] Unit.itemsuffix			//added
-//[+] Unit.itemtype				//added
+//[+] Unit.itemprefix			//added WIP
+//[+] Unit.itemsuffix			//added WIP
+//[+] Unit.itemtype				//added WIP
 //[+] Unit.mode					//added
 //[+] Unit.mp					//added
 //[+] Unit.mpmax				//added

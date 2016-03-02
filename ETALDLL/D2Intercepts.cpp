@@ -44,7 +44,7 @@ void __declspec(naked) GameDraw_Intercept()
 	}
 }
 
-void GameDrawOOG_Intercept(void)
+void GameDrawMenu_Intercept(void)
 {
-	GameDrawOOG();
+	GameDrawMenu();
 }

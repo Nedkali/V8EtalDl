@@ -14,6 +14,18 @@ int Itemtype(UnitAny* pUnit);
 char* Itemdesc(UnitAny* pUnit);
 void ReadProcessBYTES(HANDLE hProcess, DWORD lpAddress, void* buf, int len);
 
+void GetRunWalk(Local<String> property, const PropertyCallbackInfo<Value>& info);
+void SetRunWalk(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
+
+void GetWeaponsTab(Local<String> property, const PropertyCallbackInfo<Value>& info);
+void SetWeaponsTab(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
+
+void GetChickenHP(Local<String> property, const PropertyCallbackInfo<Value>& info);
+void SetChickenHP(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
+
+void GetChickenMP(Local<String> property, const PropertyCallbackInfo<Value>& info);
+void SetChickenMP(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
+
 void GetAutoRevealMap(Local<String> property, const PropertyCallbackInfo<Value>& info);
 void SetAutoRevealMap(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
 

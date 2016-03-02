@@ -56,10 +56,6 @@ bool Input::Initialize()
 		i++;
 	}
 	return true;
-	/*DWORD ThreadProcessID = GetWindowThreadProcessId(fpGetHwnd(), 0);
-	SetWindowsHookEx(WH_KEYBOARD, Input::KeyPress, NULL, ThreadProcessID);
-	SetWindowsHookEx(WH_MOUSE, Input::MouseMove, NULL, ThreadProcessID);
-	return true;*/
 }
 
 void Input::Shutdown()
@@ -77,7 +73,7 @@ LONG WINAPI Input::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		if (pCopy)
 		{
-			if (pCopy->dwData == 0x00)
+			if (pCopy->dwData == 0x0000)
 			{
 				//TODO : Add code
 			}

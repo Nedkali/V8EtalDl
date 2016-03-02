@@ -10,13 +10,13 @@ using namespace v8;
 Profile  Prof;
 Variables Vars;
 void StartUpV8();
-void SendDataCopy(char* app, int  code, char* data)// make this bool later on
+bool SendDataCopy(char* app, int  code, char* data)// make this bool later on
 {
 	HWND EtalhWnd = FindWindow(NULL, app);
 	if (!EtalhWnd)
 	{
 		//MessageBox(NULL, "Window not found", "File Path", NULL);
-		return;
+		return false;
 	}
 	DWORD thwnd = GetCurrentProcessId();
 
@@ -25,9 +25,10 @@ void SendDataCopy(char* app, int  code, char* data)// make this bool later on
 	cds.dwData = code;
 	cds.cbData = sizeof(TCHAR) * (strlen(lpszString) + 1);
 	cds.lpData = lpszString;
-	//bool b = SendMessage(EtalhWnd, WM_COPYDATA, thwnd, (LPARAM)&cds) != 0;
-	SendMessage(EtalhWnd, WM_COPYDATA, thwnd, (LPARAM)&cds);
-	return;
+	bool b = SendMessage(EtalhWnd, WM_COPYDATA, thwnd, (LPARAM)&cds) == 0;
+	//SendMessage(EtalhWnd, WM_COPYDATA, thwnd, (LPARAM)&cds);
+
+	return b;
 }
 
 DWORD WINAPI MainThread(VOID* param)

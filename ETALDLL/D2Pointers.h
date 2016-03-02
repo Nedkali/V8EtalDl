@@ -177,6 +177,9 @@ FPTR(HWND __stdcall, GetHwnd, (void), "D2gfx.dll", 0xB0C0)
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Bnclient Variable Pointers
 ////////////////////////////////////////////////////////////////////////////////////////////////
+VPTR(DWORD, bWeapSwitch, "D2Client.dll", 0x11CB84)
+FPTR(DWORD __stdcall, GetScreenSize, (void), "D2Gfx.dll", 0xA940)
+VPTR(DWORD, ExpCharFlag, "D2Client.dll", 0x1087B4)
 FPTR(void __stdcall, DrawAutomapCell2, (CellContext* context, DWORD xpos, DWORD ypos, DWORD bright2, DWORD bright, BYTE *coltab),"D2Gfx.dll", 0x7E60)
 FPTR(void __fastcall, PerformGoldDialogAction, (void), "D2Client.dll", 0x197F0)
 FPTR(CellFile* __fastcall, LoadCellFile, (const char* szFile, int Type), "D2Win.DLL", -10023)

@@ -12,27 +12,23 @@
 #include "D2Helpers.h"
 #include "D2Pointers.h"
 
-void GameDrawOOG(void)
+void GameDrawMenu(void)
 {
 	D2WIN_DrawSprites();
 	if (Vars.bActive && MENU::ClientState() == ClientStateMenu)
 	{
-		Genhook::DrawAll(OOG);
 		DrawLogo();
 	}
-	else
-		Sleep(10);
+	Sleep(10);
 }
 
 void GameDraw(void)
 {
 	if (Vars.bActive && MENU::ClientState() == ClientStateInGame)
 	{
-		Genhook::DrawAll(IG);
 		DrawLogo();
 	}
-	else
-		Sleep(10);
+	Sleep(10);
 }
 
 double GetDistance(long x1, long y1, long x2, long y2, DistanceType type)

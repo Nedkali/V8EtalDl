@@ -7,6 +7,6 @@ VOID __fastcall ClassicSTUB();
 VOID __fastcall LodSTUB();
 VOID __fastcall KeyOwnerSTUB();
 void GameDraw_Intercept();
-void GameDrawOOG_Intercept();
+void GameDrawMenu_Intercept();
 
 #endif

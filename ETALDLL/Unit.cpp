@@ -118,7 +118,7 @@ static UnitAny* GetNextUnitFromTables(UnitAny* curUnit,
 UnitAny* GetNextUnit(UnitAny* pUnit, char* szName, DWORD dwClassId,
 	DWORD dwType, DWORD dwMode)
 {
-	if(ClientGameState() != ClientStateInGame)
+	if(MENU::ClientState() != ClientStateInGame)
 		return NULL;
 
 	if(!pUnit)

@@ -17,7 +17,7 @@ void GameDrawMenu(void)
 	D2WIN_DrawSprites();
 	if (Vars.bActive && MENU::ClientState() == ClientStateMenu)
 	{
-		//DrawLogo();
+		DrawLogo();
 	}
 	Sleep(10);
 }
@@ -26,7 +26,7 @@ void GameDraw(void)
 {
 	if (Vars.bActive && MENU::ClientState() == ClientStateInGame)
 	{
-		//DrawLogo();
+		DrawLogo();
 	}
 	Sleep(10);
 }

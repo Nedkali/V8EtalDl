@@ -23,6 +23,11 @@ void SetRunWalk(Local<String> property, Local<Value> value, const PropertyCallba
 	return info.GetReturnValue().Set(Integer::New(val));
 }
 
+void meSetSkill(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
+{
+	D2Funcs::SetSkill(value->Uint32Value(), value->BooleanValue());
+}
+
 void GetAutoRevealMap(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	/*bool val = Vars.revealautomap;

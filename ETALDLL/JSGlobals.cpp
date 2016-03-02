@@ -388,6 +388,7 @@ JS_FUNC(CGetPresetUnits)
 				node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(presetUnit->dwPosY));
 				node->Set(String::NewFromUtf8(isolate, "roomx"), Integer::New(presetUnit->dwRoomX));
 				node->Set(String::NewFromUtf8(isolate, "roomy"), Integer::New(presetUnit->dwRoomY));
+				node->Set(String::NewFromUtf8(isolate, "length"), Integer::New(dwArrayCount+1));
 				//subareaid crashes game atm
 				//node->Set(String::NewFromUtf8(isolate, "subareaid"), Integer::New(fpGetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->pNextLevel->dwLevelNo));
 				nodes->Set(dwArrayCount, node);
@@ -591,11 +592,17 @@ void init_me()
 	Persistent<Context> persistent_context(isolate, context);	
 	Context::Scope context_scope(context);
 	context->Enter();
-	Handle<String> source = String::New("var me = InitMeOnce();");	//("var me = { SetSkill: function(skillid, left) { SetSkill(skillid, left); } }; ");
+
+	Handle<String> source = String::New("var me = InitMeOnce();"); //("var me = { SetSkill: function(skillid, left) { SetSkill(skillid, left); } }; ");
 	Handle<Script> script = Script::Compile(source);
 	script->Run();
 	context->Exit();
 	return;
+}
+bool setSkill(WORD Skillid, bool left)
+{
+	D2Funcs::SetSkill(Skillid, left);
+	return true;
 }
 JS_FUNC(CMe)
 {
@@ -609,7 +616,7 @@ JS_FUNC(CMe)
 	node->Set(String::New("account"), String::New(pData->szAccountName));
 	node->SetAccessor(String::New("act"), GetAct, NULL);
 	node->SetAccessor(String::New("areaid"), GetAreaId, NULL);
-	//[+] Me.Charloc
+	// node->SetAccessor(String::New("charloc"), charloc, NULL);
 	node->SetAccessor(String::New("charname"), GetName, NULL);
 	node->SetAccessor(String::New("chickenhp"), GetChickenHP, SetChickenHP);
 	node->SetAccessor(String::New("chickenmp"), GetChickenMP, SetChickenMP);
@@ -619,8 +626,8 @@ JS_FUNC(CMe)
 	node->Set(String::New("gamepassword"), String::New(pInfo->szGamePassword));
 	node->Set(String::New("gameserverip"), String::New(pInfo->szGameServerIp));
 	node->Set(String::New("gametype"), Integer::New(*vpExpCharFlag));
-	//[+] Me.Gatewayid
-	//[+] Me.Gid
+	// node->SetAccessor(String::New("gatewayid"), gatewayid, NULL);
+	// node->SetAccessor(String::New("gid"), gid, NULL);
 	node->SetAccessor(String::New("hpmax"), GetHPMax, NULL);
 	node->SetAccessor(String::New("hp"), GetHP, NULL);
 	node->Set(String::New("ingame"), Boolean::New((MENU::ClientState() == ClientStateMenu ? false : true)));
@@ -633,20 +640,23 @@ JS_FUNC(CMe)
 	node->SetAccessor(String::New("name"), GetName, NULL);
 	node->Set(String::New("ping"), Integer::New(*vpPing));
 	node->Set(String::New("playertype"), Boolean::New(!!(pData->nCharFlags & PLAYER_TYPE_HARDCORE)));
-	//[+] Me.Playtype
-	//[+] Me.Quitonhostile
+	// node->SetAccessor(String::New("playtype"), playtype, NULL);
+	// node->SetAccessor(String::New("quitonhostile"), quitonhostile, NULL);
 	node->Set(String::New("realm"), String::New(pData->szRealmName));
 	node->Set(String::New("realmshort"), String::New(pData->szRealmName2));
-	//[+] Me.Revealautomap
+	// node->SetAccessor(String::New("revealautomap"), revealautomap, NULL);
 	node->SetAccessor(String::New("runwalk"), GetRunWalk, SetRunWalk); //needs more work, set's value but doesn't actually swap atm
-	//[+] Me.Showenemyonautomap
-	//[+] Me.Showmissileonautomap
+	// node->SetAccessor(String::New("showenemyonautomap"), showenemyonautomap, NULL);
+	// node->SetAccessor(String::New("showmissileonautomap"), showmissileonautomap, NULL);
 	node->Set(String::New("screensize"), Integer::New(fpGetScreenSize()));
 	node->Set(String::New("type"), Integer::New(fpGetPlayerUnit()->dwType));
 	node->SetAccessor(String::New("weaponstab"), GetWeaponsTab, SetWeaponsTab); //needs more work, set's value but doesn't actually swap atm
 	node->SetAccessor(String::New("x"), GetX, NULL);
 	node->SetAccessor(String::New("y"), GetY, NULL);
 	node->Set(String::New("fps"), Integer::New(*vpFPS));
+	Local<Object> fn = Object::New();
+	fn->SetAccessor(String::New("SetSkill"), NULL, meSetSkill);
+	node->SetPrototype(fn);
 	//Methods
 	//[+] Me.Cancel()
 	//[+] Me.ClickItem()
@@ -963,7 +973,7 @@ JS_FUNC(CGetPlayerUnit)
 	fc->SetAccessor(String::New("mpmax"), GetMPMax);
 	fc->SetAccessor(String::New("classid"), GetClassid);
 	fc->SetAccessor(String::New("mode"), GetMode);
-	Local<String> props = Handle<String>::Cast(fc);
+	//Local<String> props = Handle<String>::Cast(fc);
 	args.GetReturnValue().Set(fc);
 }
 

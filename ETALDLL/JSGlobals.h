@@ -21,6 +21,35 @@ struct myPresetUnit //for CGetPresetUnits
 	DWORD dwLevel;
 };
 
+class ME{
+public:
+
+	// This allows us to use the constructor in the implementation's methods
+	static v8::Persistent<v8::Function> constructor;
+	static void Init(v8::Handle<v8::Object> target);
+
+private:
+	ME();
+	~ME();
+	static v8::Handle<v8::Value> Cancel(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> ClickItem(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> ClickMercItem(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> ClickParty(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> GetCursorItem(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> GetMercCost(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> GetQuest(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> GetSkillStatus(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> Repair(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> SelectNPCMenu(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> SetSkill(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> SwapWeapons(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> TakeWaypoint(const v8::FunctionCallbackInfo<v8::Value>& args);
+	static v8::Handle<v8::Value> UseBelt(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+	// The method that will construct & return the new JavaScript object
+	static v8::Handle<v8::Value> CreateMeObject();
+};
+
 // **Context
 Handle<Context>CreateContext(Isolate* isolate);
 JS_FUNC(CMe); void init_me();

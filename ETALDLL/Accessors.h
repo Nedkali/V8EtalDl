@@ -4,6 +4,8 @@
 //Unit Global Accessors
 #pragma region Unit
 
+void meSetSkill(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
+
 char* Itemflag(UnitAny* pUnit);
 int Itemclass(UnitAny* pUnit);
 char* Itemprefix(UnitAny* pUnit);
@@ -13,6 +15,7 @@ int ItemYsize(UnitAny* pUnit);
 int Itemtype(UnitAny* pUnit);
 char* Itemdesc(UnitAny* pUnit);
 void ReadProcessBYTES(HANDLE hProcess, DWORD lpAddress, void* buf, int len);
+
 
 void GetRunWalk(Local<String> property, const PropertyCallbackInfo<Value>& info);
 void SetRunWalk(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);

@@ -182,6 +182,7 @@
     <ClInclude Include="GameDraw.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="JsDefines.h" />
+    <ClInclude Include="JSGlobalMethods.h" />
     <ClInclude Include="JSGlobals.h" />
     <ClInclude Include="JsGlobals2.h" />
     <ClInclude Include="Map\BlankMap.h" />
@@ -218,6 +219,7 @@
     <ClCompile Include="GameDraw.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="JSGlobalMethods.cpp" />
     <ClCompile Include="JSGlobals.cpp" />
     <ClCompile Include="JsGlobals2.cpp" />
     <ClCompile Include="Main.cpp">

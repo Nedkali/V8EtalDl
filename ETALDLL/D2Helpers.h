@@ -36,7 +36,8 @@ POINT GetScreenSize();
 int D2GetScreenSizeX();
 int D2GetScreenSizeY();
 void GameDraw(void);
-void GameDrawMenu(void);
+void GameDrawMenu(void); 
+bool IsScrollingText();
 
 void	WorldToScreen(POINT* pPos);
 void	ScreenToWorld(POINT *ptPos);

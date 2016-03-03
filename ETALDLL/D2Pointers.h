@@ -177,6 +177,14 @@ FPTR(HWND __stdcall, GetHwnd, (void), "D2gfx.dll", 0xB0C0)
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Bnclient Variable Pointers
 ////////////////////////////////////////////////////////////////////////////////////////////////
+FPTR(int __stdcall, GetUnitState, (UnitAny *pUnit, DWORD dwStateNo), "D2Common.dll", 0x2F310)
+FPTR(int __stdcall, GetQuestFlag, (void* QuestInfo, DWORD dwAct, DWORD dwQuest), "D2Common.dll", 0x2D7A0)
+
+
+VPTR(WindowHandlerHashTable, WindowHandlers, "Storm.dll", 0x55878)
+FPTR(void __fastcall, ClearScreen, (void), "D2Client.dll", 0x7AB80)
+FPTR(UnitAny* __fastcall, GetCurrentInteractingNPC, (void), "D2Client.dll", 0x790D0)
+
 VPTR(DWORD, bWeapSwitch, "D2Client.dll", 0x11CB84)
 FPTR(DWORD __stdcall, GetScreenSize, (void), "D2Gfx.dll", 0xA940)
 VPTR(DWORD, ExpCharFlag, "D2Client.dll", 0x1087B4)
@@ -225,7 +233,6 @@ FUNCPTR(D2COMMON, GetLevel, Level * __fastcall, (ActMisc *pMisc, DWORD dwLevelNo
 FUNCPTR(D2COMMON, GetStatList, StatList* __stdcall, (UnitAny* pUnit, DWORD dwUnk, DWORD dwMaxEntries), 0x57830)
 FUNCPTR(D2COMMON, CopyStatList, DWORD __stdcall, (StatList* pStatList, Stat* pStatArray, DWORD dwMaxEntries), 0x57D30)
 FUNCPTR(D2COMMON, GetUnitStat, long __stdcall, (UnitAny* pUnit, DWORD dwStat, DWORD dwStat2), 0x584E0)
-FUNCPTR(D2COMMON, GetUnitState, int __stdcall, (UnitAny *pUnit, DWORD dwStateNo), 0x2F310)
 FUNCPTR(D2CLIENT, GetMonsterOwner, DWORD __fastcall, (DWORD nMonsterId), 0x8E3D0)
 FUNCPTR(D2COMMON, GetLevelText, LevelText * __stdcall, (DWORD levelno), 0x30CA0)
 FUNCPTR(D2CLIENT, GetLevelName_I, wchar_t* __fastcall, (DWORD levelId), 0x18250)
@@ -242,6 +249,7 @@ FUNCPTR(D2CLIENT, DrawRectFrame, void __fastcall, (DWORD Rect), 0x17D10)
 //FUNCPTR(D2WIN, LoadCellFile, CellFile* __fastcall, (const char* szFile, int Type), -10023)
 FUNCPTR(D2CMP, InitCellFile, void __stdcall, (void *cellfile, CellFile **outptr, char *srcfile, DWORD lineno, DWORD filever, char *filename), 0x13B50)
 FUNCPTR(D2WIN, DrawSprites, void __fastcall, (void), 0xEAA0)
+FUNCPTR(D2CLIENT, CloseNPCTalk, DWORD __stdcall, (void* unk), 0x77AB0)
 
 
 

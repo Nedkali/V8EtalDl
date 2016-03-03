@@ -58,6 +58,9 @@
     <ClCompile Include="GameDraw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JSGlobalMethods.cpp">
+      <Filter>V8 Engine\JSFunctions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JsDefines.h">
@@ -161,6 +164,9 @@
     </ClInclude>
     <ClInclude Include="GameDraw.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JSGlobalMethods.h">
+      <Filter>V8 Engine\JSFunctions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

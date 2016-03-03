@@ -66,7 +66,6 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CSelectChar, "SelectChar");
 	JS_FLINK(CSelectRealm, "SelectRealm");
 	JS_FLINK(CSendCopyData, "SendCopyData");		// required
-	JS_FLINK(CSetSkill, "SetSkill");				// Needs to be set for me.Global
 	//JS_FLINK(CSetStatusText, "SetStatusText");	// required
 	JS_FLINK(CSetText, "SetText");
 	JS_FLINK(CSetTitle, "SetTitle");				// Added
@@ -388,7 +387,7 @@ JS_FUNC(CGetPresetUnits)
 				node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(presetUnit->dwPosY));
 				node->Set(String::NewFromUtf8(isolate, "roomx"), Integer::New(presetUnit->dwRoomX));
 				node->Set(String::NewFromUtf8(isolate, "roomy"), Integer::New(presetUnit->dwRoomY));
-				node->Set(String::NewFromUtf8(isolate, "length"), Integer::New(dwArrayCount+1));
+				node->Set(String::NewFromUtf8(isolate, "length"), Integer::New(dwArrayCount + 1));
 				//subareaid crashes game atm
 				//node->Set(String::NewFromUtf8(isolate, "subareaid"), Integer::New(fpGetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->pNextLevel->dwLevelNo));
 				nodes->Set(dwArrayCount, node);
@@ -599,11 +598,7 @@ void init_me()
 	context->Exit();
 	return;
 }
-bool setSkill(WORD Skillid, bool left)
-{
-	D2Funcs::SetSkill(Skillid, left);
-	return true;
-}
+
 JS_FUNC(CMe)
 {
 	Local<Context> context = Context::GetCurrent();
@@ -612,7 +607,9 @@ JS_FUNC(CMe)
 	GameStructInfo* pInfo = *vpGameInfo;
 	BnetData* pData = *vpBnData;
 
-	Local<Object> node = Object::New();
+	//Local<Object> t = v8::ObjectTemplate::New();
+	
+	Local<ObjectTemplate> node = ObjectTemplate::New();
 	node->Set(String::New("account"), String::New(pData->szAccountName));
 	node->SetAccessor(String::New("act"), GetAct, NULL);
 	node->SetAccessor(String::New("areaid"), GetAreaId, NULL);
@@ -654,26 +651,25 @@ JS_FUNC(CMe)
 	node->SetAccessor(String::New("x"), GetX, NULL);
 	node->SetAccessor(String::New("y"), GetY, NULL);
 	node->Set(String::New("fps"), Integer::New(*vpFPS));
-	Local<Object> fn = Object::New();
-	fn->SetAccessor(String::New("SetSkill"), NULL, meSetSkill);
-	node->SetPrototype(fn);
 	//Methods
-	//[+] Me.Cancel()
+	node->Set(String::New("Cancel"), FunctionTemplate::New(meCancel));
+	node->Set(String::New("GetState"), FunctionTemplate::New(meGetState));
 	//[+] Me.ClickItem()
 	//[+] Me.ClickMercItem()
 	//[+] Me.ClickParty()
 	//[+] Me.GetCursorItem()
 	//[+] Me.GetMercCost()
-	//[+] Me.GetQuest()
+	node->Set(String::New("GetQuest"), FunctionTemplate::New(meGetQuest));
 	//[+] Me.GetSkillStatus()
-	//[+] Me.Repair()
+	node->Set(String::New("Repair"), FunctionTemplate::New(meRepair));
 	//[+] Me.SelectNPCMenu()
-	//[+] Me.SetSkill()		//node->Set(String::New("SetSkill()"), Function::New(isolate, CSetSkill, args.Data()));
+	node->Set(String::New("SetSkill"), FunctionTemplate::New(meSetSkill));
+	node->Set(String::New("SwapWeapons"), FunctionTemplate::New(meSwapWeapons));
 	//[+] Me.SwapWeapons()
 	//[+] Me.TakeWaypoint()
 	//[+] Me.UseBelt()
 	
-	args.GetReturnValue().Set(node);
+	args.GetReturnValue().Set(node->NewInstance());
 }
 
 JS_FUNC(CGold)
@@ -987,21 +983,6 @@ JS_FUNC(CExitGame)
 	{
 		TerminateProcess(GetCurrentProcess(), 0);
 	}
-}
-
-JS_FUNC(CSetSkill)
-{
-	HandleScope handle_scope(args.GetIsolate());
-	if (args.Length() == 2)
-	{
-		int skillid = args[0]->Uint32Value();
-		bool bLeft = args[1]->BooleanValue();
-		D2Funcs::SetSkill(skillid, bLeft);
-		args.GetReturnValue().Set(Boolean::New(true));
-	}
-
-	args.GetReturnValue().Set(Boolean::New(false));
-	return;
 }
 
 JS_FUNC(CMove)

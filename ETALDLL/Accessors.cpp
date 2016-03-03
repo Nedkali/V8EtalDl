@@ -23,11 +23,6 @@ void SetRunWalk(Local<String> property, Local<Value> value, const PropertyCallba
 	return info.GetReturnValue().Set(Integer::New(val));
 }
 
-void meSetSkill(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info)
-{
-	D2Funcs::SetSkill(value->Uint32Value(), value->BooleanValue());
-}
-
 void GetAutoRevealMap(Local<String> property, const PropertyCallbackInfo<Value>& info)
 {
 	/*bool val = Vars.revealautomap;
@@ -69,32 +64,7 @@ void SetWeaponsTab(Local<String> property, Local<Value> value, const PropertyCal
 {
 	INT32 val = value->Uint32Value();
 	Vars.nWeaponsTab = val;
-
-	int32_t nParameter = NULL;
-
-	if (val > 0)
-	{
-		nParameter = val;
-	}
-
-	if (nParameter == NULL)
-	{
-		// don't perform a weapon switch if current gametype is classic
-		BnetData* pData = (*vpBnData);
-		if (pData)
-		{
-			if (!(pData->nCharFlags & PLAYER_TYPE_EXPAC))
-				return info.GetReturnValue().Set(Integer::New(0));
-		}
-		else
-			return info.GetReturnValue().Set(Integer::New(0));
-
-		BYTE aPacket[1];
-		aPacket[0] = 0x60;
-		fpSendPacket(1, 1, aPacket);
-	}
-	else
-		return info.GetReturnValue().Set(Integer::New((*vpbWeapSwitch)));
+	return info.GetReturnValue().Set(Integer::New(val));
 }
 
 void GetChickenHP(Local<String> property, const PropertyCallbackInfo<Value>& info)

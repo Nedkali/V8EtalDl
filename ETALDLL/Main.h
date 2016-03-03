@@ -53,6 +53,11 @@ struct Variables
 	WNDPROC oldWNDPROC;
 	HHOOK hMouseHook;
 	HHOOK hKeybHook;
+
+	BOOL	bClickAction;
+	DWORD dwSelectedUnitId;
+	DWORD dwSelectedUnitType;
+	POINT pMouseCoords;
 };
 
 extern Profile  Prof;

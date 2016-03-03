@@ -7,6 +7,7 @@
 #include "JsDefines.h"
 #include "D2Pointers.h"
 #include "Unit.h"
+#include "JSGlobalMethods.h"
 
 using namespace v8;
 
@@ -19,35 +20,6 @@ struct myPresetUnit //for CGetPresetUnits
 	DWORD dwPosY;
 	DWORD dwId;
 	DWORD dwLevel;
-};
-
-class ME{
-public:
-
-	// This allows us to use the constructor in the implementation's methods
-	static v8::Persistent<v8::Function> constructor;
-	static void Init(v8::Handle<v8::Object> target);
-
-private:
-	ME();
-	~ME();
-	static v8::Handle<v8::Value> Cancel(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> ClickItem(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> ClickMercItem(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> ClickParty(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> GetCursorItem(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> GetMercCost(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> GetQuest(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> GetSkillStatus(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> Repair(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> SelectNPCMenu(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> SetSkill(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> SwapWeapons(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> TakeWaypoint(const v8::FunctionCallbackInfo<v8::Value>& args);
-	static v8::Handle<v8::Value> UseBelt(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-	// The method that will construct & return the new JavaScript object
-	static v8::Handle<v8::Value> CreateMeObject();
 };
 
 // **Context
@@ -95,9 +67,6 @@ JS_FUNC(CGetUnit);			//WIP : needs more work
 JS_FUNC(CGetDistance);		//needs written
 JS_FUNC(CRunGC);			//needs written
 JS_FUNC(CClickMap);			//object reference needs work
-
-//needs set under me global
-JS_FUNC(CSetSkill);
 
 //for testing will be removed
 JS_FUNC(CMove);
@@ -189,7 +158,7 @@ JS_FUNC(CGetLevel);
 //[+] Me.Weaponstab				//added
 //[+] Me.X						//added
 //[+] Me.Y						//added
-//[+] Me.Cancel()
+//[+] Me.Cancel()				//added
 //[+] Me.ClickItem()
 //[+] Me.ClickMercItem()
 //[+] Me.ClickParty()
@@ -199,7 +168,7 @@ JS_FUNC(CGetLevel);
 //[+] Me.GetSkillStatus()
 //[+] Me.Repair()
 //[+] Me.SelectNPCMenu()
-//[+] Me.SetSkill()
+//[+] Me.SetSkill()				//added
 //[+] Me.SwapWeapons()
 //[+] Me.TakeWaypoint()
 //[+] Me.UseBelt()

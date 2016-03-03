@@ -12,6 +12,42 @@
 #include "D2Helpers.h"
 #include "D2Pointers.h"
 
+bool IsScrollingText()
+{
+	HWND d2Hwnd = fpGetHwnd();
+	WindowHandlerList* whl = vpWindowHandlers->table[(0x534D5347 ^ (DWORD)d2Hwnd) % vpWindowHandlers->length];
+	MessageHandlerHashTable* mhht;
+	MessageHandlerList* mhl;
+
+	while (whl)
+	{
+		if (whl->unk_0 == 0x534D5347 && whl->hWnd == d2Hwnd)
+		{
+			mhht = whl->msgHandlers;
+			if (mhht != NULL && mhht->table != NULL && mhht->length != 0)
+			{
+				// 0x201 - WM_something click
+				mhl = mhht->table[0x201 % mhht->length];
+
+				if (mhl != NULL)
+				{
+					while (mhl)
+					{
+						if (mhl->message && mhl->unk_4 < 0xffffffff && mhl->handler == D2CLIENT_CloseNPCTalk)
+						{
+							return true;
+						}
+						mhl = mhl->next;
+					}
+				}
+			}
+		}
+		whl = whl->next;
+	}
+
+	return false;
+}
+
 void GameDrawMenu(void)
 {
 	D2WIN_DrawSprites();

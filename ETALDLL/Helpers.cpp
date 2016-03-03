@@ -29,14 +29,27 @@ bool ClickMap(DWORD dwClickType, int wX, int wY, BOOL bShift, UnitAny* pUnit)
 
 	if (pUnit && pUnit != fpGetPlayerUnit())
 	{
+		Vars.dwSelectedUnitId = pUnit->dwUnitId;
+		Vars.dwSelectedUnitType = pUnit->dwType;
+
+		Vars.bClickAction = TRUE;
+
 		fpClickMap(dwClickType, Click.x, Click.y, bShift ? 0x0C : (*vpAlwaysRun ? 0x08 : 0));
 		D2CLIENT_SetSelectedUnit(NULL);
+
+		Vars.bClickAction = FALSE;
+		Vars.dwSelectedUnitId = NULL;
+		Vars.dwSelectedUnitType = NULL;
 	}
 	else
 	{
-		fpClickMap(dwClickType, Click.x, Click.y, bShift ? 0x0C : (*vpAlwaysRun ? 0x08 : 0));
-	}
+		Vars.dwSelectedUnitId = NULL;
+		Vars.dwSelectedUnitType = NULL;
 
+		Vars.bClickAction = TRUE;
+		fpClickMap(dwClickType, Click.x, Click.y, bShift ? 0x0C : (*vpAlwaysRun ? 0x08 : 0));
+		Vars.bClickAction = FALSE;
+	}
 	*vpMouseX = OldMouse.x;
 	*vpMouseY = OldMouse.y;
 	return TRUE;

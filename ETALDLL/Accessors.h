@@ -4,8 +4,6 @@
 //Unit Global Accessors
 #pragma region Unit
 
-void meSetSkill(Local<String> property, Local<Value> value, const PropertyCallbackInfo<void>& info);
-
 char* Itemflag(UnitAny* pUnit);
 int Itemclass(UnitAny* pUnit);
 char* Itemprefix(UnitAny* pUnit);

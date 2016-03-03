@@ -697,6 +697,35 @@ struct BnetData {
 	BYTE passlength;			//+0x3c1
 };
 
+struct MessageHandlerList
+{
+	DWORD message;
+	DWORD unk_4;
+	DWORD(__stdcall *handler)(void*);
+	struct MessageHandlerList* next;
+};
+
+struct MessageHandlerHashTable
+{
+	struct MessageHandlerList** table;
+	DWORD length;
+};
+
+struct WindowHandlerHashTable
+{
+	struct WindowHandlerList** table;
+	DWORD length;
+};
+
+struct WindowHandlerList
+{
+	DWORD unk_0;
+	HWND hWnd;
+	DWORD unk_8;
+	struct MessageHandlerHashTable* msgHandlers;
+	struct WindowHandlerList* next;
+};
+
 struct WardenClientRegion_t {
 	DWORD cbAllocSize; //+00
 	DWORD offsetFunc1; //+04

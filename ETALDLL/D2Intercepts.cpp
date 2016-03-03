@@ -48,3 +48,33 @@ void GameDrawMenu_Intercept(void)
 {
 	GameDrawMenu();
 }
+
+UnitAny* GetSelectedUnit_Intercept(void)
+{
+	if (Vars.bClickAction)
+	{
+		if (Vars.dwSelectedUnitId)
+		{
+			UnitAny* pUnit = D2CLIENT_FindUnit(Vars.dwSelectedUnitId, Vars.dwSelectedUnitType);
+
+			return pUnit;
+		}
+
+		return NULL;
+	}
+
+	return fpGetSelectedUnit();
+}
+
+void __declspec(naked) GameCrashFix_Intercept()
+{
+	__asm
+	{
+		CMP ECX, 0
+		JE Skip
+			MOV DWORD PTR DS : [ECX + 0x10], EDX
+			Skip :
+		MOV DWORD PTR DS : [EAX + 0xC], 0
+			RETN
+	}
+}

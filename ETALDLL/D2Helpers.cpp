@@ -48,6 +48,14 @@ bool IsScrollingText()
 	return false;
 }
 
+int GetItemLocation(UnitAny *pItem)
+{
+	if (!pItem || !pItem->pItemData)
+		return -1;
+
+	return (pItem->pItemData->GameLocation);
+}
+
 void GameDrawMenu(void)
 {
 	D2WIN_DrawSprites();
@@ -150,6 +158,55 @@ UnitAny* GetMercUnit(UnitAny* pUnit)
 #endif
 }
 
+typedef void(*fnClickEntry) (void);
+
+bool ClickNPCMenu(DWORD NPCClassId, DWORD MenuId)
+{
+	NPCMenu* pMenu = (NPCMenu*)vpNPCMenu;
+	fnClickEntry pClick = (fnClickEntry)NULL;
+
+	for (UINT i = 0; i < *vpNPCMenuAmount; i++)
+	{
+		if (pMenu->dwNPCClassId == NPCClassId)
+		{
+			if (pMenu->wEntryId1 == MenuId)
+			{
+				pClick = (fnClickEntry)pMenu->dwEntryFunc1;
+				if (pClick)
+					pClick();
+				else return false;
+				return true;
+			}
+			else if (pMenu->wEntryId2 == MenuId)
+			{
+				pClick = (fnClickEntry)pMenu->dwEntryFunc2;
+				if (pClick)
+					pClick();
+				else return false;
+				return true;
+			}
+			else if (pMenu->wEntryId3 == MenuId)
+			{
+				pClick = (fnClickEntry)pMenu->dwEntryFunc3;
+				if (pClick)
+					pClick();
+				else return false;
+				return true;
+			}
+			else if (pMenu->wEntryId4 == MenuId)
+			{
+				pClick = (fnClickEntry)pMenu->dwEntryFunc4;
+				if (pClick)
+					pClick();
+				else return FALSE;
+				return TRUE;
+			}
+		}
+		pMenu = (NPCMenu*)((DWORD)pMenu + sizeof(NPCMenu));
+	}
+
+	return false;
+}
 UnitAny* D2CLIENT_FindUnit(DWORD dwId, DWORD dwType)
 {
 	if (dwId == -1) return NULL;
@@ -645,8 +702,8 @@ DWORD GoldDialogAction = Pointer::GetDllOffset("D2Client.dll", 0x11C86C);
 DWORD GoldDialogAmount = Pointer::GetDllOffset("D2Client.dll", 0x11D568);
 void SendGold(int nGold, int nMode)
 {
-	GoldDialogAction = nGold;
-	GoldDialogAmount = nMode;
+	*vpGoldDialogAction = nGold;
+	*vpGoldDialogAmount = nMode;
 	fpPerformGoldDialogAction();
 }
 
@@ -709,6 +766,57 @@ void __declspec(naked) __fastcall D2GFX_DrawRectFrame_STUB(RECT* rect)
 	{
 		mov eax, ecx;
 		jmp D2CLIENT_DrawRectFrame;
+	}
+}
+
+DWORD MercItemAction_I = Pointer::GetDllOffset("D2Client.dll", 0xB6B00);
+void __declspec(naked) __fastcall D2CLIENT_MercItemAction_ASM(DWORD bPacketType, DWORD dwSlot)
+{
+	__asm
+	{
+		mov eax, ecx
+		mov ecx, edx
+			jmp MercItemAction_I
+	}
+}
+
+DWORD ClickItemRight_I = Pointer::GetDllOffset("D2Client.dll", 0x9CF30);
+void __declspec(naked) __fastcall D2CLIENT_ClickItemRight_ASM(DWORD x, DWORD y, DWORD Location, DWORD Player, DWORD pUnitInventory)
+{
+	__asm
+	{
+		// ECX = y, EDX = x - Blizzard is weird :D
+		MOV EAX, ECX
+		MOV ECX, EDX
+			MOV EDX, EAX
+
+			POP EAX
+			MOV EBX, EAX
+			POP EAX
+			PUSH EBX
+			jmp ClickItemRight_I
+	}
+}
+
+DWORD ClickBeltRight_I = Pointer::GetDllOffset("D2Client.dll", 0x6FA40);
+void __declspec(naked) __fastcall D2CLIENT_ClickBeltRight_ASM(DWORD pInventory, DWORD pPlayer, DWORD HoldShift, DWORD dwPotPos)
+{
+	__asm
+	{
+		POP EAX
+		MOV EBX, EAX
+			POP EAX
+			PUSH EBX
+			JMP ClickBeltRight_I
+	}
+}
+
+DWORD ClickBelt_I = Pointer::GetDllOffset("D2Client.dll", 0x6E310);
+void __declspec(naked) __fastcall D2CLIENT_ClickBelt(DWORD x, DWORD y, Inventory* pInventoryData)
+{
+	__asm {
+		mov eax, edx
+			jmp ClickBelt_I
 	}
 }
 //AutomapLayer* InitAutomapLayer(DWORD levelno)

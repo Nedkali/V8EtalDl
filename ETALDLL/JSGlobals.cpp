@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////
 // JS Functions
 //////////////////////////////////////////////////////////////////////
+#include "JSGlobalMethods.h"
 #include "JSGlobals.h"
 #include "MenuControls.h"
 #include "V8Script.h"
@@ -12,6 +13,9 @@
 #include <algorithm>
 #include <assert.h>
 #include "Accessors.h"
+
+#pragma warning ( push )
+#pragma warning ( disable: 4244 )
 
 bool loaded = false;
 void StringReplace(char* str, const char find, const char replace, size_t buflen)
@@ -73,6 +77,7 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	JS_FLINK(CSubmitItem, "SubmitItem");			// required
 	JS_FLINK(CTransmute, "Transmute");				// required
 	//JS_FLINK(CUnregisterEvent, "UnregisterEvent");// required
+
 	JS_FLINK(CMe, "InitMeOnce");					// required for me global
 
 	//Functions Added not in D2NT
@@ -81,7 +86,6 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	
 	// For Testing ONLY
 	JS_FLINK(CGetLevel, "GetLevel");				// Will be removed
-	JS_FLINK(CTESTWAYPOINT, "WayPoint");			// Will be removed
 
 	return Context::New(isolate, NULL, global);
 }
@@ -167,29 +171,17 @@ JS_FUNC(CClickMap)
 		nX = args[2]->Uint32Value();
 	if (args[3]->IsNumber())
 		nY = args[3]->Uint32Value();
-
+	
 	if (args.Length() == 3 && args[0]->IsNumber() && (args[1]->IsNumber() || args[1]->IsBoolean()) && args[2]->IsObject())
-	{
-		//need to figure out how to set the object from the argument to myUnit* struct
-		//myUnit* mypUnit = (myUnit*)args[2]->ToObject();
-		myUnit* mypUnit = NULL; //until above line is corrected
-
-		if (!mypUnit || (mypUnit->_dwPrivateType & PRIVATE_UNIT) != PRIVATE_UNIT)
-			args.GetReturnValue().Set(Boolean::New(true));
-
-		UnitAny* pUnit = D2CLIENT_FindUnit(mypUnit->dwUnitId, mypUnit->dwType);
-
-		if (!pUnit)
-			args.GetReturnValue().Set(Boolean::New(true));
-
-		args.GetReturnValue().Set(Boolean::New(ClickMap(nClickType, nX, nY, nShift, pUnit)));
+	{				
+		UnitAny* pUnit = Vars.thisUnit;
+		if (pUnit)
+			return args.GetReturnValue().Set(Boolean::New(ClickMap(nClickType, nX, nY, nShift, pUnit)));
 	}
 	else if (args.Length() > 3 && args[0]->IsNumber() && (args[1]->IsNumber() || args[1]->IsBoolean()) && args[2]->IsNumber() && args[3]->IsNumber())
 	{
-		args.GetReturnValue().Set(Boolean::New(ClickMap(nClickType, nX, nY, nShift, NULL)));
+		return args.GetReturnValue().Set(Boolean::New(ClickMap(nClickType, nX, nY, nShift, NULL)));
 	}
-
-	args.GetReturnValue().Set(Boolean::New(true));
 }
 
 JS_FUNC(CGetControl)// unsure if this will work - testing
@@ -230,8 +222,60 @@ JS_FUNC(CGetControl)// unsure if this will work - testing
 	//return;
 
 }
+
 JS_FUNC(CGetDistance)
 {
+	int32_t nX1 = NULL;
+	int32_t nX2 = NULL;
+	int32_t nY1 = NULL;
+	int32_t nY2 = NULL;
+	
+	//Needs work
+	//2 args first arg has to be me global
+	if (args.Length() == 2)
+	{
+		if (args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsObject())
+		{
+			UnitAny* pUnit = Vars.thisUnit;
+			if (pUnit)
+			{
+				nX1 = fpGetUnitX(fpGetPlayerUnit());
+				nY1 = fpGetUnitX(fpGetPlayerUnit());
+				nX2 = fpGetUnitX(pUnit);
+				nY2 = fpGetUnitY(pUnit);
+			}
+		}
+	}
+	if (args.Length() == 3)
+	{
+		if (args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsObject())
+		{
+			UnitAny* pUnit = Vars.thisUnit;
+			if (pUnit)
+			{
+				nX1 = args[0]->Uint32Value();
+				nY1 = args[1]->Uint32Value();
+				nX2 = fpGetUnitX(pUnit);
+				nY2 = fpGetUnitY(pUnit);
+			}
+		}
+	}
+	if (args.Length() == 4)
+	{
+		if (args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())
+		{
+			nX1 = args[0]->Uint32Value();
+			nY1 = args[1]->Uint32Value();
+			nX2 = args[2]->Uint32Value();
+			nY2 = args[3]->Uint32Value();
+		}
+	}
+
+	double jsdist = (double)abs(GetDistance(nX1, nY1, nX2, nY2));
+
+	Local<Integer> val = Integer::New(jsdist);
+
+	args.GetReturnValue().Set(Local<Integer>::New(val));
 
 }
 
@@ -315,19 +359,18 @@ JS_FUNC(CGetBaseStat)
 	
 }
 
-//JS_FUNC(CGetPath)
-//{
-//
-//}
-
 JS_FUNC(CGetPresetUnits)
 {
 	Isolate* isolate = args.GetIsolate();
 	HandleScope handle_scope(isolate);
-	
+
+	uint32_t nMode = (uint32_t)-1;
+	uint32_t nUnitId = (uint32_t)-1;
 	uint32_t levelId = NULL;
 	uint32_t nClassId = NULL;
 	uint32_t nType = NULL;
+	char szName[128] = "";
+	char tmp[256] = "";
 
 	if (args.Length() == 0)
 		args.GetReturnValue().Set(Boolean::New(false));
@@ -352,12 +395,16 @@ JS_FUNC(CGetPresetUnits)
 	bool bAddedRoom = FALSE;
 	int dwArrayCount = 0;
 
-	Local<Object> nodes = Object::New();
-	Local<Array> node = Array::New();
+	UnitAny* gpUnit = GetUnit(szName, nClassId, nType, nMode, nUnitId);
+
+	Handle<Array> nodes = Array::New();
+	Vars.thisUnit = gpUnit;
+	myUnit* pmyUnit = (myUnit*)gpUnit;
+	Vars.thismyUnit = pmyUnit;
+
+	GetUnitName(gpUnit, tmp, 256);
 	for (Room2 *pRoom = pLevel->pRoom2First; pRoom; pRoom = pRoom->pRoom2Next)
 	{
-		HandleScope handle_scope(isolate);
-
 		bAddedRoom = FALSE;
 
 		if (!pRoom->pPreset)
@@ -372,24 +419,33 @@ JS_FUNC(CGetPresetUnits)
 			if ((nType == NULL || pUnit->dwType == nType) && (nClassId == NULL || pUnit->dwTxtFileNo == nClassId))
 			{
 				myPresetUnit* presetUnit = new myPresetUnit;
+
+				Handle<Array> node = Array::New();
 				presetUnit->dwPosX = pUnit->dwPosX;
 				presetUnit->dwPosY = pUnit->dwPosY;
 				presetUnit->dwRoomX = pRoom->dwPosX;
 				presetUnit->dwRoomY = pRoom->dwPosY;
 				presetUnit->dwType = pUnit->dwType;
 				presetUnit->dwId = pUnit->dwTxtFileNo;
-				presetUnit->dwLevel = levelId;
+				presetUnit->dwLevel = fpGetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->dwLevelNo;
+				Vars.nthisPresetX = (presetUnit->dwPosX) + (presetUnit->dwRoomX * 5);
+				Vars.nthisPresetY = (presetUnit->dwPosY) + (presetUnit->dwRoomY * 5);
 
-				node->Set(String::NewFromUtf8(isolate, "areaid"), Integer::New(presetUnit->dwLevel));
-				node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(presetUnit->dwType));
-				node->Set(String::NewFromUtf8(isolate, "id"), Integer::New(presetUnit->dwId));
+				node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
+				node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(nClassId));
+				node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(nMode));
+				//node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(gpUnit->dwUnitId));
 				node->Set(String::NewFromUtf8(isolate, "x"), Integer::New(presetUnit->dwPosX));
 				node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(presetUnit->dwPosY));
 				node->Set(String::NewFromUtf8(isolate, "roomx"), Integer::New(presetUnit->dwRoomX));
 				node->Set(String::NewFromUtf8(isolate, "roomy"), Integer::New(presetUnit->dwRoomY));
-				node->Set(String::NewFromUtf8(isolate, "length"), Integer::New(dwArrayCount + 1));
+				node->Set(String::NewFromUtf8(isolate, "areaid"), Integer::New(presetUnit->dwLevel));
+				node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(presetUnit->dwType));
+				node->Set(String::NewFromUtf8(isolate, "id"), Integer::New(presetUnit->dwId));
+				node->Set(String::NewFromUtf8(isolate, "newx"), Integer::New(Vars.nthisPresetX));
+				node->Set(String::NewFromUtf8(isolate, "newy"), Integer::New(Vars.nthisPresetY));
 				//subareaid crashes game atm
-				//node->Set(String::NewFromUtf8(isolate, "subareaid"), Integer::New(fpGetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->pNextLevel->dwLevelNo));
+				node->Set(String::NewFromUtf8(isolate, "subareaid"), Integer::New(pLevel->dwLevelNo+1));
 				nodes->Set(dwArrayCount, node);
 				dwArrayCount++;
 			}
@@ -401,11 +457,6 @@ JS_FUNC(CGetPresetUnits)
 			bAddedRoom = FALSE;
 		}
 	}
-
-	char Text2[128];//Player Area num
-	sprintf_s(Text2, "%u", dwArrayCount);
-	SendDataCopy("Etal Manager", 11, Text2);
-
 	args.GetReturnValue().Set(nodes);
 }
 
@@ -426,11 +477,13 @@ JS_FUNC(CGetUnit)
 	char tmp[256] = "";
 	DWORD pid = NULL;
 	DWORD dwmeAct = NULL;
-	int32_t type = NULL;
 	uint32_t nQual = NULL;
 	uint32_t nLoc = NULL;
+	uint32_t nItemlvl = NULL;
+	Vars.thisUnit = NULL;
 
-	Local<Object> node = Object::New();
+	Local<ObjectTemplate> node = ObjectTemplate::New();
+	Local<Array> pReturnArray = Array::New();
 
 	if (args.Length() > 0 && args[0]->IsNumber())
 		nType = args[0]->Uint32Value();
@@ -462,7 +515,7 @@ JS_FUNC(CGetUnit)
 	}
 	else
 		pUnit = GetUnit(szName, nClassId, nType, nMode, nUnitId);
-
+	
 	if (!pUnit)
 		args.GetReturnValue().Set(Boolean::New(true));
 
@@ -471,19 +524,25 @@ JS_FUNC(CGetUnit)
 	if (!pmyUnit)
 		args.GetReturnValue().Set(Boolean::New(true));
 
+	myPresetUnit* presetUnit = new myPresetUnit;
+
+	Level* pLevel = GetLevel(fpGetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->dwLevelNo);
+	int dwArrayCount = 0;
+
 	if (pUnit && pmyUnit)
 	{
+		Vars.thisUnit = pUnit;
 		GetUnitName(pUnit, tmp, 256);
 		pmyUnit->_dwPrivateType = PRIVATE_UNIT;
 		pmyUnit->dwClassId = nClassId;
 		pmyUnit->dwMode = nMode;
 		pmyUnit->dwType = pUnit->dwType;
 		pmyUnit->dwUnitId = pUnit->dwUnitId;
-
+		Vars.thismyUnit = (myUnit*)pUnit;
 		//this needs a ton of work
 		switch (nType)
 		{
-		case 0:
+		case UNIT_PLAYER:
 			pid = pUnit->dwTxtFileNo;
 			dwmeAct = pUnit->dwAct;
 			node->Set(String::NewFromUtf8(isolate, "act"), Integer::New(dwmeAct));
@@ -498,8 +557,10 @@ JS_FUNC(CGetUnit)
 			node->Set(String::NewFromUtf8(isolate, "mp"), Integer::New((D2COMMON_GetUnitStat(pUnit, 8, 0) >> 8)));
 			node->Set(String::NewFromUtf8(isolate, "hpmax"), Integer::New((D2COMMON_GetUnitStat(pUnit, 7, 0) >> 8)));
 			node->Set(String::NewFromUtf8(isolate, "mpmax"), Integer::New((D2COMMON_GetUnitStat(pUnit, 9, 0) >> 8)));
+			node->Set(String::NewFromUtf8(isolate, "level"), Integer::New((D2COMMON_GetUnitStat(pUnit, 12, 0) >> 8)));
+			node->Set(String::NewFromUtf8(isolate, "GetStat"), FunctionTemplate::New(unitGetStat));
 			break;
-		case 1:
+		case PRIVATE_UNIT:
 			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
 			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
 			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
@@ -507,35 +568,76 @@ JS_FUNC(CGetUnit)
 			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
 			node->Set(String::NewFromUtf8(isolate, "x"), Integer::New(fpGetUnitX(pUnit)));
 			node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(fpGetUnitY(pUnit)));
+			node->Set(String::NewFromUtf8(isolate, "GetStat"), FunctionTemplate::New(unitGetStat));
 			break;
-		case 2:
+		case UNIT_OBJECT:
+
+			for (Room2 *pRoom = pLevel->pRoom2First; pRoom; pRoom = pRoom->pRoom2Next)
+			{
+
+				for (PresetUnit* pUnit = pRoom->pPreset; pUnit; pUnit = pUnit->pPresetNext)
+				{
+					// Does it fit?
+					if ((nType == NULL || pUnit->dwType == nType) && (nClassId == NULL || pUnit->dwTxtFileNo == nClassId))
+					{
+
+						//Local<Object> nodes = Object::New();
+						presetUnit->dwPosX = pUnit->dwPosX;
+						presetUnit->dwPosY = pUnit->dwPosY;
+						presetUnit->dwRoomX = pRoom->dwPosX;
+						presetUnit->dwRoomY = pRoom->dwPosY;
+						presetUnit->dwType = pUnit->dwType;
+						presetUnit->dwId = pUnit->dwTxtFileNo;
+						presetUnit->dwLevel = fpGetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->dwLevelNo;
+						Vars.nthisPresetX = (presetUnit->dwPosX) + (presetUnit->dwRoomX * 5);
+						Vars.nthisPresetY = (presetUnit->dwPosY) + (presetUnit->dwRoomY * 5);
+
+						node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
+						node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
+						node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
+						node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
+						node->Set(String::NewFromUtf8(isolate, "x"), Integer::New(presetUnit->dwPosX));
+						node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(presetUnit->dwPosY));
+						node->Set(String::NewFromUtf8(isolate, "roomx"), Integer::New(presetUnit->dwRoomX));
+						node->Set(String::NewFromUtf8(isolate, "roomy"), Integer::New(presetUnit->dwRoomY));
+						node->Set(String::NewFromUtf8(isolate, "areaid"), Integer::New(presetUnit->dwLevel));
+						node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(presetUnit->dwType));
+						node->Set(String::NewFromUtf8(isolate, "id"), Integer::New(presetUnit->dwId));
+						node->Set(String::NewFromUtf8(isolate, "newx"), Integer::New(Vars.nthisPresetX));
+						node->Set(String::NewFromUtf8(isolate, "newy"), Integer::New(Vars.nthisPresetY));
+						//node->Set(String::NewFromUtf8(isolate, "subareaid"), Integer::New(pLevel->pNextLevel->dwLevelNo));
+						//pReturnArray->Set(dwArrayCount, nodes);
+						dwArrayCount++;
+					}
+				}
+			}
+			//return args.GetReturnValue().Set(pReturnArray);
+			break;
+		case UNIT_MISSILE:
 			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
 			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
 			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
 			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
 			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
 			break;
-		case 3:
-			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
-			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
-			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
-			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
-			break;
-		case 4:
+		case UNIT_ITEM:
 			if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData)
 				nLoc = (pUnit->pItemData->GameLocation);
 			if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData)
 				nQual = (pUnit->pItemData->dwQuality);
+			if (pUnit->pItemData)
+				nItemlvl = pUnit->pItemData->dwItemLevel;
 			/*if (pUnit->dwType == UNIT_ITEM && pUnit->pItemData) {
 				if (!D2COMMON_GetItemText(pUnit->dwTxtFileNo))
 					break;
 				type = (D2COMMON_GetItemText(pUnit->dwTxtFileNo)->nType);
 			}*/
 
+			node->Set(String::NewFromUtf8(isolate, "GetStat"), FunctionTemplate::New(unitGetStat));
 			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
 			node->Set(String::NewFromUtf8(isolate, "quality"), Integer::New(nQual));
 			node->Set(String::NewFromUtf8(isolate, "itemloc"), Integer::New(nLoc));
+			node->Set(String::NewFromUtf8(isolate, "itemlevel"), Integer::New(nItemlvl));
 			//node->Set(String::NewFromUtf8(isolate, "itemclass"), Integer::New(Itemclass(pUnit)));
 			node->Set(String::NewFromUtf8(isolate, "itemdesc"), String::New(Itemdesc(pUnit)));
 			//node->Set(String::NewFromUtf8(isolate, "itemflag"), String::New(Itemflag(pUnit)));
@@ -547,28 +649,48 @@ JS_FUNC(CGetUnit)
 			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
 			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
 			//node->Set(String::NewFromUtf8(isolate, "xsize"), Integer::New(ItemXsize(pUnit)));
-			//node->Set(String::NewFromUtf8(isolate, "ysize"), Integer::New(ItemYsize(pUnit)));
+			//node->Set(String::NewFromUtf8(isolate, "ysize"), Integer::New(ItemYsize(pUnit
 			break;
-		case 5:
-			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
-			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
-			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
-			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
-			break;
-		case 267:
-			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
-			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
-			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
-			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
-			break;
-		case 549:
-			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
-			node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
-			node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
-			node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
-			node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(pmyUnit->dwType));
+		case UNIT_TILE:
+			for (Room2 *pRoom = pLevel->pRoom2First; pRoom; pRoom = pRoom->pRoom2Next)
+			{
+
+				for (PresetUnit* pUnit = pRoom->pPreset; pUnit; pUnit = pUnit->pPresetNext)
+				{
+					// Does it fit?
+					if ((nType == NULL || pUnit->dwType == nType) && (nClassId == NULL || pUnit->dwTxtFileNo == nClassId))
+					{
+						//Local<Object> nodes = Object::New();
+						presetUnit->dwPosX = pUnit->dwPosX;
+						presetUnit->dwPosY = pUnit->dwPosY;
+						presetUnit->dwRoomX = pRoom->dwPosX;
+						presetUnit->dwRoomY = pRoom->dwPosY;
+						presetUnit->dwType = pUnit->dwType;
+						presetUnit->dwId = pUnit->dwTxtFileNo;
+						presetUnit->dwLevel = fpGetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->dwLevelNo;
+						Vars.nthisPresetX = (presetUnit->dwPosX) + (presetUnit->dwRoomX * 5);
+						Vars.nthisPresetY = (presetUnit->dwPosY) + (presetUnit->dwRoomY * 5);
+
+						node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
+						node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(pmyUnit->dwClassId));
+						node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(pmyUnit->dwMode));
+						node->Set(String::NewFromUtf8(isolate, "unitid"), Integer::New(pmyUnit->dwUnitId));
+						node->Set(String::NewFromUtf8(isolate, "x"), Integer::New(presetUnit->dwPosX));
+						node->Set(String::NewFromUtf8(isolate, "y"), Integer::New(presetUnit->dwPosY));
+						node->Set(String::NewFromUtf8(isolate, "roomx"), Integer::New(presetUnit->dwRoomX));
+						node->Set(String::NewFromUtf8(isolate, "roomy"), Integer::New(presetUnit->dwRoomY));
+						node->Set(String::NewFromUtf8(isolate, "areaid"), Integer::New(presetUnit->dwLevel));
+						node->Set(String::NewFromUtf8(isolate, "type"), Integer::New(presetUnit->dwType));
+						node->Set(String::NewFromUtf8(isolate, "id"), Integer::New(presetUnit->dwId));
+						node->Set(String::NewFromUtf8(isolate, "newx"), Integer::New(Vars.nthisPresetX));
+						node->Set(String::NewFromUtf8(isolate, "newy"), Integer::New(Vars.nthisPresetY));
+						node->Set(String::NewFromUtf8(isolate, "subareaid"), Integer::New(pLevel->pNextLevel->dwLevelNo));
+						//pReturnArray->Set(dwArrayCount, nodes);
+						dwArrayCount++;
+					}
+				}
+			}
+			//return args.GetReturnValue().Set(pReturnArray);
 			break;
 		default :
 			node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
@@ -579,8 +701,10 @@ JS_FUNC(CGetUnit)
 			break;
 		}
 	}
+	node->Set(String::New("GetNext"), FunctionTemplate::New(unitGetNext));
 
-	args.GetReturnValue().Set(node);
+	delete[] pmyUnit, presetUnit;
+	args.GetReturnValue().Set(node->NewInstance());
 }
 
 void init_me()
@@ -592,7 +716,7 @@ void init_me()
 	Context::Scope context_scope(context);
 	context->Enter();
 
-	Handle<String> source = String::New("var me = InitMeOnce();"); //("var me = { SetSkill: function(skillid, left) { SetSkill(skillid, left); } }; ");
+	Handle<String> source = String::New("var me = InitMeOnce();");
 	Handle<Script> script = Script::Compile(source);
 	script->Run();
 	context->Exit();
@@ -607,9 +731,8 @@ JS_FUNC(CMe)
 	GameStructInfo* pInfo = *vpGameInfo;
 	BnetData* pData = *vpBnData;
 
-	//Local<Object> t = v8::ObjectTemplate::New();
-	
-	Local<ObjectTemplate> node = ObjectTemplate::New();
+	Handle<ObjectTemplate> node = ObjectTemplate::New();
+
 	node->Set(String::New("account"), String::New(pData->szAccountName));
 	node->SetAccessor(String::New("act"), GetAct, NULL);
 	node->SetAccessor(String::New("areaid"), GetAreaId, NULL);
@@ -653,8 +776,10 @@ JS_FUNC(CMe)
 	node->Set(String::New("fps"), Integer::New(*vpFPS));
 	//Methods
 	node->Set(String::New("Cancel"), FunctionTemplate::New(meCancel));
+	node->Set(String::New("GetItems"), FunctionTemplate::New(meGetItems));
+	node->Set(String::New("GetStat"), FunctionTemplate::New(meGetStat));
 	node->Set(String::New("GetState"), FunctionTemplate::New(meGetState));
-	//[+] Me.ClickItem()
+	node->Set(String::New("ClickItem"), FunctionTemplate::New(meClickItem));
 	//[+] Me.ClickMercItem()
 	//[+] Me.ClickParty()
 	//[+] Me.GetCursorItem()
@@ -662,11 +787,10 @@ JS_FUNC(CMe)
 	node->Set(String::New("GetQuest"), FunctionTemplate::New(meGetQuest));
 	//[+] Me.GetSkillStatus()
 	node->Set(String::New("Repair"), FunctionTemplate::New(meRepair));
-	//[+] Me.SelectNPCMenu()
+	node->Set(String::New("SelectNPCMenu"), FunctionTemplate::New(meSelectNPCMenu));
 	node->Set(String::New("SetSkill"), FunctionTemplate::New(meSetSkill));
 	node->Set(String::New("SwapWeapons"), FunctionTemplate::New(meSwapWeapons));
-	//[+] Me.SwapWeapons()
-	//[+] Me.TakeWaypoint()
+	node->Set(String::New("TakeWaypoint"), FunctionTemplate::New(meTakeWayPoint));
 	//[+] Me.UseBelt()
 	
 	args.GetReturnValue().Set(node->NewInstance());
@@ -944,15 +1068,6 @@ JS_FUNC(CGetArea)
 	args.GetReturnValue().Set(v8::Int32::New(areaid));
 }
 
-JS_FUNC(CTESTWAYPOINT)
-{
-	HandleScope handle_scope(args.GetIsolate());
-	INT32 wp = args[0]->Uint32Value();
-	D2CLIENT_TakeWaypoint(0, wp);
-	if (!D2CLIENT_GetUIState(UI_GAME))
-		fpCloseInteract();
-
-}
 JS_FUNC(CGetPlayerUnit)
 {
 	HandleScope handle_scope(args.GetIsolate());
@@ -992,16 +1107,20 @@ JS_FUNC(CMove)
 
 	if (args.Length() == 2)
 	{
+		long zx = args[0]->Uint32Value();
+		long zy = args[1]->Uint32Value();
 		int x = args[0]->Uint32Value();
 		int y = args[1]->Uint32Value();
-		D2Funcs::MoveTo(x, y);
-		fpCloseInteract();
+		fpMapToAbsScreen(&zx, &zy);
+		ClickMap(0, x, y, FALSE, NULL);
+		Sleep(50);
+		ClickMap(2, x, y, FALSE, NULL);
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
 	else {
-		D2Funcs::MoveTo(fpGetUnitX(me) + 4, fpGetUnitY(me) - 2);
-		if (!D2CLIENT_GetUIState(UI_GAME))
-			fpCloseInteract();
+		ClickMap(0, fpGetUnitX(me) + 4, fpGetUnitY(me) - 2, FALSE, NULL);
+		Sleep(50);
+		ClickMap(2, fpGetUnitX(me) + 4, fpGetUnitY(me) - 2, FALSE, NULL);
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
 }
@@ -1188,3 +1307,5 @@ JS_FUNC(CPrint)
 	char* cstr = (char*)ToCString(str);
 	D2Funcs::Print("%s", cstr);;
 }
+
+#pragma warning ( pop )

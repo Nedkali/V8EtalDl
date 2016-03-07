@@ -147,7 +147,7 @@ public:
 			if (lineLength > 5 && ((currentStep != lineStartStep && currentStep != secondStep) || differentStepCount > 1 || lineLength > 20))
 			{
 				out.push_back(previousPoint);
-				lineStartStep = Point(currentStep);
+				lineStartStep = currentStep;// Point(currentStep);
 				secondStep = lineStartStep;
 				lineLength = 1;
 				differentStepCount = 0;

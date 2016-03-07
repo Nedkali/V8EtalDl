@@ -137,6 +137,14 @@ LRESULT CALLBACK Input::KeyPress(int code, WPARAM wParam, LPARAM lParam)
 				MessageBoxA(NULL, "Key Pressed", "Debug", NULL);
 			}
 			break;
+		case VK_INSERT:
+
+			if (isDown && !isRepeat)
+			{
+				D2Funcs::Print("ÿc8x: %i" ,fpGetUnitX(fpGetPlayerUnit()));
+				D2Funcs::Print("ÿc8y: %i", fpGetUnitY(fpGetPlayerUnit()));
+			}
+			break;
 		}
 	}
 	return CallNextHookEx(NULL, code, wParam, lParam);

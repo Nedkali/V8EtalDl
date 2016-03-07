@@ -61,6 +61,9 @@
     <ClCompile Include="JSGlobalMethods.cpp">
       <Filter>V8 Engine\JSFunctions</Filter>
     </ClCompile>
+    <ClCompile Include="MPQStats.cpp">
+      <Filter>Diablo II</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="JsDefines.h">
@@ -126,9 +129,6 @@
     <ClInclude Include="Map\Map.h">
       <Filter>Map</Filter>
     </ClInclude>
-    <ClInclude Include="ActMap.h">
-      <Filter>Map\Diablo II</Filter>
-    </ClInclude>
     <ClInclude Include="MenuControls.h">
       <Filter>V8 Engine\JSFunctions</Filter>
     </ClInclude>
@@ -167,6 +167,12 @@
     </ClInclude>
     <ClInclude Include="JSGlobalMethods.h">
       <Filter>V8 Engine\JSFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="MPQStats.h">
+      <Filter>Diablo II</Filter>
+    </ClInclude>
+    <ClInclude Include="Map\Diablo_II\ActMap.h">
+      <Filter>Map\Diablo II</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

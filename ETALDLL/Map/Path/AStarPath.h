@@ -53,7 +53,7 @@ public:
 	int g, h;
 
 	Node() : parent(0) {}
-	Node(Point s, Node* p, int _g, int _h) : point(s), parent(p), g(_g), h(_h) {}
+	Node(Point _s, Node* p, int _g, int _h) : point(_s), parent(p), g(_g), h(_h) {}
 };
 struct NodeComparer {
 	inline bool __fastcall operator() (const Node* left, const Node* right) const { return (left->g + left->h) > (right->g + right->h); }
@@ -83,7 +83,7 @@ private:
 		std::set<Point> closed;
 		PointList newNodes;
 		Node* begin = alloc.allocate(1);
-		UnitAny* player = D2CLIENT_GetPlayerUnit();
+		UnitAny* player = fpGetPlayerUnit();
 		DWORD startLvl = player->pPath->pRoom1->pRoom2->pLevel->dwLevelNo;
 		
 		// if we don't get a valid node, just return
@@ -110,12 +110,9 @@ private:
 				map->AllowCritSpace();
 				ticks=GetTickCount();
 			}
-			if (!GameReady() || startLvl != D2CLIENT_GetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->dwLevelNo){
-				Log("Pather lvl change while pathing");
+			if (startLvl != fpGetPlayerUnit()->pPath->pRoom1->pRoom2->pLevel->dwLevelNo){
 				return;
 			}
-			if (Vars.bQuitting)
-				return;
 
 			bool result = closed.insert(current->point).second;
 			assert(result == true);

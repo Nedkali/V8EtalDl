@@ -51,6 +51,11 @@ void *memcpy2(void *dest, const void *src, size_t count);
 BYTE *AllocReadFile(char *filename);
 CellFile *myInitCellFile(CellFile *cf);
 
+void  __fastcall D2CLIENT_MercItemAction_ASM(DWORD bPacketType, DWORD dwSlot);
+void  __fastcall D2CLIENT_ClickItemRight_ASM(DWORD x, DWORD y, DWORD Location, DWORD pItem, DWORD pItemPath);
+void  __fastcall D2CLIENT_ClickBelt(DWORD x, DWORD y, Inventory* pInventoryData);
+void  __fastcall D2CLIENT_ClickBeltRight_ASM(DWORD pInventory, DWORD pPlayer, DWORD HoldShift, DWORD dwPotPos);
+
 //AutomapLayer* InitAutomapLayer(DWORD levelno);
 //DWORD __fastcall D2CLIENT_InitAutomapLayer_STUB(DWORD nLayerNo);
 
@@ -60,7 +65,7 @@ void	D2CLIENT_Interact(UnitAny* pUnit, DWORD dwMoveType);
 BYTE	CalcPercent(DWORD dwVal, DWORD dwMaxVal, BYTE iMin = NULL);
 DWORD	GetTileLevelNo(Room2* lpRoom2, DWORD dwTileNo);
 UnitAny* GetMercUnit(UnitAny* pUnit);
-BOOL	ClickNPCMenu(DWORD NPCClassId, DWORD MenuId);
+bool	ClickNPCMenu(DWORD NPCClassId, DWORD MenuId);
 int		GetItemLocation(UnitAny *pItem);
 
 char*	GetSkillByID(WORD id);

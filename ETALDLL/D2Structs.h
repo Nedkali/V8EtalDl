@@ -389,6 +389,12 @@ struct Stat {
 	DWORD dwStatValue;				//0x04
 };
 
+struct StatVector {
+	Stat* pStats;
+	WORD wCount;
+	WORD wSize;
+};
+
 // Credits to SVR, http://phrozenkeep.hugelaser.com/forum/viewtopic.php?f=8&t=31458&p=224066
 struct StatList {
 	DWORD _1;						//0x00
@@ -397,9 +403,7 @@ struct StatList {
 	DWORD dwUnitId;					//0x0C
 	DWORD dwFlags;					//0x10
 	DWORD _2[4];					//0x14
-	Stat *pStat;					//0x24
-	WORD wStatCount1;				//0x28
-	WORD wnSize;					//0x2A
+	StatVector StatVec;				//0x24
 	StatList *pPrevLink;			//0x2C
 	DWORD _3;						//0x30
 	StatList *pPrev;				//0x34
@@ -407,10 +411,10 @@ struct StatList {
 	StatList *pNext;				//0x3C
 	StatList *pSetList;				//0x40
 	DWORD _5;						//0x44
-	Stat *pSetStat;					//0x48
-	WORD wSetStatCount;				//0x4C
+	StatVector SetStatVec;			//0x48
+	DWORD _6[2];					//0x50
+	DWORD StateBits[6];				//0x58
 };
-
 struct Inventory {
 	DWORD dwSignature;				//0x00
 	BYTE *bGame1C;					//0x04
@@ -824,6 +828,26 @@ struct sgptDataTable {
 	MpqTable*	pStorePage;
 	DWORD		dwStorePageRecords;
 	MpqTable*	pElemTypes;
+};
+
+// Not sure of the location of handler and this struct inside Info.
+// Could be this struct is later and handler is earlier, but this is the safest
+// for now.
+struct TransactionDialogsLine_t
+{
+	wchar_t text[120];				// 0x000
+	DWORD unk[6];					// 0x0F0
+	void(__stdcall *handler)();	// 0x108
+	DWORD bMaybeSelectable;			// 0x10C
+};
+
+struct TransactionDialogsInfo_t
+{
+	DWORD unk[0x14];						// 0x000
+	DWORD numLines;							// 0x050
+	DWORD unk_2[0x5];						// 0x054
+	TransactionDialogsLine_t dialogLines[10];	// 0x068
+	void* something;						// 0xB08
 };
 
 #pragma warning ( pop )

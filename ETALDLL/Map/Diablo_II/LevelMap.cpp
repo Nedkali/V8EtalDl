@@ -30,8 +30,8 @@ void LevelMap::ClearCache(void)
 
 LevelMap::LevelMap(const Level* level)
 {
-	//lock = new CRITICAL_SECTION;
-	//InitializeCriticalSection(lock);
+	lock = new CRITICAL_SECTION;
+	InitializeCriticalSection(lock);
 
 	assert(act != NULL);
 	assert(level != NULL);
@@ -70,14 +70,14 @@ LevelMap::~LevelMap(void)
 
 void LevelMap::Build(void)
 {
-		/*EnterCriticalSection(lock);
+	/*EnterCriticalSection(lock);
 
 	mapPoints = Matrix<CollisionFlag>(height, width, LevelMap::Avoid);
 
 	RoomList addedRooms;
 	UnitAny* player = GetPlayerUnit();
 	AddRoom(level->pRoom2First, addedRooms, player);
-	
+
 	FillGaps();
 	ThickenWalls();
 	DrillExits();

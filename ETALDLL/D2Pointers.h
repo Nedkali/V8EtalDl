@@ -78,6 +78,7 @@ FPTR(void __stdcall, CloseNPCTalk, (void* unk), "D2Client.dll", 0x77AB0)
 //FPTR(void __fastcall, ClearScreen, (void), "D2Client.dll", 0x7AB80)
 FPTR(void __fastcall, CloseInteract, (void), "D2Client.dll", 0x44980)
 FPTR(void __stdcall, ClickMap, (DWORD MouseFlag, DWORD x, DWORD y, DWORD Type), "D2Client.dll", 0x2B420)
+FPTR(void __stdcall, jsClickMap, (DWORD MouseFlag, DWORD x, DWORD y, DWORD Type), "D2Client.dll", 0x2B420)
 FPTR(void __stdcall, ClickItem, (UnitAny* pPlayer, Inventory* pInventory, int x, int y, DWORD dwClickType, InventoryLayout* pLayout, DWORD Location), "D2Client.dll", 0x9AFF0)
 FPTR(DWORD __fastcall, GetMouseXOffset, (void), "D2Client.dll", 0x5BC20)
 FPTR(DWORD __fastcall, GetMouseYOffset, (void), "D2Client.dll", 0x5BC30)
@@ -177,6 +178,29 @@ FPTR(HWND __stdcall, GetHwnd, (void), "D2gfx.dll", 0xB0C0)
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Bnclient Variable Pointers
 ////////////////////////////////////////////////////////////////////////////////////////////////
+
+VPTR(DWORD, GoldDialogAction, "D2Client.dll", 0x11C86C)
+VPTR(DWORD, GoldDialogAmount, "D2Client.dll", 0x11D568)
+
+VPTR(InventoryLayout*, TradeLayout, "D2Client.dll", 0x101598)
+VPTR(InventoryLayout*, StashLayout, "D2Client.dll", 0x1015E0)
+VPTR(InventoryLayout*, StoreLayout, "D2Client.dll", 0x1016C0)
+VPTR(InventoryLayout*, CubeLayout, "D2Client.dll", 0x1016D8)
+VPTR(InventoryLayout*, InventoryLayout, "D2Client.dll", 0x1016F0)
+VPTR(InventoryLayout*, MercLayout, "D2Client.dll", 0x11CC84)
+
+FPTR(void __stdcall, LeftClickItem, (UnitAny* pPlayer, Inventory* pInventory, int x, int y, DWORD dwClickType, InventoryLayout* pLayout, DWORD Location), "D2Client.dll", 0x9AFF0)
+FPTR(UnitAny* __fastcall, GetMercUnit, (void), "D2Client.dll", 0x9C0A0)
+VPTR(void*, TransactionDialog, "D2Client.dll", 0x1018D3)
+VPTR(DWORD, TransactionDialogs, "D2Client.dll", 0x11D58C)
+VPTR(DWORD, TransactionDialogs_2, "D2Client.dll", 0x11D588)
+VPTR(TransactionDialogsInfo_t*, pTransactionDialogsInfo, "D2Client.dll",  0x11D584)
+
+VPTR(DWORD, sgptDataTable, "D2Common.dll", 0xA33F0)
+
+VPTR(NPCMenu*, NPCMenu, "D2Client.dll", 0xF1A90)
+VPTR(DWORD, NPCMenuAmount, "D2Client.dll", 0xF21E0)
+
 FPTR(int __stdcall, GetUnitState, (UnitAny *pUnit, DWORD dwStateNo), "D2Common.dll", 0x2F310)
 FPTR(int __stdcall, GetQuestFlag, (void* QuestInfo, DWORD dwAct, DWORD dwQuest), "D2Common.dll", 0x2D7A0)
 
@@ -251,7 +275,7 @@ FUNCPTR(D2CMP, InitCellFile, void __stdcall, (void *cellfile, CellFile **outptr,
 FUNCPTR(D2WIN, DrawSprites, void __fastcall, (void), 0xEAA0)
 FUNCPTR(D2CLIENT, CloseNPCTalk, DWORD __stdcall, (void* unk), 0x77AB0)
 
-
+ASMPTR(D2CLIENT, BodyClickTable, 0xEE4B8)
 
 ASMPTR(BNCLIENT, DClass, 0x15EB8)
 ASMPTR(BNCLIENT, DName, 0x1607D)
@@ -261,7 +285,6 @@ VARPTR(BNCLIENT, XPacKey, char*, 0x1E930)
 VARPTR(BNCLIENT, KeyOwner, char*, 0x1E934)
 FUNCPTR(BNCLIENT, DecodeAndLoadKeys, char __cdecl, (), 0x10920)
 VARPTR(D2CLIENT, PlayerUnit, UnitAny*, 0x11D050)
-ASMPTR(D2CLIENT, SendGamePacket_I, 0xB61F0)
 FUNCPTR(D2COMMON, InitLevel, void __stdcall, (Level *pLevel), 0x6DDF0)
 #define _D2PTRS_END	BNCLIENT_DecodeAndLoadKeys
 

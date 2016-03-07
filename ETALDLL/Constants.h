@@ -178,7 +178,12 @@ enum OOG_Location {
 #define STAT_EXP					13		// experience
 #define	STAT_GOLD					14		// gold
 #define	STAT_GOLDBANK				15		// stash gold
+#define	STAT_ENHANCEDDEFENSE		16
+#define	STAT_ENHANCEDDAMAGEMAX		17		//njipStats["itemmaxdamagepercent"]=[17,0];
+#define	STAT_ENHANCEDDAMAGEMIN		18		//njipStats["itemmindamagepercent"]=[18,0];	njipStats["enhanceddamage"]=[18,0];
 #define	STAT_TOBLOCK				20		// to block
+#define	STAT_LASTEXP				29
+#define	STAT_NEXTEXP				30
 #define	STAT_DAMAGEREDUCTION		36		// damage reduction
 #define	STAT_MAGICDAMAGEREDUCTION	35		// magic damage reduction
 #define	STAT_MAGICRESIST			37		// magic resist
@@ -199,6 +204,7 @@ enum OOG_Location {
 #define STAT_MAXDURABILITY			73		// max item durability
 #define STAT_GOLDFIND				79		// Gold find (GF)
 #define	STAT_MAGICFIND				80		// magic find (MF)
+#define	STAT_ITEMLEVELREQ			92
 #define	STAT_IAS					93		// IAS
 #define	STAT_FASTERRUNWALK			96		// faster run/walk
 #define	STAT_FASTERHITRECOVERY		99		// faster hit recovery
@@ -244,6 +250,15 @@ enum {
 };
 
 ///////////////////////////////////////////////////
+// Constants pertaining to ItemLocation
+///////////////////////////////////////////////////
+#define CLICKTARGET_INVENTORY	0
+#define CLICKTARGET_TRADE		2
+#define CLICKTARGET_CUBE		3
+#define CLICKTARGET_STASH		4
+#define CLICKTARGET_BELT		5
+
+///////////////////////////////////////////////////
 // Storage Buffers
 ///////////////////////////////////////////////////
 #define STORAGE_INVENTORY	0
@@ -253,6 +268,16 @@ enum {
 #define STORAGE_STASH		4
 #define STORAGE_NULL		255
 
+// Constants pertaining to GameLocation
+#define LOCATION_GROUND		0
+#define LOCATION_EQUIP		1
+#define LOCATION_BELT		2
+#define LOCATION_INVENTORY	3
+#define LOCATION_STORE		4
+#define LOCATION_TRADE		5
+#define LOCATION_CUBE		6
+#define LOCATION_STASH		7
+#define LOCATION_NULL		255
 ///////////////////////////////////////////////////
 // Item Quality
 ///////////////////////////////////////////////////

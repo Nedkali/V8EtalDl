@@ -10,7 +10,11 @@
 
 #define D2ETAL_VERSION "v0.01"
 
+#define PRIVATE_ITEM		3
+
 using namespace std;
+
+struct Private { DWORD dwPrivateType; };
 
 struct Profile {
 	char Account[24];
@@ -58,6 +62,13 @@ struct Variables
 	DWORD dwSelectedUnitId;
 	DWORD dwSelectedUnitType;
 	POINT pMouseCoords;
+
+
+	//for access to objects in d2
+	UnitAny* thisUnit;
+	myUnit* thismyUnit;
+	int		nthisPresetX;
+	int		nthisPresetY;
 };
 
 extern Profile  Prof;

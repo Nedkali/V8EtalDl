@@ -7,7 +7,6 @@
 #include "JsDefines.h"
 #include "D2Pointers.h"
 #include "Unit.h"
-#include "JSGlobalMethods.h"
 
 using namespace v8;
 
@@ -24,7 +23,7 @@ struct myPresetUnit //for CGetPresetUnits
 
 // **Context
 Handle<Context>CreateContext(Isolate* isolate);
-JS_FUNC(CMe); void init_me();
+JS_FUNC(CMe);
 //Working as intended
 JS_FUNC(CLoad);
 JS_FUNC(CInclude);

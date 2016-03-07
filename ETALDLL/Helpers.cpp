@@ -52,8 +52,9 @@ bool ClickMap(DWORD dwClickType, int wX, int wY, BOOL bShift, UnitAny* pUnit)
 	}
 	*vpMouseX = OldMouse.x;
 	*vpMouseY = OldMouse.y;
-	return TRUE;
+	return true;
 }
+
 char* UnicodeToAnsi(const wchar_t* str)
 {
 	char* buf = NULL;

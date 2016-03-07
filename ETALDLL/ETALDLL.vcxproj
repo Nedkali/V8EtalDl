@@ -173,7 +173,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Accessors.h" />
-    <ClInclude Include="ActMap.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="D2Funcs.h" />
@@ -186,6 +185,7 @@
     <ClInclude Include="JSGlobals.h" />
     <ClInclude Include="JsGlobals2.h" />
     <ClInclude Include="Map\BlankMap.h" />
+    <ClInclude Include="Map\Diablo_II\ActMap.h" />
     <ClInclude Include="Map\Diablo_II\LevelMap.h" />
     <ClInclude Include="Map\Map.h" />
     <ClInclude Include="Map\Path\AStarPath.h" />
@@ -196,6 +196,7 @@
     <ClInclude Include="Map\Path\Reduction\TeleportPathReducer.h" />
     <ClInclude Include="Map\Path\Reduction\WalkPathReducer.h" />
     <ClInclude Include="MenuControls.h" />
+    <ClInclude Include="MPQStats.h" />
     <ClInclude Include="Offset.h" />
     <ClInclude Include="D2Helpers.h" />
     <ClInclude Include="D2Pointers.h" />
@@ -239,6 +240,7 @@
     <ClCompile Include="Map\Diablo_II\ActMap.cpp" />
     <ClCompile Include="Map\Diablo_II\LevelMap.cpp" />
     <ClCompile Include="MenuControls.cpp" />
+    <ClCompile Include="MPQStats.cpp" />
     <ClCompile Include="stringhash.cpp" />
     <ClCompile Include="Unit.cpp" />
     <ClCompile Include="V8Script.cpp" />

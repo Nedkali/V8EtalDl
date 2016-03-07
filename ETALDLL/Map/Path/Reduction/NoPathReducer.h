@@ -1,5 +1,5 @@
 #pragma once
-
+#include "../../Diablo_II/ActMap.h"
 #include "PathReducer.h"
 
 namespace Mapping

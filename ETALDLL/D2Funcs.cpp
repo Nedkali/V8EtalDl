@@ -117,12 +117,6 @@ bool D2Funcs::GetSkill(WORD wSkillId)
 			return 1;
 	return 0;
 }
-bool D2Funcs::MoveTo(WORD x, WORD y) {
-	ClickMap(0, x, y, FALSE, NULL);
-	Sleep(50);
-	ClickMap(2, x, y, FALSE, NULL);
-	return 1;
-}
 
 void D2Funcs::Print(const char * szText, ...)
 {

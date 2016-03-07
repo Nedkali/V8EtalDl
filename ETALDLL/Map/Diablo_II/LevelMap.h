@@ -22,7 +22,7 @@ struct Exit
 {
 public:
 	DWORD Target;
-	Point Position;
+	Point &Position;
 	ExitType Type;
 	DWORD TileId;
 

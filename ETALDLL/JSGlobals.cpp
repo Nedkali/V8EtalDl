@@ -83,11 +83,42 @@ v8::Handle<v8::Context> CreateContext(v8::Isolate* isolate)
 	//Functions Added not in D2NT
 	JS_FLINK(CUseSkillPoint, "UseSkillPoint");		// Added
 	JS_FLINK(CUseStatPoint, "UseStatPoint");		// Added
+	JS_FLINK(CGetScriptName, "GetScriptName");		// Added
+	JS_FLINK(CGetRealmIndex, "GetRealmIndex");		// Added
 	
 	// For Testing ONLY
 	JS_FLINK(CGetLevel, "GetLevel");				// Will be removed
 
 	return Context::New(isolate, NULL, global);
+}
+
+JS_FUNC(CGetRealmIndex)
+{
+	int realm = 0;
+	Control* pControl = MENU::findControl(CONTROL_BUTTON, (char *)NULL, -1, 264, 391, 272, 25);
+	if (pControl && pControl->wText2) {
+		char* cstr = "";
+		char* szLine = wchart_to_char(pControl->wText2);
+
+		if (strcmp("GATEWAY: U.S. WEST", szLine) == 0) { realm = 1; }
+		if (strcmp("GATEWAY: U.S. EAST", szLine) == 0) { realm = 2; }
+		if (strcmp("GATEWAY: ASIA", szLine) == 0) { realm = 3; }
+		if (strcmp("GATEWAY: EUROPE", szLine) == 0) { realm = 4; }
+
+	}
+
+	args.GetReturnValue().Set(v8::Int32::New(realm));
+
+}
+
+JS_FUNC(CGetScriptName)
+{
+	HandleScope handle_scope(args.GetIsolate());
+	v8::Local<v8::String> str = v8::StackTrace::CurrentStackTrace(1,
+		v8::StackTrace::kScriptName)->GetFrame(0)->GetScriptName();
+
+	args.GetReturnValue().Set(str);
+
 }
 
 JS_FUNC(CRunGC)
@@ -151,8 +182,6 @@ JS_FUNC(CSelectRealm)
 		MENU::clickControl(pControl2);
 	Sleep(2000);
 	return;
-
-
 }
 
 JS_FUNC(CClickMap)
@@ -225,22 +254,25 @@ JS_FUNC(CGetControl)// unsure if this will work - testing
 
 JS_FUNC(CGetDistance)
 {
+	HandleScope handle_scope(args.GetIsolate());
 	int32_t nX1 = NULL;
 	int32_t nX2 = NULL;
 	int32_t nY1 = NULL;
 	int32_t nY2 = NULL;
 	
 	//Needs work
-	//2 args first arg has to be me global
+	//2 args : first arg has to be me global atm
 	if (args.Length() == 2)
 	{
-		if (args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsObject())
+		if (args[0]->IsObject() && args[1]->IsObject())
 		{
+			UnitAny* me = fpGetPlayerUnit();
 			UnitAny* pUnit = Vars.thisUnit;
+
 			if (pUnit)
 			{
-				nX1 = fpGetUnitX(fpGetPlayerUnit());
-				nY1 = fpGetUnitX(fpGetPlayerUnit());
+				nX1 = fpGetUnitX(me);
+				nY1 = fpGetUnitY(me);
 				nX2 = fpGetUnitX(pUnit);
 				nY2 = fpGetUnitY(pUnit);
 			}
@@ -272,10 +304,8 @@ JS_FUNC(CGetDistance)
 	}
 
 	double jsdist = (double)abs(GetDistance(nX1, nY1, nX2, nY2));
-
-	Local<Integer> val = Integer::New(jsdist);
-
-	args.GetReturnValue().Set(Local<Integer>::New(val));
+	
+	args.GetReturnValue().Set(Integer::New(jsdist));
 
 }
 
@@ -397,12 +427,16 @@ JS_FUNC(CGetPresetUnits)
 
 	UnitAny* gpUnit = GetUnit(szName, nClassId, nType, nMode, nUnitId);
 
-	Handle<Array> nodes = Array::New();
+	Local<Array> nodes = Array::New();
 	Vars.thisUnit = gpUnit;
 	myUnit* pmyUnit = (myUnit*)gpUnit;
-	Vars.thismyUnit = pmyUnit;
 
-	GetUnitName(gpUnit, tmp, 256);
+	int32_t nX1 = NULL;
+	int32_t nY1 = NULL;
+	int32_t nX2 = NULL;
+	int32_t nY2 = NULL;
+	double jsdist = -1;
+
 	for (Room2 *pRoom = pLevel->pRoom2First; pRoom; pRoom = pRoom->pRoom2Next)
 	{
 		bAddedRoom = FALSE;
@@ -420,7 +454,7 @@ JS_FUNC(CGetPresetUnits)
 			{
 				myPresetUnit* presetUnit = new myPresetUnit;
 
-				Handle<Array> node = Array::New();
+				Local<Array> node = Array::New();
 				presetUnit->dwPosX = pUnit->dwPosX;
 				presetUnit->dwPosY = pUnit->dwPosY;
 				presetUnit->dwRoomX = pRoom->dwPosX;
@@ -431,6 +465,16 @@ JS_FUNC(CGetPresetUnits)
 				Vars.nthisPresetX = (presetUnit->dwPosX) + (presetUnit->dwRoomX * 5);
 				Vars.nthisPresetY = (presetUnit->dwPosY) + (presetUnit->dwRoomY * 5);
 
+				gpUnit = GetUnit(szName, pUnit->dwTxtFileNo, pUnit->dwType, nMode, nUnitId);
+				GetUnitName(gpUnit, tmp, 256);
+				if (gpUnit) {
+					Vars.thisUnit = gpUnit;
+					nX1 = fpGetUnitX(fpGetPlayerUnit());
+					nY1 = fpGetUnitY(fpGetPlayerUnit());
+					nX2 = fpGetUnitX(gpUnit);
+					nY2 = fpGetUnitY(gpUnit);
+					jsdist = (double)abs(GetDistance(nX1, nY1, nX2, nY2));
+				}
 				node->Set(String::NewFromUtf8(isolate, "name"), String::New(tmp));
 				node->Set(String::NewFromUtf8(isolate, "classid"), Integer::New(nClassId));
 				node->Set(String::NewFromUtf8(isolate, "mode"), Integer::New(nMode));
@@ -444,6 +488,7 @@ JS_FUNC(CGetPresetUnits)
 				node->Set(String::NewFromUtf8(isolate, "id"), Integer::New(presetUnit->dwId));
 				node->Set(String::NewFromUtf8(isolate, "newx"), Integer::New(Vars.nthisPresetX));
 				node->Set(String::NewFromUtf8(isolate, "newy"), Integer::New(Vars.nthisPresetY));
+				node->Set(String::NewFromUtf8(isolate, "distance"), Integer::New(jsdist));
 				//subareaid crashes game atm
 				node->Set(String::NewFromUtf8(isolate, "subareaid"), Integer::New(pLevel->dwLevelNo+1));
 				nodes->Set(dwArrayCount, node);
@@ -462,7 +507,6 @@ JS_FUNC(CGetPresetUnits)
 
 JS_FUNC(CGetUnit)
 {
-	Local<Context> context = Context::GetCurrent();
 	Isolate* isolate = args.GetIsolate();
 	HandleScope scope(isolate);
 
@@ -480,7 +524,6 @@ JS_FUNC(CGetUnit)
 	uint32_t nQual = NULL;
 	uint32_t nLoc = NULL;
 	uint32_t nItemlvl = NULL;
-	Vars.thisUnit = NULL;
 
 	Local<ObjectTemplate> node = ObjectTemplate::New();
 	Local<Array> pReturnArray = Array::New();
@@ -515,7 +558,9 @@ JS_FUNC(CGetUnit)
 	}
 	else
 		pUnit = GetUnit(szName, nClassId, nType, nMode, nUnitId);
-	
+
+	Vars.thisUnit = pUnit;
+
 	if (!pUnit)
 		args.GetReturnValue().Set(Boolean::New(true));
 
@@ -531,14 +576,13 @@ JS_FUNC(CGetUnit)
 
 	if (pUnit && pmyUnit)
 	{
-		Vars.thisUnit = pUnit;
 		GetUnitName(pUnit, tmp, 256);
 		pmyUnit->_dwPrivateType = PRIVATE_UNIT;
 		pmyUnit->dwClassId = nClassId;
 		pmyUnit->dwMode = nMode;
 		pmyUnit->dwType = pUnit->dwType;
 		pmyUnit->dwUnitId = pUnit->dwUnitId;
-		Vars.thismyUnit = (myUnit*)pUnit;
+
 		//this needs a ton of work
 		switch (nType)
 		{
@@ -575,7 +619,7 @@ JS_FUNC(CGetUnit)
 			for (Room2 *pRoom = pLevel->pRoom2First; pRoom; pRoom = pRoom->pRoom2Next)
 			{
 
-				for (PresetUnit* pUnit = pRoom->pPreset; pUnit; pUnit = pUnit->pPresetNext)
+				for (PresetUnit* pUnit = pRoom->pPreset; pUnit; pUnit = pUnit->pPresetNext, dwArrayCount++)
 				{
 					// Does it fit?
 					if ((nType == NULL || pUnit->dwType == nType) && (nClassId == NULL || pUnit->dwTxtFileNo == nClassId))
@@ -607,7 +651,6 @@ JS_FUNC(CGetUnit)
 						node->Set(String::NewFromUtf8(isolate, "newy"), Integer::New(Vars.nthisPresetY));
 						//node->Set(String::NewFromUtf8(isolate, "subareaid"), Integer::New(pLevel->pNextLevel->dwLevelNo));
 						//pReturnArray->Set(dwArrayCount, nodes);
-						dwArrayCount++;
 					}
 				}
 			}
@@ -655,7 +698,7 @@ JS_FUNC(CGetUnit)
 			for (Room2 *pRoom = pLevel->pRoom2First; pRoom; pRoom = pRoom->pRoom2Next)
 			{
 
-				for (PresetUnit* pUnit = pRoom->pPreset; pUnit; pUnit = pUnit->pPresetNext)
+				for (PresetUnit* pUnit = pRoom->pPreset; pUnit; pUnit = pUnit->pPresetNext, dwArrayCount++)
 				{
 					// Does it fit?
 					if ((nType == NULL || pUnit->dwType == nType) && (nClassId == NULL || pUnit->dwTxtFileNo == nClassId))
@@ -686,7 +729,6 @@ JS_FUNC(CGetUnit)
 						node->Set(String::NewFromUtf8(isolate, "newy"), Integer::New(Vars.nthisPresetY));
 						node->Set(String::NewFromUtf8(isolate, "subareaid"), Integer::New(pLevel->pNextLevel->dwLevelNo));
 						//pReturnArray->Set(dwArrayCount, nodes);
-						dwArrayCount++;
 					}
 				}
 			}
@@ -701,7 +743,7 @@ JS_FUNC(CGetUnit)
 			break;
 		}
 	}
-	node->Set(String::New("GetNext"), FunctionTemplate::New(unitGetNext));
+	node->Set(String::New("GetNext"), FunctionTemplate::New(unitGetNext,args.This()));
 
 	delete[] pmyUnit, presetUnit;
 	args.GetReturnValue().Set(node->NewInstance());
@@ -711,13 +753,13 @@ void init_me()
 {
 	Isolate* isolate = Isolate::GetCurrent();
 	HandleScope handle_scope(isolate);	
-	Handle<Context> context = Context::GetCurrent();	
+	Local<Context> context = Context::GetCurrent();
 	Persistent<Context> persistent_context(isolate, context);	
 	Context::Scope context_scope(context);
 	context->Enter();
 
-	Handle<String> source = String::New("var me = InitMeOnce();");
-	Handle<Script> script = Script::Compile(source);
+	Local<String> source = String::New("var me = InitMeOnce();");
+	Local<Script> script = Script::Compile(source);
 	script->Run();
 	context->Exit();
 	return;
@@ -731,7 +773,7 @@ JS_FUNC(CMe)
 	GameStructInfo* pInfo = *vpGameInfo;
 	BnetData* pData = *vpBnData;
 
-	Handle<ObjectTemplate> node = ObjectTemplate::New();
+	Local<ObjectTemplate> node = ObjectTemplate::New();
 
 	node->Set(String::New("account"), String::New(pData->szAccountName));
 	node->SetAccessor(String::New("act"), GetAct, NULL);
@@ -1034,14 +1076,12 @@ JS_FUNC(CSay)
 	HandleScope handle_scope(args.GetIsolate());
 	if (args.Length() == 1)
 	{
-		HandleScope handle_scope(args.GetIsolate());
 		String::Utf8Value str(args[0]);
 		char* cstr = (char*)ToCString(str);
 		Say(cstr);
 		args.GetReturnValue().Set(Boolean::New(true));
 	}
 	args.GetReturnValue().Set(Boolean::New(false));
-	return;
 }
 
 JS_FUNC(CGetArea)

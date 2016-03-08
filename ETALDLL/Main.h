@@ -66,7 +66,6 @@ struct Variables
 
 	//for access to objects in d2
 	UnitAny* thisUnit;
-	myUnit* thismyUnit;
 	int		nthisPresetX;
 	int		nthisPresetY;
 };

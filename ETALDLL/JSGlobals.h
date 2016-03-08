@@ -51,25 +51,26 @@ JS_FUNC(CSetUIState);
 JS_FUNC(CGetLocaleString);
 JS_FUNC(CUseStatPoint);
 JS_FUNC(CUseSkillPoint);
-JS_FUNC(CGold);
 JS_FUNC(CGetControl);
 JS_FUNC(CSelectRealm);
 JS_FUNC(CGetWayPoint);
+JS_FUNC(CGetScriptName);
+JS_FUNC(CGetPath);
+JS_FUNC(CGetDistance);
+JS_FUNC(CClickMap);
+JS_FUNC(CGetRealmIndex);
 
 //currently testing/non functioning/un-finished
 JS_FUNC(CPrint);			//needs color code correted
+JS_FUNC(CGetUnit);			//WIP : needs more work
 JS_FUNC(CGetPresetUnits);	//subareaid needs corrected
 JS_FUNC(CGetArea);			//needs written
-JS_FUNC(CGetPath);			//needs written
 JS_FUNC(CGetBaseStat);		//needs written
-JS_FUNC(CGetUnit);			//WIP : needs more work
-JS_FUNC(CGetDistance);		//needs written
 JS_FUNC(CRunGC);			//needs written
-JS_FUNC(CClickMap);			//object reference needs work
+JS_FUNC(CGold);				//needs tested
 
 //for testing will be removed
 JS_FUNC(CMove);
-JS_FUNC(CTESTWAYPOINT);
 JS_FUNC(CGetLevel);
 
 //			________________________
@@ -158,18 +159,18 @@ JS_FUNC(CGetLevel);
 //[+] Me.X						//added
 //[+] Me.Y						//added
 //[+] Me.Cancel()				//added
-//[+] Me.ClickItem()
+//[+] Me.ClickItem()			//added
 //[+] Me.ClickMercItem()
 //[+] Me.ClickParty()
 //[+] Me.GetCursorItem()
 //[+] Me.GetMercCost()
-//[+] Me.GetQuest()
+//[+] Me.GetQuest()				//added
 //[+] Me.GetSkillStatus()
-//[+] Me.Repair()
-//[+] Me.SelectNPCMenu()
+//[+] Me.Repair()				//added
+//[+] Me.SelectNPCMenu()		//added
 //[+] Me.SetSkill()				//added
-//[+] Me.SwapWeapons()
-//[+] Me.TakeWaypoint()
+//[+] Me.SwapWeapons()			//added
+//[+] Me.TakeWaypoint()			//added
 //[+] Me.UseBelt()
 
 //[-] Unit

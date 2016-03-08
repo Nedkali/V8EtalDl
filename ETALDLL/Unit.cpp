@@ -118,10 +118,7 @@ static UnitAny* GetNextUnitFromTables(UnitAny* curUnit,
 UnitAny* GetNextUnit(UnitAny* pUnit, char* szName, DWORD dwClassId,
 	DWORD dwType, DWORD dwMode)
 {
-	if(MENU::ClientState() != ClientStateInGame)
-		return NULL;
-
-	if(!pUnit)
+	if (!pUnit)
 		return NULL;
 	if(dwType == 3)
 		return GetNextUnitFromTables(pUnit, vpClientSideUnitHashTables,

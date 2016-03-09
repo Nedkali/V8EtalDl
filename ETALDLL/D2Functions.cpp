@@ -35,7 +35,7 @@ DWORD WINAPI MainThread(VOID* param)
 {
 	Input* input = new Input;
 	input->Initialize();
-
+	
 	bool starter = true;
 	bool ingame = false;
 	bool startup = false;
@@ -55,36 +55,40 @@ DWORD WINAPI MainThread(VOID* param)
 			SendDataCopy("Etal Manager", 11, Vars.szLod);
 		}
 	}
-	else if (Vars.bzUseRawKeys == false)
+	else if (Vars.bzUseRawKeys == false && strlen(Prof.KeyOwner) > 5)
 	{
-		if (Pointer::LoadCDKeyMPQ(Prof.MpqFile))
+		if (Pointer::LoadCDKeyMPQ(Prof.KeyOwner))
 		{
 			SendDataCopy("Etal Manager", 11, "Loaded Key MPQ");			
 		}
 		else {
 			SendDataCopy("Etal Manager", 11, "Error Loading Key MPQ");
 			SendDataCopy("Etal Manager", 11, Vars.szMpqfile);
-		}
-		
+		}		
 	}
-	#pragma endregion
 
-	while (1)
+	#pragma endregion
+	
+	if (strlen(Prof.ScriptFile) > 5)
 	{
-		switch (MENU::ClientState())
+
+		while (1)
 		{
-		case ClientStateInGame :
-			break;
-		case ClientStateMenu :
-		case ClientStateNull:
-		case ClientStateBusy :
-			if (!startup) {
-				StartUpV8();
-				startup = true;
+			switch (MENU::ClientState())
+			{
+			case ClientStateInGame :
+				break;
+			case ClientStateMenu :
+			case ClientStateNull:
+			case ClientStateBusy :
+				if (!startup) {
+					StartUpV8();
+					startup = true;
+				}
+				break;
 			}
-			break;
+			Sleep(100);
 		}
-		Sleep(100);
 	}
 	FreeLibraryAndExitThread((HMODULE)param, 0);
 

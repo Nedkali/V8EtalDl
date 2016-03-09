@@ -336,7 +336,7 @@ ClientGameState MENU::ClientState(void)
 	return state;
 }
 
-v8::Local<v8::Array> MENU::GetText(int x, int a)
+v8::Local<v8::Array> MENU::GetText(int x)
 {
 	int count = 0;
 	char* Text2 = "";
@@ -357,7 +357,7 @@ v8::Local<v8::Array> MENU::GetText(int x, int a)
 				char* Line2 = wchart_to_char(pControlText->pNext->wText);
 				char* Line3 = wchart_to_char(pControlText->pNext->pNext->wText);
 				char* Line4 = wchart_to_char(pControlText->pNext->pNext->pNext->wText);
-				if (a > 0)//crashes on single player on next read
+				if (Prof.Realm > 0)//crashes on single player on next read
 				{
 					Line5 = wchart_to_char(pControlText->pNext->pNext->pNext->pNext->wText);
 				}
@@ -388,8 +388,8 @@ void MENU::locateControl()
 			return;
 		}
 
-		//if (pControl && pControl->wText2 != NULL)
-		//{
+		if (pControl->dwType == CONTROL_BUTTON)
+		{
 
 			char* Text1 = wchart_to_char(pControl->wText2);
 			char Text2[128];
@@ -397,8 +397,6 @@ void MENU::locateControl()
 
 			if (strlen(Text2) > 1)
 			{
-
-
 				//int disabled = pControl->dwDisabled;
 				int x = pControl->dwPosX;
 				int y = pControl->dwPosY;
@@ -417,7 +415,47 @@ void MENU::locateControl()
 				SendDataCopy("Etal Manager", 11, Text2);
 				//MessageBox(NULL, Text2, "Debug fcontrol", NULL);
 			}
-		//}
+		}
+
+
+		if (pControl->dwType == CONTROL_TEXTBOX)
+		{
+			char* Text1 = wchart_to_char(pControl->wText2);
+			char Text2[128];
+			strcpy_s(Text2, 128, Text1);
+
+			char temp2[128];
+			int type = CONTROL_TEXTBOX;
+			 sprintf_s(temp2, "%u", type); strcat_s(temp2, 128, ", ");
+			
+			strcat_s(temp2, 128, Text2); strcat_s(temp2, 128, ", ");
+
+			int x = pControl->dwPosX;
+			sprintf_s(temp2, "%u", x); strcat_s(Text2, 128, ", -1, ");
+			strcat_s(Text2, 128, temp2); strcat_s(temp2, 128, ", ");
+
+			int y = pControl->dwPosY;
+			char temp3[128];	sprintf_s(temp3, "%u", y);
+			strcat_s(Text2, 128, temp3); strcat_s(Text2, 128, ", ");
+
+			int bwidth = pControl->dwSizeX;
+			char temp4[128];	sprintf_s(temp4, "%u", bwidth);
+			 strcat_s(Text2, 128, temp4); strcat_s(Text2, 128, ", ");
+
+			int bheight = pControl->dwSizeY;
+			char temp5[128];	sprintf_s(temp5, "%u", bheight);
+			strcat_s(Text2, 128, temp5); strcat_s(Text2, 128, ", ");			
+			
+			strcat_s(Text2, 128, "];");
+
+			SendDataCopy("Etal Manager", 11, Text2);
+
+
+		}
+
+
+
+
 		//pControl = pControl->pNext;
 	}
 

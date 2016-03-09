@@ -13,10 +13,20 @@
 
 void CheckStruct()
 {
+	MessageBoxA(NULL, Prof.Account, "Debug Account", NULL);
+	MessageBoxA(NULL, Prof.AccPass, "Debug AccPass", NULL);
+	//MessageBoxA(NULL, Prof.MpqFile, "Debug MpqFile", NULL);
+	MessageBoxA(NULL, Prof.KeyOwner, "Debug KeyOwner", NULL);
+	MessageBoxA(NULL, Prof.Classic, "Debug Classic", NULL);
+	MessageBoxA(NULL, Prof.Lod, "Debug Lod", NULL);
 	MessageBoxA(NULL, Prof.GameName, "Debug GameName", NULL);
 	MessageBoxA(NULL, Prof.GamePass, "Debug GamePass", NULL);
-	MessageBoxA(NULL, Prof.MpqFile, "Debug MpqFile", NULL);
-	MessageBoxA(NULL, Prof.Classic, "Debug Classic", NULL);
+	char temp1[128];	sprintf_s(temp1, "%u", Prof.Charloc);
+	MessageBoxA(NULL, temp1, "Debug Charloc", NULL);
+	char temp2[128];	sprintf_s(temp2, "%u", Prof.Realm);
+	MessageBoxA(NULL, temp2, "Debug Realm", NULL);
+	char temp3[128];	sprintf_s(temp3, "%u", Prof.Difficulty);
+	MessageBoxA(NULL, temp3, "Debug Difficulty", NULL);
 	MessageBoxA(NULL, Prof.ScriptFile, "Debug ScriptFile", NULL);
 	
 }

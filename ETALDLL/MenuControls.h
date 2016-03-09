@@ -32,7 +32,7 @@ public:
 	static bool clickControl(Control* pControl);
 	static void SetControlText(Control* pControl, const char* Text);
 	static ClientGameState ClientState(void);
-	static v8::Local<v8::Array> GetText(int x, int a);
+	static v8::Local<v8::Array> GetText(int x);
 };
 
 ///////////////////////////////////////////////////

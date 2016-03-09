@@ -144,43 +144,23 @@ JS_FUNC(CGetWayPoint)
 JS_FUNC(CSelectRealm)
 {
 	HandleScope handle_scope(args.GetIsolate());
-	if (Prof.Realm == 0)//Single Player
+
+	if (MENU::GetLocationID() == 27)
 	{
-		Control*  pControl = MENU::findControl(CONTROL_BUTTON, "SINGLE PLAYER", -1, 264, 324, 272, 35);
-		if (pControl)
-		{
-			MENU::clickControl(pControl);
-			return;
-		}
-	}
-	Control* pControl = MENU::findControl(CONTROL_BUTTON, (char *)NULL, -1, 264, 391, 272, 25);
-	if (pControl && pControl->wText2) {
-		char* cstr = "";
-		char* szLine = wchart_to_char(pControl->wText2);
-
-		if (Prof.Realm == 1) { cstr = "GATEWAY: U.S. WEST"; }
-		if (Prof.Realm == 2) { cstr = "GATEWAY: U.S. EAST"; }
-		if (Prof.Realm == 3) { cstr = "GATEWAY: ASIA"; }
-		if (Prof.Realm == 4) { cstr = "GATEWAY: EUROPE"; }
-
-		if (strcmp(cstr, szLine) != 0) {
-			MENU::clickControl(pControl);
-
-			Sleep(2000);
-			Input::SendMouseClick(295, 320 + ((Prof.Realm * 24) + 12), 0);//select correct realm
+		Sleep(50);
+		Input::SendMouseClick(295, 320 + ((Prof.Realm * 24) + 12), 0);//select correct realm
 																		  //OK Button
-			Control* pControl2 = MENU::findControl(CONTROL_BUTTON, (char *)NULL, -1, 281, 538, 96, 32);
-			if (pControl2) {
-				MENU::clickControl(pControl2);
-				Sleep(2000);
-			}
-
+		Control* pControl2 = MENU::findControl(CONTROL_BUTTON, (char *)NULL, -1, 281, 538, 96, 32);
+		if (pControl2) {
+			MENU::clickControl(pControl2);
+			Sleep(800);
 		}
+
 	}
-	Control* pControl2 = MENU::findControl(CONTROL_BUTTON, "BATTLE.NET", -1, 264, 366, 272, 35);
-	if (pControl2)
-		MENU::clickControl(pControl2);
-	Sleep(2000);
+	//Control* pControl2 = MENU::findControl(CONTROL_BUTTON, "BATTLE.NET", -1, 264, 366, 272, 35);
+	//if (pControl2)
+	//	MENU::clickControl(pControl2);
+	//Sleep(2000);
 	return;
 }
 
@@ -215,7 +195,7 @@ JS_FUNC(CClickMap)
 
 JS_FUNC(CGetControl)// unsure if this will work - testing
 {
-	//MENU::locateControl();
+	MENU::locateControl();
 	//HandleScope handle_scope(args.GetIsolate());
 	//if (args.Length() == 5)
 	//{
@@ -961,13 +941,14 @@ JS_FUNC(CSetText)
 JS_FUNC(CGetText)
 {
 	HandleScope handle_scope(args.GetIsolate());
-	Local<v8::Array> arr = v8::Local<v8::Array>::Cast(MENU::GetText(Prof.Charloc, Prof.Realm));
+	Local<v8::Array> arr = v8::Local<v8::Array>::Cast(MENU::GetText(Prof.Charloc));
 	args.GetReturnValue().Set(arr);
 
 }
 
 JS_FUNC(CSelectChar)
 {
+	
 	HandleScope handle_scope(args.GetIsolate());
 	int x = 175; int y = 125;
 	int charpos = Prof.Charloc;

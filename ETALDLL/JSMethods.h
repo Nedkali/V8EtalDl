@@ -19,3 +19,13 @@ JS_METHOD(meGetItems);
 //Unit Methods
 JS_METHOD(unitGetStat);
 JS_METHOD(unitGetNext);
+JS_METHOD(unitGetState);
+JS_METHOD(unitGetItems);
+
+
+//Room Methods
+JS_METHOD(roomGetFirst);
+JS_METHOD(roomGetNearby);
+JS_METHOD(roomGetNext);
+JS_METHOD(roomGetPresetUnits);
+JS_METHOD(roomUnitInRoom);

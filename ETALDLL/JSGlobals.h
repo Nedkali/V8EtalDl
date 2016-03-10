@@ -7,6 +7,7 @@
 #include "JsDefines.h"
 #include "D2Pointers.h"
 #include "Unit.h"
+#include "Room.h"
 
 using namespace v8;
 
@@ -59,6 +60,7 @@ JS_FUNC(CGetPath);
 JS_FUNC(CGetDistance);
 JS_FUNC(CClickMap);
 JS_FUNC(CGetRealmIndex);
+JS_FUNC(CSetDifficulty);
 
 //currently testing/non functioning/un-finished
 JS_FUNC(CPrint);			//needs color code correted
@@ -68,6 +70,7 @@ JS_FUNC(CGetArea);			//needs written
 JS_FUNC(CGetBaseStat);		//needs written
 JS_FUNC(CRunGC);			//needs written
 JS_FUNC(CGold);				//needs tested
+JS_FUNC(CGetRoom);			//WIP
 
 //for testing will be removed
 JS_FUNC(CMove);
@@ -95,12 +98,12 @@ JS_FUNC(CGetLevel);
 //[+] GetPath()					//WIP : Will probably be added last sadly
 //[+] GetPlayerFlag()
 //[+] GetPlayerUnit()			//added
-//[+] GetPresetUnits()			//added
-//[+] GetRoom()
+//[+] GetPresetUnits()			//added : WIP
+//[+] GetRoom()					//added : WIP
 //[+] GetScript()
 //[+] GetTickCount()			//added
 //[+] GetUIState()				//added
-//[+] GetUnit()					/WIP
+//[+] GetUnit()					//added : WIP
 //[+] GetWaypoint()				//added
 //[+] Gold()					//added
 //[+] Include()					//added
@@ -108,7 +111,7 @@ JS_FUNC(CGetLevel);
 //[+] Print()					//added
 //[+] RegisterEvent()
 //[+] Random()					//added
-//[+] RunGC()					//WIP
+//[+] RunGC()					//WIP : needs written
 //[+] Say()						//added
 //[+] SendCopyData()			//added
 //[+] SetStatusText()
@@ -137,7 +140,7 @@ JS_FUNC(CGetLevel);
 //[+] Me.Hp						//added
 //[+] Me.Ingame					//added
 //[+] Me.itemoncursor			//added
-//[+] Me.Ladder					//WIP
+//[+] Me.Ladder					//added
 //[+] Me.Maxgametime			//added
 //[+] Me.Mode					//added
 //[+] Me.Mpmax					//added
@@ -148,7 +151,7 @@ JS_FUNC(CGetLevel);
 //[+] Me.Playtype
 //[+] Me.Quitonhostile
 //[+] Me.Realm					//added : WIP
-//[+] Me.Realmshort				//added
+//[+] Me.Realmshort				//added : WIP
 //[+] Me.Revealautomap
 //[+] Me.Runwalk				//added
 //[+] Me.Showenemyonautomap
@@ -202,19 +205,19 @@ JS_FUNC(CGetLevel);
 //[+] Unit.y					//added
 //[+] Unit.ysize
 //[+] Unit.GetItemCost()
-//[+] Unit.GetItems()
+//[+] Unit.GetItems()			//added
 //[+] Unit.GetMerc()
-//[+] Unit.GetNext()
+//[+] Unit.GetNext()			//WIP
 //[+] Unit.GetOptimalAttackPos()
 //[+] Unit.GetParent()
 //[+] Unit.GetRoom()
 //[+] Unit.GetSkill()
-//[+] Unit.GetStat()
-//[+] Unit.GetState()
+//[+] Unit.GetStat()			//added
+//[+] Unit.GetState()			//added
 //[+] Unit.IsAttackable()
 
 //[-] Script
-//[+] Script.name
+//[+] Script.name				//added
 //[+] Script.gametype
 //[+] Script.running
 //[+] Script.GetNext()
@@ -275,17 +278,17 @@ JS_FUNC(CGetLevel);
 //[+] Area.ysize
 
 //[-] Room
-//[+] Room.areaid
-//[+] Room.correcttomb
-//[+] Room.x
-//[+] Room.xsize
-//[+] Room.y
-//[+] Room.ysize
-//[+] Room.GetFirst()
-//[+] Room.GetNearby()
-//[+] Room.GetNext()
-//[+] Room.GetPresetUnits()
-//[+] Room.UnitInRoom()
+//[+] Room.areaid				//added
+//[+] Room.correcttomb			//added
+//[+] Room.x					//added
+//[+] Room.xsize				//added
+//[+] Room.y					//added
+//[+] Room.ysize				//added
+//[+] Room.GetFirst()			//WIP
+//[+] Room.GetNearby()			//added not sure if working how it should?
+//[+] Room.GetNext()			//WIP
+//[+] Room.GetPresetUnits()		//added WIP
+//[+] Room.UnitInRoom()			//added needs tested
 
 //[-] Events
 //[+] EVENT_GAMEMSG

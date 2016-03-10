@@ -65,6 +65,7 @@ struct Variables
 
 
 	//for access to objects in d2
+	Room2* pRoom2;
 	UnitAny* thisUnit;
 	int		nthisPresetX;
 	int		nthisPresetY;

@@ -74,7 +74,6 @@
     <TargetName>D2ETAL</TargetName>
     <LibraryWPath />
     <IncludePath>V8\lib\Debug;$(IncludePath)</IncludePath>
-    <OutDir>D:\My Documents\GitHub\EtalManager\Etal Manager\bin\Debug\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -182,9 +181,8 @@
     <ClInclude Include="GameDraw.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="JsDefines.h" />
-    <ClInclude Include="JSGlobalMethods.h" />
+    <ClInclude Include="JSMethods.h" />
     <ClInclude Include="JSGlobals.h" />
-    <ClInclude Include="JsGlobals2.h" />
     <ClInclude Include="Map\BlankMap.h" />
     <ClInclude Include="Map\Diablo_II\ActMap.h" />
     <ClInclude Include="Map\Diablo_II\LevelMap.h" />
@@ -205,6 +203,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Patch.h" />
+    <ClInclude Include="Room.h" />
     <ClInclude Include="stringhash.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Unit.h" />
@@ -221,9 +220,8 @@
     <ClCompile Include="GameDraw.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Input.cpp" />
-    <ClCompile Include="JSGlobalMethods.cpp" />
+    <ClCompile Include="JSMethods.cpp" />
     <ClCompile Include="JSGlobals.cpp" />
-    <ClCompile Include="JsGlobals2.cpp" />
     <ClCompile Include="Main.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -242,6 +240,7 @@
     <ClCompile Include="Map\Diablo_II\LevelMap.cpp" />
     <ClCompile Include="MenuControls.cpp" />
     <ClCompile Include="MPQStats.cpp" />
+    <ClCompile Include="Room.cpp" />
     <ClCompile Include="stringhash.cpp" />
     <ClCompile Include="Unit.cpp" />
     <ClCompile Include="V8Script.cpp" />

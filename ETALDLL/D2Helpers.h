@@ -56,8 +56,8 @@ void  __fastcall D2CLIENT_ClickItemRight_ASM(DWORD x, DWORD y, DWORD Location, D
 void  __fastcall D2CLIENT_ClickBelt(DWORD x, DWORD y, Inventory* pInventoryData);
 void  __fastcall D2CLIENT_ClickBeltRight_ASM(DWORD pInventory, DWORD pPlayer, DWORD HoldShift, DWORD dwPotPos);
 
-//AutomapLayer* InitAutomapLayer(DWORD levelno);
-//DWORD __fastcall D2CLIENT_InitAutomapLayer_STUB(DWORD nLayerNo);
+AutomapLayer* InitAutomapLayer(DWORD levelno);
+DWORD __fastcall D2CLIENT_InitAutomapLayer_STUB(DWORD nLayerNo);
 
 DWORD	GetPlayerArea(void);
 Level*	GetLevel(DWORD dwLevelNo);
